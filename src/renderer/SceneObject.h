@@ -4,7 +4,7 @@
 #include "Material.h"
 #include "BoundingBox.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class Ray;
 class HitInformation;

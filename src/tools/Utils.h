@@ -4,7 +4,7 @@
 #include <vector>
 #include <sstream>
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class Utils {
 public:

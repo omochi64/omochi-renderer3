@@ -3,7 +3,7 @@
 #include "Color.h"
 #include "scenes/Scene.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class Scene;
 class Ray;

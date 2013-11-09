@@ -8,7 +8,7 @@
 #include "Polygon.h"
 
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class Matrix;
 

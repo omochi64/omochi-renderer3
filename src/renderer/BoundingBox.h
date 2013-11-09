@@ -5,7 +5,7 @@
 #include "Ray.h"
 #include "tools/Constant.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class BoundingBox {
 public:

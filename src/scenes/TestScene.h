@@ -2,7 +2,7 @@
 
 #include "Scene.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class TestScene : public Scene {
 public:

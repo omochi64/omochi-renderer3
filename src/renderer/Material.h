@@ -3,7 +3,7 @@
 #include <functional>
 #include "Color.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class Material {
 public:

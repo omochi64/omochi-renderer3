@@ -4,7 +4,7 @@
 #include "renderer/Sphere.h"
 #include "renderer/Polygon.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 CornellBoxScene::CornellBoxScene()
 {

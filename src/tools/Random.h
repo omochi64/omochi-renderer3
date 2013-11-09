@@ -2,7 +2,7 @@
 
 #include <climits>
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class Random {
 public:

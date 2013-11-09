@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 Model::Model()
   : m_materials()

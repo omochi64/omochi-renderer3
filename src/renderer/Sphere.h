@@ -6,7 +6,7 @@
 #include "HitInformation.h"
 #include "Material.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class Sphere : public SceneObject {
 public:

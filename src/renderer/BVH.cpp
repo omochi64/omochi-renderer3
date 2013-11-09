@@ -9,7 +9,7 @@ using namespace std;
 namespace {
 };
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 BVH::~BVH()
 {

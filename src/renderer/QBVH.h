@@ -4,7 +4,7 @@
 #include "scenes/Scene.h"
 #include "BVH.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
   class SceneObject;
   class Ray;
   struct Scene::IntersectionInformation;

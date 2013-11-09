@@ -6,7 +6,7 @@
 #include "renderer/Model.h"
 #include "tools/Constant.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class SceneObject;
 class BVH;

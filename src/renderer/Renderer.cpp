@@ -8,7 +8,7 @@
 
 using namespace std;
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 PathTracer::PathTracer(int screen_width, int screen_height, int samples, int supersamples)
 {

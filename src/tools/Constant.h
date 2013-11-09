@@ -1,5 +1,5 @@
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 #define INF (FLT_MAX-1)
 #define PI 3.14159265358979323846264338327950288419716939

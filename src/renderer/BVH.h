@@ -5,7 +5,7 @@
 #include "scenes/Scene.h"
 #include "SceneObject.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class BVH {
 public:

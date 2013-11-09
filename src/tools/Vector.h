@@ -4,7 +4,7 @@
 #include <cassert>
 #include <sstream>
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class Vector3 {
 public:

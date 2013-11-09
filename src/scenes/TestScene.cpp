@@ -6,7 +6,7 @@
 #include "renderer/Model.h"
 #include "renderer/BVH.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 TestScene::TestScene()
 {

@@ -6,7 +6,7 @@
 #include "HitInformation.h"
 #include "tools/Matrix.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class Polygon : public SceneObject {
 public:

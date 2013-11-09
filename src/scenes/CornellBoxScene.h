@@ -2,7 +2,7 @@
 
 #include "Scene.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class CornellBoxScene : public Scene {
 public:

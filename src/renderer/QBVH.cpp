@@ -9,7 +9,7 @@
 
 using namespace std;
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
   QBVH::~QBVH() {
   }

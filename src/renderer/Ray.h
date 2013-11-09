@@ -2,7 +2,7 @@
 
 #include "tools/Vector.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class Ray {
 public:

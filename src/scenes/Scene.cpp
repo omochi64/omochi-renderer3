@@ -2,7 +2,7 @@
 #include "renderer/BVH.h"
 #include "renderer/QBVH.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 Scene::~Scene() {
   for (size_t i=0; i<m_objects.size(); i++) {

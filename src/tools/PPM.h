@@ -7,7 +7,7 @@
 #include <sstream>
 #include "renderer/Color.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class PPM {
 private:

@@ -9,7 +9,7 @@
 #include "tools/PPM.h"
 
 using namespace std;
-using namespace SimpleRenderer;
+using namespace OmochiRenderer;
 
 static const int supersampling = 4;
 

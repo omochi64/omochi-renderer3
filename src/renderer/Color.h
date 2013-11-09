@@ -2,6 +2,6 @@
 
 #include "tools/Vector.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
   typedef Vector3 Color;
 }

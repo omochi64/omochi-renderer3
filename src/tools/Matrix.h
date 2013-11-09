@@ -3,7 +3,7 @@
 #include <cstring>
 #include "Vector.h"
 
-namespace SimpleRenderer {
+namespace OmochiRenderer {
 
 class Matrix {
 public:
