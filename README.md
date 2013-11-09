@@ -1,4 +1,4 @@
-pathtracer
+omochi-renderer
 ==========
 
-simple_pathtracer が simple じゃなくなってきたので
+色々実装するレンダラ系のものはここに集約するつもり
