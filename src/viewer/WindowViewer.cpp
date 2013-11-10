@@ -1,7 +1,11 @@
-#include <Windows.h>
 #include "WindowViewer.h"
 #include <unordered_map>
 #include "renderer/Camera.h"
+#include "renderer/ToonMapper.h"
+#include "renderer/Renderer.h"
+
+#include <iostream>
+#include <Windows.h>
 
 using namespace std;
 
@@ -19,6 +23,8 @@ namespace OmochiRenderer {
   class WindowViewer::WindowImpl {
     WindowViewer &viewer;
     static unordered_map<size_t, WindowImpl *> handleToInstance;
+
+    wstring wstr_title;
 
   public:
     explicit WindowImpl(WindowViewer &viewer_)
@@ -63,6 +69,8 @@ namespace OmochiRenderer {
       HWND hWnd;
       HINSTANCE hInst = static_cast<HINSTANCE>(GetModuleHandle(NULL));
 
+      wstr_title = widen(viewer.m_windowTitle.c_str());
+
       // ウィンドウクラスの情報を設定
       wc.cbSize = sizeof(wc);               // 構造体サイズ
       wc.style = CS_HREDRAW | CS_VREDRAW;   // スタイル
@@ -82,7 +90,7 @@ namespace OmochiRenderer {
       wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH); // ウィンドウ背景
       wc.lpszMenuName = NULL;                     // メニュー名
       // ugly code
-      wc.lpszClassName = widen(viewer.m_windowTitle.c_str()).c_str();// ウィンドウクラス名
+      wc.lpszClassName = wstr_title.c_str();// ウィンドウクラス名
 
       // ウィンドウクラスを登録する
       if( RegisterClassEx( &wc ) == 0 ){ return (HWND)INVALID_HANDLE_VALUE; }
@@ -96,7 +104,7 @@ namespace OmochiRenderer {
       // ウィンドウを作成する
       hWnd = CreateWindow(
 	      wc.lpszClassName,      // ウィンドウクラス名
-        widen(viewer.m_windowTitle.c_str()).c_str(),  // タイトルバーに表示する文字列
+        wstr_title.c_str(),  // タイトルバーに表示する文字列
 	      WS_OVERLAPPEDWINDOW,   // ウィンドウの種類
 	      x,         // ウィンドウを表示する位置（X座標）
 	      y,         // ウィンドウを表示する位置（Y座標）
@@ -108,8 +116,7 @@ namespace OmochiRenderer {
 	      NULL                   // その他の作成データ
       );
 
-
-      if (hWnd == INVALID_HANDLE_VALUE) return (HWND)INVALID_HANDLE_VALUE;
+      if (hWnd == 0 || hWnd == INVALID_HANDLE_VALUE) return (HWND)INVALID_HANDLE_VALUE;
 
       RECT wrect, crect;
       GetWindowRect(hWnd, &wrect); GetClientRect(hWnd, &crect);
@@ -122,6 +129,8 @@ namespace OmochiRenderer {
       // ウィンドウを表示する
 	    ShowWindow( hWnd, SW_SHOW );
 	    UpdateWindow( hWnd );
+
+      cerr << "HWND = " << hWnd << endl;
 
       return hWnd;
     }
@@ -138,14 +147,51 @@ namespace OmochiRenderer {
       }
 
       return handleToInstance[sizethWnd]->WndProc_impl(hWnd, msg, wp, lp);
+      //return WndProc_impl(hWnd, msg, wp, lp);
     }
 
   private:
     LRESULT WndProc_impl(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
       switch (msg) {
+      case WM_CREATE:
+        cerr << "WM_CREATE = " << hWnd << endl;
+        InvalidateRect(hWnd, NULL, TRUE);
+        break;
+
       case WM_DESTROY:
-		      PostQuitMessage( 0 );
-		      return 0;
+        PostQuitMessage( 0 );
+        return 0;
+
+      case WM_PAINT:
+        {
+          PAINTSTRUCT paint;
+          HDC hdc = BeginPaint(hWnd, &paint);
+
+
+          int width = viewer.m_camera.GetScreenWidth();
+          int height = viewer.m_camera.GetScreenHeight();
+
+          const Color *result = viewer.m_renderer.GetResult();
+          for (int y=0; y<height; y++) {
+            for (int x=0; x<width; x++) {
+              int index = x+y*width;
+
+              SetPixel(hdc,x,y,
+                RGB(viewer.m_mapper.Map(result[index].x),
+                  viewer.m_mapper.Map(result[index].y),
+                  viewer.m_mapper.Map(result[index].z)
+                ));
+            }
+          }
+
+          // draw information
+          SetBkMode(hdc, TRANSPARENT);
+          wstring info = widen(viewer.m_renderer.GetCurrentRenderingInfo());
+          RECT rc; GetClientRect(hWnd, &rc);
+          DrawText(hdc, info.c_str(), -1, &rc, DT_LEFT|DT_WORDBREAK);
+
+          EndPaint(hWnd, &paint);
+        }
       }
 
       return DefWindowProc( hWnd, msg, wp, lp );
@@ -154,10 +200,11 @@ namespace OmochiRenderer {
 
   unordered_map<size_t, WindowViewer::WindowImpl *> WindowViewer::WindowImpl::handleToInstance;
 
-  WindowViewer::WindowViewer(const std::string &windowTitle, const Camera &camera, const PathTracer &renderer)
+  WindowViewer::WindowViewer(const std::string &windowTitle, const Camera &camera, const PathTracer &renderer, const ToonMapper &mapper)
     : m_windowTitle(windowTitle)
     , m_camera(camera)
     , m_renderer(renderer)
+    , m_mapper(mapper)
     , m_pWindow(NULL)
   {
   }
@@ -174,6 +221,6 @@ namespace OmochiRenderer {
   void WindowViewer::StartViewerOnNewThread() {
   }
 
-  bool WindowViewer::CreateViewWindow() {
+  void WindowViewer::WaitWindowFinish() {
   }
 }

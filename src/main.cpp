@@ -4,6 +4,7 @@
 
 #include "renderer/Renderer.h"
 #include "renderer/Camera.h"
+#include "renderer/LinearGammaToonMapper.h"
 #include "scenes/CornellBoxScene.h"
 #include "scenes/TestScene.h"
 #include "tools/Vector.h"
@@ -45,7 +46,8 @@ int main(int argc, char *argv[]) {
 	TestScene scene;
   //CornellBoxScene scene;
 
-  WindowViewer viewer("OmochiRenderer", camera, renderer);
+  LinearGammaToonMapper mapper;
+  WindowViewer viewer("OmochiRenderer", camera, renderer, mapper);
   viewer.StartViewerOnThisThread();
 
 	cerr << "begin rendering..." << endl;

@@ -29,6 +29,8 @@ public:
 
 	const Color *GetResult() const {return m_result;}
 
+  std::string GetCurrentRenderingInfo() const;
+
 private:
   void init(const Camera &camera, int min_samples, int max_samples, int step, int supersamples, RenderingFinishCallback *callback);
 
@@ -43,6 +45,8 @@ private:
   Camera m_camera;
 	int m_min_samples,m_max_samples,m_step_samples;
 	int m_supersamples;
+  int m_previous_samples;
+  int m_processed_y_counts;
   RenderingFinishCallback *m_renderFinishCallback;
 
   int m_checkIntersectionCount;

@@ -6,6 +6,8 @@
 #include "Ray.h"
 #include "tools/Random.h"
 
+#include <sstream>
+
 using namespace std;
 
 namespace OmochiRenderer {
@@ -29,6 +31,7 @@ void PathTracer::init(const Camera &camera, int min_samples, int max_samples, in
   m_max_samples = max_samples;
   m_step_samples = steps;
 	m_supersamples = (supersamples);
+  m_previous_samples = 0;
   m_renderFinishCallback = callback;
 
   m_checkIntersectionCount = 0;
@@ -45,30 +48,26 @@ void PathTracer::RenderScene(const Scene &scene) {
   // スクリーン中心
   const Vector3 screen_center = m_camera.GetScreenCenterPosition();
 
-  int previous_samples = 0;
+  m_previous_samples = 0;
   for (int samples=m_min_samples; samples<=m_max_samples; samples+=m_step_samples) {
     clock_t t1, t2;
     t1 = clock();
     m_checkIntersectionCount = 0;
-    ScanPixelsAndCastRays(scene, previous_samples, samples);
+    ScanPixelsAndCastRays(scene, m_previous_samples, samples);
     t2 = clock();
-    previous_samples = samples;
+    m_previous_samples = samples;
     cerr << "samples = " << samples << " rendering finished." << endl;
     double pastsec = 1.0*(t2-t1)/CLOCKS_PER_SEC;
     cerr << "rendering time = " << (1.0/60)*pastsec << " min." << endl;
-    cerr << "speed = " << m_checkIntersectionCount/pastsec*(samples-previous_samples) << " rays (intersection check)/sec" << endl;
+    cerr << "speed = " << m_checkIntersectionCount/pastsec*(samples-m_previous_samples) << " rays (intersection check)/sec" << endl;
     if (m_renderFinishCallback) {
       (*m_renderFinishCallback)(samples, m_result);
     }
   }
 }
 
-namespace {
-  int processed_y_counts = 0;
-}
-
 void PathTracer::ScanPixelsAndCastRays(const Scene &scene, int previous_samples, int next_samples) {
-  processed_y_counts = 0;
+  m_processed_y_counts = 0;
 
   const size_t height = m_camera.GetScreenHeight();
   const size_t width = m_camera.GetScreenWidth();
@@ -106,8 +105,8 @@ void PathTracer::ScanPixelsAndCastRays(const Scene &scene, int previous_samples,
       // img_n+c(x) = n/(n+c)*img_n(x) + 1/(n+c)*sum_{n+1}^{n+c}rad_i(x)/supersamples^2
       m_result[index] = m_result[index] * (static_cast<double>(previous_samples) / next_samples) + accumulated_radiance / averaging_factor;
     }
-    processed_y_counts++;
-    cerr << "y = " << y << ": " << static_cast<double>(processed_y_counts)/height*100 << "% finished" << endl;
+    m_processed_y_counts++;
+    cerr << "y = " << y << ": " << static_cast<double>(m_processed_y_counts)/height*100 << "% finished" << endl;
 
   }
 }
@@ -266,6 +265,16 @@ Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random
   }
 
   return intersect.object->material.emission + Vector3(weight.x*income.x, weight.y*income.y, weight.z*income.z);
+}
+
+std::string PathTracer::GetCurrentRenderingInfo() const {
+
+  stringstream ss;
+  ss << "(width, height) = (" << m_camera.GetScreenWidth() << ", " << m_camera.GetScreenHeight() << ")" << endl;
+  ss << "previous samples = " << m_previous_samples << "x(" << m_supersamples << "x" << m_supersamples << "). sample step = " << m_step_samples << endl;
+  ss << m_processed_y_counts*100.0/m_camera.GetScreenHeight() << "% finished." << endl;
+
+  return ss.str();
 }
 
 }

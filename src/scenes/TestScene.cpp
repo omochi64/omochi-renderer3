@@ -24,7 +24,7 @@ TestScene::TestScene()
   AddObject(new Sphere(1e5, Vector3(50, -1e5+81.6, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75))), true, false);  // ã
 
   Model *cube = new Model;
-  if (!cube->ReadFromObj("Gatling Gun.obj")) {
+  if (!cube->ReadFromObj("torii.obj")) {
     std::cerr << "failed to load cube.obj!!!" << std::endl;
     getchar();
     exit(-1);
@@ -39,8 +39,8 @@ TestScene::TestScene()
 
 	AddObject(new Sphere(15.0,Vector3(50.0, 90.0, 81.6),   Material(Material::REFLECTION_TYPE_LAMBERT, Color(36,36,36), Color())), true, false);    // Æ–¾
 
-  ConstructBVH();
-  //ConstructQBVH();
+  //ConstructBVH();
+  ConstructQBVH();
 }
 
 }
