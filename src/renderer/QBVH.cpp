@@ -161,7 +161,9 @@ namespace OmochiRenderer {
     size_t newSize = m_allocatedQBVHNodeSize + addSize;
     QBVH_structure *alignedRoot = new(_aligned_malloc(sizeof(QBVH_structure)*newSize, 16)) QBVH_structure[newSize];
     if (m_root) {
-      std::copy(m_root.get(), m_root.get()+m_allocatedQBVHNodeSize, alignedRoot);
+      for (size_t i = 0; i < m_allocatedQBVHNodeSize; i++) {
+        alignedRoot[i] = m_root.get()[i];
+      }
     }
     memset(alignedRoot+m_allocatedQBVHNodeSize, 0, sizeof(QBVH_structure)*addSize);
     m_root.reset(alignedRoot, [](void *p){_aligned_free(p);});

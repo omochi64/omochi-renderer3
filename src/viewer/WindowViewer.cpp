@@ -12,7 +12,8 @@ using namespace std;
 namespace {
   wstring widen(const std::string &src) {
 	  wchar_t *wcs = new wchar_t[src.length() + 1];
-	  mbstowcs(wcs, src.c_str(), src.length() + 1);
+    size_t converted;
+    mbstowcs_s(&converted, wcs, src.length()+1, src.c_str(), src.length());
 	  wstring dest = wcs;
 	  delete [] wcs;
     return dest;
@@ -25,20 +26,36 @@ namespace OmochiRenderer {
     static unordered_map<size_t, WindowImpl *> handleToInstance;
 
     wstring wstr_title;
+    HWND m_hWnd;
+    size_t m_timerID;
 
   public:
     explicit WindowImpl(WindowViewer &viewer_)
       : viewer(viewer_)
+      , wstr_title()
+      , m_hWnd(NULL)
+      , m_timerID(0)
     {
     }
 
     bool CreateNewWindow() {
       HWND hWnd = CreateNewWindow_impl();
+      m_hWnd = hWnd;
       if (hWnd != INVALID_HANDLE_VALUE) {
         RegisterWindow(hWnd, this);
+        ResetTimer();
         return true;
       }
       return false;
+    }
+
+    void ResetTimer() {
+      if (viewer.m_refreshTimeInMsec < 2) return;
+      if (m_timerID != 0) {
+        KillTimer(m_hWnd, m_timerID);
+      }
+      m_timerID = WM_USER + rand() % 10000;
+      SetTimer(m_hWnd, m_timerID, viewer.m_refreshTimeInMsec - 1, NULL);
     }
 
     static void MessageLoop() {
@@ -185,13 +202,20 @@ namespace OmochiRenderer {
           }
 
           // draw information
-          SetBkMode(hdc, TRANSPARENT);
+          //SetBkMode(hdc, TRANSPARENT);
           wstring info = widen(viewer.m_renderer.GetCurrentRenderingInfo());
           RECT rc; GetClientRect(hWnd, &rc);
           DrawText(hdc, info.c_str(), -1, &rc, DT_LEFT|DT_WORDBREAK);
 
           EndPaint(hWnd, &paint);
         }
+        return 0;
+
+      case WM_TIMER:
+        if (static_cast<size_t>(wp) == m_timerID) {
+          InvalidateRect(hWnd, NULL, FALSE);
+        }
+        break;
       }
 
       return DefWindowProc( hWnd, msg, wp, lp );
@@ -200,12 +224,19 @@ namespace OmochiRenderer {
 
   unordered_map<size_t, WindowViewer::WindowImpl *> WindowViewer::WindowImpl::handleToInstance;
 
-  WindowViewer::WindowViewer(const std::string &windowTitle, const Camera &camera, const PathTracer &renderer, const ToonMapper &mapper)
+  WindowViewer::WindowViewer(
+    const std::string &windowTitle,
+    const Camera &camera, 
+    const PathTracer &renderer,
+    const ToonMapper &mapper, 
+    const size_t refreshSpanInMsec)
     : m_windowTitle(windowTitle)
     , m_camera(camera)
     , m_renderer(renderer)
     , m_mapper(mapper)
     , m_pWindow(NULL)
+    , m_windowThread()
+    , m_refreshTimeInMsec(refreshSpanInMsec)
   {
   }
   WindowViewer::~WindowViewer() {
@@ -219,8 +250,18 @@ namespace OmochiRenderer {
   }
 
   void WindowViewer::StartViewerOnNewThread() {
+    m_windowThread.reset(new std::thread(
+      [this]{
+        m_pWindow.reset(new WindowImpl(*this));
+        m_pWindow->CreateNewWindow();
+        WindowImpl::MessageLoop(); }
+    ));
   }
 
   void WindowViewer::WaitWindowFinish() {
+    if (m_windowThread) {
+      m_windowThread->join();
+      m_windowThread.reset();
+    }
   }
 }

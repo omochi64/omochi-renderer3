@@ -27,7 +27,7 @@ public:
   void operator()(int samples, const Color *img) {
   	cerr << "save ppm file for sample " << samples << " ..." << endl;
     char name[1024];
-    sprintf(name, "result_bvh_bunny_%04d_%dx%d.ppm", samples, supersampling, supersampling);
+    sprintf_s(name, 1024, "result_bvh_bunny_%04d_%dx%d.ppm", samples, supersampling, supersampling);
     clock_t begin,end;
     begin = clock();
     PPM::Save(name, img, w, h);
@@ -48,7 +48,8 @@ int main(int argc, char *argv[]) {
 
   LinearGammaToonMapper mapper;
   WindowViewer viewer("OmochiRenderer", camera, renderer, mapper);
-  viewer.StartViewerOnThisThread();
+  //viewer.StartViewerOnThisThread();
+  viewer.StartViewerOnNewThread();
 
 	cerr << "begin rendering..." << endl;
   clock_t t1 = clock();

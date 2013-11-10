@@ -271,7 +271,8 @@ std::string PathTracer::GetCurrentRenderingInfo() const {
 
   stringstream ss;
   ss << "(width, height) = (" << m_camera.GetScreenWidth() << ", " << m_camera.GetScreenHeight() << ")" << endl;
-  ss << "previous samples = " << m_previous_samples << "x(" << m_supersamples << "x" << m_supersamples << "). sample step = " << m_step_samples << endl;
+  ss << "previous samples / pixel = " << m_previous_samples << "x(" << m_supersamples << "x" << m_supersamples << ")" << endl;
+  ss << "current rendering samples / pixel = " << (m_previous_samples+m_step_samples) << "x(" << m_supersamples << "x" << m_supersamples << ")" << endl;
   ss << m_processed_y_counts*100.0/m_camera.GetScreenHeight() << "% finished." << endl;
 
   return ss.str();

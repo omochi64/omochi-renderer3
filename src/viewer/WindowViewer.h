@@ -2,6 +2,7 @@
 
 #include <string>
 #include <memory>
+#include <thread>
 
 namespace OmochiRenderer {
 
@@ -11,7 +12,7 @@ namespace OmochiRenderer {
 
   class WindowViewer {
   public:
-    explicit WindowViewer(const std::string &windowTitle, const Camera &camera, const PathTracer &renderer, const ToonMapper &mapper);
+    explicit WindowViewer(const std::string &windowTitle, const Camera &camera, const PathTracer &renderer, const ToonMapper &mapper, const size_t refreshSpanInMsec = 10000);
     virtual ~WindowViewer();
 
     void StartViewerOnThisThread();
@@ -28,7 +29,8 @@ namespace OmochiRenderer {
     const PathTracer &m_renderer;
     const ToonMapper &m_mapper;
 
-    //std::shared_ptr<std::thread> m_windowThread;
+    std::shared_ptr<std::thread> m_windowThread;
+    size_t m_refreshTimeInMsec;
 
     class WindowImpl;
     friend class WindowImpl;
