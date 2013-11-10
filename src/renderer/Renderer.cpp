@@ -48,6 +48,8 @@ void PathTracer::RenderScene(const Scene &scene) {
   // スクリーン中心
   const Vector3 screen_center = m_camera.GetScreenCenterPosition();
 
+  m_omittedRayCount = 0;
+  m_absorbedInObjectRayCount = 0;
   m_previous_samples = 0;
   for (int samples=m_min_samples; samples<=m_max_samples; samples+=m_step_samples) {
     clock_t t1, t2;
@@ -100,6 +102,7 @@ void PathTracer::ScanPixelsAndCastRays(const Scene &scene, int previous_samples,
         // (m_samples)回サンプリングする
         for (int s=previous_samples+1; s<=next_samples; s++) {
           accumulated_radiance += Radiance(scene, Ray(m_camera.GetCameraPosition(), target_dir), rnd, 0);
+          m_omittedRayCount++;
         }
       }
       // img_n+c(x) = n/(n+c)*img_n(x) + 1/(n+c)*sum_{n+1}^{n+c}rad_i(x)/supersamples^2
@@ -137,6 +140,9 @@ Color PathTracer::Radiance(const Scene &scene, const Ray &ray, Random &rnd, cons
   }
   if (depth > MinDepth) {
     if (rnd.nextDouble() >= russian_roulette_probability) {
+      if (intersect.object->material.emission.lengthSq() == 0) {
+        m_absorbedInObjectRayCount++;
+      }
       return intersect.object->material.emission;
     }
   } else {
@@ -258,6 +264,7 @@ Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random
     }
   } else {
     // 反射と屈折両方追跡
+    m_omittedRayCount++;
     income =
         Radiance(scene, Ray(intersect.hit.position, reflect_dir), rnd, depth+1) * Fr +
         Radiance(scene, refract_ray, rnd, depth+1) * Tr;
@@ -273,6 +280,11 @@ std::string PathTracer::GetCurrentRenderingInfo() const {
   ss << "(width, height) = (" << m_camera.GetScreenWidth() << ", " << m_camera.GetScreenHeight() << ")" << endl;
   ss << "previous samples / pixel = " << m_previous_samples << "x(" << m_supersamples << "x" << m_supersamples << ")" << endl;
   ss << "current rendering samples / pixel = " << (m_previous_samples+m_step_samples) << "x(" << m_supersamples << "x" << m_supersamples << ")" << endl;
+  ss << "absorbed ray / omitted ray = " << m_absorbedInObjectRayCount << " / " << m_omittedRayCount;
+  if (m_omittedRayCount != 0) {
+    ss << " = " << static_cast<double>(m_absorbedInObjectRayCount*100.0) / m_omittedRayCount << "%";
+  }
+  ss << endl;
   ss << m_processed_y_counts*100.0/m_camera.GetScreenHeight() << "% finished." << endl;
 
   return ss.str();

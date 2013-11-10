@@ -50,6 +50,8 @@ private:
   RenderingFinishCallback *m_renderFinishCallback;
 
   int m_checkIntersectionCount;
+  int m_omittedRayCount;
+  int m_absorbedInObjectRayCount;
 	
 	Color *m_result;
 };

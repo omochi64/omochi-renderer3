@@ -39,22 +39,32 @@ public:
 int main(int argc, char *argv[]) {
 
 	int width = 640, height = 480;
-	//PathTracer renderer(width, height, 16, 4);
+	
+  // set renderer and scene
   SavePPM_callback callback(width, height);
   Camera camera(width, height);
   PathTracer renderer(camera, startSample, endSample, stepSample, supersampling, &callback);
 	TestScene scene;
   //CornellBoxScene scene;
 
+  clock_t startTime;
+
+  // set window viewer
   LinearGammaToonMapper mapper;
   WindowViewer viewer("OmochiRenderer", camera, renderer, mapper);
-  //viewer.StartViewerOnThisThread();
   viewer.StartViewerOnNewThread();
+  viewer.SetCallbackFunctionWhenWindowClosed(std::function<void(void)>(
+    [&startTime]{
+      cerr << "total time = " << (1.0 / 60 * (clock() - startTime) / CLOCKS_PER_SEC) << " (min)." << endl;
+      exit(0);
+    }
+  ));
 
-	cerr << "begin rendering..." << endl;
-  clock_t t1 = clock();
+  // start
+  cerr << "begin rendering..." << endl;
+  startTime = clock();
 	renderer.RenderScene(scene);
-  cerr << "total time = "  << (1.0/60*(clock()-t1)/CLOCKS_PER_SEC) << " (min)." << endl;
+  cerr << "total time = " << (1.0 / 60 * (clock() - startTime) / CLOCKS_PER_SEC) << " (min)." << endl;
 
 	return 0;
 }

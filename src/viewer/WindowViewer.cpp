@@ -236,6 +236,7 @@ namespace OmochiRenderer {
     , m_mapper(mapper)
     , m_pWindow(NULL)
     , m_windowThread()
+    , m_callbackWhenClosed()
     , m_refreshTimeInMsec(refreshSpanInMsec)
   {
   }
@@ -247,6 +248,10 @@ namespace OmochiRenderer {
     m_pWindow->CreateNewWindow();
 
     WindowImpl::MessageLoop();
+
+    if (m_callbackWhenClosed) {
+      m_callbackWhenClosed();
+    }
   }
 
   void WindowViewer::StartViewerOnNewThread() {
@@ -254,7 +259,11 @@ namespace OmochiRenderer {
       [this]{
         m_pWindow.reset(new WindowImpl(*this));
         m_pWindow->CreateNewWindow();
-        WindowImpl::MessageLoop(); }
+        WindowImpl::MessageLoop();
+        if (m_callbackWhenClosed) {
+          m_callbackWhenClosed();
+        }
+    }
     ));
   }
 
