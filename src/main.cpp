@@ -8,6 +8,7 @@
 #include "scenes/TestScene.h"
 #include "tools/Vector.h"
 #include "tools/PPM.h"
+#include "viewer/WindowViewer.h"
 
 using namespace std;
 using namespace OmochiRenderer;
@@ -43,6 +44,9 @@ int main(int argc, char *argv[]) {
   PathTracer renderer(camera, startSample, endSample, stepSample, supersampling, &callback);
 	TestScene scene;
   //CornellBoxScene scene;
+
+  WindowViewer viewer("OmochiRenderer", camera, renderer);
+  viewer.StartViewerOnThisThread();
 
 	cerr << "begin rendering..." << endl;
   clock_t t1 = clock();
