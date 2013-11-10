@@ -10,34 +10,29 @@ using namespace std;
 
 namespace OmochiRenderer {
 
-PathTracer::PathTracer(int screen_width, int screen_height, int samples, int supersamples)
+PathTracer::PathTracer(const Camera &camera, int samples, int supersamples)
+  : m_camera(camera)
 {
-  init(screen_width, screen_height, samples, samples, 1, supersamples, NULL);
+  init(camera, samples, samples, 1, supersamples, NULL);
 }
 
-PathTracer::PathTracer(int screen_width, int screen_height, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallback *callback)
+PathTracer::PathTracer(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallback *callback)
+  : m_camera(camera)
 {
-  init(screen_width, screen_height, min_samples, max_samples, steps, supersamples, callback);
+  init(camera, min_samples, max_samples, steps, supersamples, callback);
 }
 
-void PathTracer::init(int screen_width, int screen_height, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallback *callback)
+void PathTracer::init(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallback *callback)
 {
-  m_width = screen_width;
-	m_height = (screen_height);
+  SetCamera(camera);
 	m_min_samples = (min_samples);
   m_max_samples = max_samples;
   m_step_samples = steps;
 	m_supersamples = (supersamples);
-	m_camPos = Vector3(50.0, 52.0, 220.0);
-	m_camDir = Vector3(0.0, -0.04, -1.0);
-	m_camUp = Vector3(0.0, 1.0, 0.0);
-	m_nearScreenHeight = (30.0);
-	m_distToScreen = (40.0);
   m_renderFinishCallback = callback;
 
   m_checkIntersectionCount = 0;
-  m_camDir.normalize();
-	m_result = new Color[m_width*m_height];
+  m_result = new Color[m_camera.GetScreenHeight()*m_camera.GetScreenWidth()];
 }
 
 PathTracer::~PathTracer()
@@ -47,24 +42,15 @@ PathTracer::~PathTracer()
 
 void PathTracer::RenderScene(const Scene &scene) {
 
-  double nearScreenHeight = m_nearScreenHeight;
-  double nearScreenWidth = m_nearScreenHeight * m_width / m_height;
-
-  // スクリーンx方向を張るベクトル
-  Vector3 screen_x(m_camDir.cross(m_camUp));
-  screen_x.normalize(); screen_x *= nearScreenWidth;
-  // スクリーンy方向を張るベクトル
-  Vector3 screen_y(screen_x.cross(m_camDir));
-  screen_y.normalize(); screen_y *= nearScreenHeight;
   // スクリーン中心
-  const Vector3 screen_center = m_camPos + m_camDir * m_distToScreen;
+  const Vector3 screen_center = m_camera.GetScreenCenterPosition();
 
   int previous_samples = 0;
   for (int samples=m_min_samples; samples<=m_max_samples; samples+=m_step_samples) {
     clock_t t1, t2;
     t1 = clock();
     m_checkIntersectionCount = 0;
-    ScanPixelsAndCastRays(scene, screen_x, screen_y, screen_center, previous_samples, samples);
+    ScanPixelsAndCastRays(scene, previous_samples, samples);
     t2 = clock();
     previous_samples = samples;
     cerr << "samples = " << samples << " rendering finished." << endl;
@@ -81,15 +67,22 @@ namespace {
   int processed_y_counts = 0;
 }
 
-void PathTracer::ScanPixelsAndCastRays(const Scene &scene, const Vector3 &screen_x, const Vector3 &screen_y, const Vector3 &screen_center, int previous_samples, int next_samples) {
+void PathTracer::ScanPixelsAndCastRays(const Scene &scene, int previous_samples, int next_samples) {
   processed_y_counts = 0;
+
+  const size_t height = m_camera.GetScreenHeight();
+  const size_t width = m_camera.GetScreenWidth();
+  const Vector3 &screen_x(m_camera.GetScreenAxisXvector());
+  const Vector3 &screen_y(m_camera.GetScreenAxisYvector());
+  const Vector3 &screen_center(m_camera.GetScreenCenterPosition());
+
   // trace all pixels
   const double averaging_factor = next_samples * m_supersamples * m_supersamples;
 #pragma omp parallel for num_threads(2)
-  for (int y=0; y<m_height; y++) {
-    Random rnd(y+1+previous_samples*m_height);
-    for (int x=0; x<m_width; x++) {
-      const int index = x + (m_height - y - 1)*m_width;
+  for (int y=0; y<height; y++) {
+    Random rnd(y+1+previous_samples*height);
+    for (int x=0; x<width; x++) {
+      const int index = x + (height - y - 1)*width;
 
       Color accumulated_radiance;
        
@@ -100,21 +93,21 @@ void PathTracer::ScanPixelsAndCastRays(const Scene &scene, const Vector3 &screen
         const double ry = (2.0*sy + 1.0)/(2*m_supersamples);
 
         Vector3 target_position = screen_center +
-          screen_x * ((x+rx)/m_width - 0.5) +
-          screen_y * ((y+ry)/m_height - 0.5);
-        Vector3 target_dir = target_position - m_camPos;
+          screen_x * ((x+rx)/width - 0.5) +
+          screen_y * ((y+ry)/height - 0.5);
+        Vector3 target_dir = target_position - m_camera.GetCameraPosition();
         target_dir.normalize();
 
         // (m_samples)回サンプリングする
         for (int s=previous_samples+1; s<=next_samples; s++) {
-          accumulated_radiance += Radiance(scene, Ray(m_camPos, target_dir), rnd, 0);
+          accumulated_radiance += Radiance(scene, Ray(m_camera.GetCameraPosition(), target_dir), rnd, 0);
         }
       }
       // img_n+c(x) = n/(n+c)*img_n(x) + 1/(n+c)*sum_{n+1}^{n+c}rad_i(x)/supersamples^2
       m_result[index] = m_result[index] * (static_cast<double>(previous_samples) / next_samples) + accumulated_radiance / averaging_factor;
     }
     processed_y_counts++;
-    cerr << "y = " << y << ": " << static_cast<double>(processed_y_counts)/m_height*100 << "% finished" << endl;
+    cerr << "y = " << y << ": " << static_cast<double>(processed_y_counts)/height*100 << "% finished" << endl;
 
   }
 }

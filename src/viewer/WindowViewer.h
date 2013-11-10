@@ -3,7 +3,7 @@
 namespace OmochiRenderer {
   class WindowViewer {
   public:
-    WindowViewer();
+    explicit WindowViewer();
     virtual ~WindowViewer();
 
     void StartViewerOnThisThread();
