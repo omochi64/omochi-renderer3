@@ -122,8 +122,9 @@ Color PathTracer::Radiance(const Scene &scene, const Ray &ray, Random &rnd, cons
 
   m_checkIntersectionCount++;
   if (!scene.CheckIntersection(ray, intersect)) {
-    //std::cerr << "Hit to " << intersect.object << " distance = " << intersect.hit.distance << std::endl;
-    return Vector3(0,0,0);
+    //double v = fabs(ray.dir.dot(Vector3(0, 1, 0)));
+    double v = 0;
+    return Vector3(v,v,v);
   }
 
   Vector3 normal = intersect.hit.normal.dot(ray.dir) < 0.0 ? intersect.hit.normal : intersect.hit.normal * -1.0;

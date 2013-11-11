@@ -21,6 +21,9 @@ static const int startSample = 2;
 static const int endSample = 1024;
 static const int stepSample = 2;
 
+static const int width = 480;
+static const int height = 360;
+
 class SavePPM_callback : public PathTracer::RenderingFinishCallback {
   int w,h;
 public:
@@ -28,7 +31,9 @@ public:
   void operator()(int samples, const Color *img) {
   	cerr << "save ppm file for sample " << samples << " ..." << endl;
     char name[1024];
-    sprintf_s(name, 1024, "result_ibl_test_%04d_%dx%d.ppm", samples, supersampling, supersampling);
+    sprintf_s(name, 1024, "result_ibl_test_w%d_h%d_%04d_%dx%d.ppm", 
+      width, height,
+      samples, supersampling, supersampling);
     clock_t begin,end;
     begin = clock();
     PPM::Save(name, img, w, h);
@@ -39,8 +44,6 @@ public:
 
 int main(int argc, char *argv[]) {
 
-	int width = 640, height = 480;
-	
   // set renderer and scene
   SavePPM_callback callback(width, height);
   Camera camera(width, height);

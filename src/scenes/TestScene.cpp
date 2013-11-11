@@ -12,7 +12,7 @@ TestScene::TestScene()
 {
   AddObject(new Sphere(1e5, Vector3( 1e5+1, 40.8, 81.6),  Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.25, 0.25))), true, false);  // ¶
   AddObject(new Sphere(1e5, Vector3(-1e5+99, 40.8, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.25, 0.25, 0.75))), true, false);  // ‰E
-  AddObject(new Sphere(1e5, Vector3(50, 40.8,  1e5),      Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.25, 0.75, 0.25))), true, false);  // ‰œ
+  AddObject(new Sphere(1e5, Vector3(50, 40.8,  1e5),      Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75))), true, false);  // ‰œ
   AddObject(new Sphere(1e5, Vector3(50, 40.8, -1e250),    Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color())), true, false);                  // Žè‘O
 
   //addObject(new Sphere(1e5, Vector3( 1e5+1, 40.8, 81.6),  Color(), Color(0.75, 0.75, 0.75), SceneObject::REFLECTION_TYPE_SPECULAR));  // ¶
@@ -24,12 +24,12 @@ TestScene::TestScene()
   AddObject(new Sphere(1e5, Vector3(50, -1e5+81.6, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75))), true, false);  // ã
 
   Model *cube = new Model;
-  if (!cube->ReadFromObj("torii.obj")) {
+  if (!cube->ReadFromObj("input_data/izayoi_sakuya.obj")) {
     std::cerr << "failed to load cube.obj!!!" << std::endl;
     getchar();
     exit(-1);
   }
-  cube->SetTransform(Vector3(50,20,80), Vector3(0.8,0.8,0.8), Matrix::RotateAroundVector(Vector3(1,1,1), 30.0/180*PI));
+  cube->SetTransform(Vector3(50, 10, 80), Vector3(2.5, 2.5, 2.5) , Matrix::RotateAroundVector(Vector3(0, 1, 0), 0.0 / 180 * PI));
   AddModel(cube);
   
   //addObject(new Sphere(10,Vector3(),           Material(Material::REFLECTION_TYPE_LAMBERT,    Color(), Color(0.25, 0.75, 0.25))));    // —Î‹…
