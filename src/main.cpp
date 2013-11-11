@@ -7,6 +7,7 @@
 #include "renderer/LinearGammaToonMapper.h"
 #include "scenes/CornellBoxScene.h"
 #include "scenes/TestScene.h"
+#include "scenes/IBLTestScene.h"
 #include "tools/Vector.h"
 #include "tools/PPM.h"
 #include "viewer/WindowViewer.h"
@@ -27,7 +28,7 @@ public:
   void operator()(int samples, const Color *img) {
   	cerr << "save ppm file for sample " << samples << " ..." << endl;
     char name[1024];
-    sprintf_s(name, 1024, "result_bvh_bunny_%04d_%dx%d.ppm", samples, supersampling, supersampling);
+    sprintf_s(name, 1024, "result_ibl_test_%04d_%dx%d.ppm", samples, supersampling, supersampling);
     clock_t begin,end;
     begin = clock();
     PPM::Save(name, img, w, h);
@@ -44,7 +45,8 @@ int main(int argc, char *argv[]) {
   SavePPM_callback callback(width, height);
   Camera camera(width, height);
   PathTracer renderer(camera, startSample, endSample, stepSample, supersampling, &callback);
-	TestScene scene;
+	//TestScene scene;
+  IBLTestScene scene;
   //CornellBoxScene scene;
 
   clock_t startTime;
