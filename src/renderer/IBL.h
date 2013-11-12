@@ -11,15 +11,20 @@ namespace OmochiRenderer {
   class IBL {
   public:
 
-    IBL(const std::string &hdr_filename)
+    IBL(const std::string &hdr_filename, const double radius = 1000.0, const Vector3 &centerPosition = Vector3::Zero())
       : m_image()
+      , m_radius(radius)
+      , m_center(centerPosition)
     {
       if (!m_image.ReadFromRadianceFile(hdr_filename)) {
         std::cerr << "failed to load HDR file: " << hdr_filename << std::endl;
       }
     }
 
-    inline const Color &Sample(const Vector3 &dir) {
+    inline const Color &Sample(const Ray &ray) const {
+      return Sample(ConvertRayToNormalizedDir(ray));
+    }
+    inline const Color &Sample(const Vector3 &dir) const {
       // (x, y, z) = (r*sin(theta)*cos(phi), r*cos(theta), r*sin(theta)*sin(phi))
       const double theta = acos(dir.y);
       double phi = acos(dir.x / sqrt(dir.x*dir.x + dir.z*dir.z));
@@ -56,6 +61,36 @@ namespace OmochiRenderer {
     }
 
   private:
+    Vector3 ConvertRayToNormalizedDir(const Ray &ray) const {
+      const Vector3 &x = ray.orig;
+      const Vector3 &v = ray.dir;
+      const Vector3 &c = m_center;
+
+      // ”»•ÊŽ®
+      Vector3 c_minus_x = c - x;
+      double v_dot_c_minus_x = v.dot(c_minus_x);
+      double D1 = v_dot_c_minus_x * v_dot_c_minus_x;
+      double D2 = v.lengthSq() * (c_minus_x.lengthSq() - m_radius*m_radius);
+      double D = D1 - D2;
+      assert(D >= 0);
+
+      double sqrtD = sqrt(D);
+      double t1 = sqrtD + v_dot_c_minus_x;
+      double t2 = -sqrtD + v_dot_c_minus_x;
+
+      if (t1 <= EPS && t2 <= EPS) return ray.dir;
+
+      double distance;
+      if (t2 > EPS) distance = t2;
+      else distance = t1;
+
+      Vector3 res(x + v * distance); res.normalize();
+      return res;
+    }
+
+  private:
     HDRImage m_image;
+    double m_radius;
+    Vector3 m_center;
   };
 }

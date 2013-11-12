@@ -18,7 +18,7 @@ using namespace OmochiRenderer;
 static const int supersampling = 4;
 
 static const int startSample = 2;
-static const int endSample = 1024;
+static const int endSample = 32;
 static const int stepSample = 2;
 
 static const int width = 1280;
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
   // set renderer and scene
   SavePPM_callback callback(width, height);
   Camera camera(width, height);
-  PathTracer renderer(camera, startSample, endSample, stepSample, supersampling, &callback, "input_data/Alexs_Apt_2k.hdr");
+  PathTracer renderer(camera, startSample, endSample, stepSample, supersampling, &callback);
 	//TestScene scene;
   IBLTestScene scene;
   //CornellBoxScene scene;

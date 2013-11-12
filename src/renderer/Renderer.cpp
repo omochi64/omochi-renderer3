@@ -16,16 +16,16 @@ namespace OmochiRenderer {
 PathTracer::PathTracer(const Camera &camera, int samples, int supersamples)
   : m_camera(camera)
 {
-  init(camera, samples, samples, 1, supersamples, NULL, "");
+  init(camera, samples, samples, 1, supersamples, NULL);
 }
 
-PathTracer::PathTracer(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallback *callback, const std::string &hdrFileForIBL)
+PathTracer::PathTracer(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallback *callback)
   : m_camera(camera)
 {
-  init(camera, min_samples, max_samples, steps, supersamples, callback, hdrFileForIBL);
+  init(camera, min_samples, max_samples, steps, supersamples, callback);
 }
 
-void PathTracer::init(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallback *callback, const std::string &hdrFileForIBL)
+void PathTracer::init(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallback *callback)
 {
   SetCamera(camera);
 	m_min_samples = (min_samples);
@@ -36,11 +36,6 @@ void PathTracer::init(const Camera &camera, int min_samples, int max_samples, in
   m_renderFinishCallback = callback;
 
   m_checkIntersectionCount = 0;
-  if (hdrFileForIBL.empty()) {
-    m_ibl.reset();
-  } else {
-    m_ibl.reset(new IBL(hdrFileForIBL));
-  }
   m_result = new Color[m_camera.GetScreenHeight()*m_camera.GetScreenWidth()];
 }
 
@@ -130,9 +125,9 @@ Color PathTracer::Radiance(const Scene &scene, const Ray &ray, Random &rnd, cons
   if (!scene.CheckIntersection(ray, intersect)) {
     //double v = fabs(ray.dir.dot(Vector3(0, 1, 0)));
     //double v = 0;
-    if (m_ibl.get()) {
-      //return m_ibl->SampleOriginal(ray.dir);
-      return m_ibl->Sample(ray.dir);
+    if (scene.GetIBL()) {
+      //return m_ibl->SampleOriginal(ray.dir);  // レイの始点が原点だと仮定して計算する
+      return scene.GetIBL()->Sample(ray);    // 正確に背景との衝突位置を計算する
     } else {
       return Vector3(0, 0, 0);
     }

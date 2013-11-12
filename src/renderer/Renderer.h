@@ -19,7 +19,7 @@ public:
   };
 public:
 	PathTracer(const Camera &camera, int samples, int supersamples);
-  PathTracer(const Camera &camera, int min_samples, int max_samples, int step, int supersamples, RenderingFinishCallback *callback, const std::string &hdrFileForIBL = "");
+  PathTracer(const Camera &camera, int min_samples, int max_samples, int step, int supersamples, RenderingFinishCallback *callback);
 	~PathTracer();
 
 	void SetCamera(const Camera &cam) {
@@ -33,7 +33,7 @@ public:
   std::string GetCurrentRenderingInfo() const;
 
 private:
-  void init(const Camera &camera, int min_samples, int max_samples, int step, int supersamples, RenderingFinishCallback *callback, const std::string &hdrFileForIBL);
+  void init(const Camera &camera, int min_samples, int max_samples, int step, int supersamples, RenderingFinishCallback *callback);
 
   void ScanPixelsAndCastRays(const Scene &scene, int previous_samples, int next_samples);
   Color Radiance(const Scene &scene, const Ray &ray, Random &rnd, const int depth);
@@ -54,8 +54,6 @@ private:
   int m_omittedRayCount;
   int m_absorbedInObjectRayCount;
 
-  std::auto_ptr<IBL> m_ibl;
-	
 	Color *m_result;
 };
 

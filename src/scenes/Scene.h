@@ -5,12 +5,14 @@
 #include "renderer/SceneObject.h"
 #include "renderer/Model.h"
 #include "tools/Constant.h"
+#include "renderer/IBL.h"
 
 namespace OmochiRenderer {
 
 class SceneObject;
 class BVH;
 class QBVH;
+class IBL;
 
 class Scene {
 public:
@@ -27,8 +29,10 @@ public:
 
   bool CheckIntersection(const Ray &ray, IntersectionInformation &info) const;
 
+  const IBL *GetIBL() const { return m_ibl.get(); }
+
 protected:
-  Scene() : m_objects(), m_models(), m_inBVHObjects(), m_notInBVHObjects(), m_bvh(NULL), m_qbvh(NULL) {}
+  Scene() : m_objects(), m_models(), m_inBVHObjects(), m_notInBVHObjects(), m_bvh(NULL), m_qbvh(NULL), m_ibl(NULL) {}
 
   void AddObject(SceneObject *obj, bool doDelete = true, bool containedInBVH = true) {
     m_objects.push_back(SceneObjectInfo(obj, doDelete, containedInBVH));
@@ -81,6 +85,7 @@ protected:
 
   BVH *m_bvh;
   QBVH *m_qbvh;
+  std::auto_ptr<IBL> m_ibl;
 
 private:
   Scene(const Scene &s) {}
