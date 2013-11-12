@@ -131,7 +131,8 @@ Color PathTracer::Radiance(const Scene &scene, const Ray &ray, Random &rnd, cons
     //double v = fabs(ray.dir.dot(Vector3(0, 1, 0)));
     //double v = 0;
     if (m_ibl.get()) {
-      return m_ibl->SampleOriginal(ray.dir);
+      //return m_ibl->SampleOriginal(ray.dir);
+      return m_ibl->Sample(ray.dir);
     } else {
       return Vector3(0, 0, 0);
     }

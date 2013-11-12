@@ -21,7 +21,7 @@ static const int startSample = 2;
 static const int endSample = 1024;
 static const int stepSample = 2;
 
-static const int width = 480;
+static const int width = 1280;
 static const int height = 360;
 
 class SavePPM_callback : public PathTracer::RenderingFinishCallback {
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
   // set renderer and scene
   SavePPM_callback callback(width, height);
   Camera camera(width, height);
-  PathTracer renderer(camera, startSample, endSample, stepSample, supersampling, &callback, "input_data/grace_probe.hdr");
+  PathTracer renderer(camera, startSample, endSample, stepSample, supersampling, &callback, "input_data/Alexs_Apt_2k.hdr");
 	//TestScene scene;
   IBLTestScene scene;
   //CornellBoxScene scene;
