@@ -74,4 +74,16 @@ bool Scene::CheckIntersection(const Ray &ray, IntersectionInformation &info) con
   return info.hit.distance != INF;
 }
 
+
+void Scene::AddFloor(const double size_x, const double size_z, const Vector3 &position, const Material &material) {
+  AddObject(new Polygon(
+    Vector3(-size_x / 2, 0, -size_z / 2), Vector3(-size_x / 2, 0, size_z / 2), Vector3(size_x / 2, 0, -size_z/2),
+    Vector3(0, 1, 0),
+    material, position));
+  AddObject(new Polygon(
+    Vector3(size_x / 2, 0, -size_z / 2), Vector3(-size_x / 2, 0, size_z / 2), Vector3(size_x / 2, 0, size_z/2),
+    Vector3(0, 1, 0),
+    material, position));
+}
+
 }

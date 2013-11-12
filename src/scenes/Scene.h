@@ -39,6 +39,8 @@ protected:
     }
   }
 
+  void AddFloor(const double size_x, const double size_z, const Vector3 &position, const Material &material);
+
   void AddModel(Model *obj, bool doDelete = true, bool containedInBVH = true) {
     m_models.push_back(ModelObjectInfo(obj, doDelete));
 
