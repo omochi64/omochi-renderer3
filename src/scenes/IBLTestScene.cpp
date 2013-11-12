@@ -19,10 +19,10 @@ namespace OmochiRenderer {
       getchar();
       exit(-1);
     }
-    cube->SetTransform(Vector3(50, 0, 0), Vector3(3,3,3));
+    cube->SetTransform(Vector3(50, 0, 0), Vector3(1,1,1));
     AddModel(cube);
 
-    AddObject(new AxisAlignedPlane(Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.7, 0.7, 0.7)), AxisAlignedPlane::PLANE_XZ), true, false);
+    //AddObject(new AxisAlignedPlane(Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.7, 0.7, 0.7)), AxisAlignedPlane::PLANE_XZ), true, false);
 
 
     ConstructQBVH();

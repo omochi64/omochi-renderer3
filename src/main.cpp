@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
   // set renderer and scene
   SavePPM_callback callback(width, height);
   Camera camera(width, height);
-  PathTracer renderer(camera, startSample, endSample, stepSample, supersampling, &callback);
+  PathTracer renderer(camera, startSample, endSample, stepSample, supersampling, &callback, "input_data/grace_probe.hdr");
 	//TestScene scene;
   IBLTestScene scene;
   //CornellBoxScene scene;

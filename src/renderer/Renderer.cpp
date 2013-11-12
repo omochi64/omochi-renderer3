@@ -5,6 +5,7 @@
 #include "Renderer.h"
 #include "Ray.h"
 #include "tools/Random.h"
+#include "IBL.h"
 
 #include <sstream>
 
@@ -15,16 +16,16 @@ namespace OmochiRenderer {
 PathTracer::PathTracer(const Camera &camera, int samples, int supersamples)
   : m_camera(camera)
 {
-  init(camera, samples, samples, 1, supersamples, NULL);
+  init(camera, samples, samples, 1, supersamples, NULL, "");
 }
 
-PathTracer::PathTracer(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallback *callback)
+PathTracer::PathTracer(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallback *callback, const std::string &hdrFileForIBL)
   : m_camera(camera)
 {
-  init(camera, min_samples, max_samples, steps, supersamples, callback);
+  init(camera, min_samples, max_samples, steps, supersamples, callback, hdrFileForIBL);
 }
 
-void PathTracer::init(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallback *callback)
+void PathTracer::init(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallback *callback, const std::string &hdrFileForIBL)
 {
   SetCamera(camera);
 	m_min_samples = (min_samples);
@@ -35,6 +36,11 @@ void PathTracer::init(const Camera &camera, int min_samples, int max_samples, in
   m_renderFinishCallback = callback;
 
   m_checkIntersectionCount = 0;
+  if (hdrFileForIBL.empty()) {
+    m_ibl.reset();
+  } else {
+    m_ibl.reset(new IBL(hdrFileForIBL));
+  }
   m_result = new Color[m_camera.GetScreenHeight()*m_camera.GetScreenWidth()];
 }
 
@@ -123,8 +129,12 @@ Color PathTracer::Radiance(const Scene &scene, const Ray &ray, Random &rnd, cons
   m_checkIntersectionCount++;
   if (!scene.CheckIntersection(ray, intersect)) {
     //double v = fabs(ray.dir.dot(Vector3(0, 1, 0)));
-    double v = 0;
-    return Vector3(v,v,v);
+    //double v = 0;
+    if (m_ibl.get()) {
+      return m_ibl->SampleOriginal(ray.dir);
+    } else {
+      return Vector3(0, 0, 0);
+    }
   }
 
   Vector3 normal = intersect.hit.normal.dot(ray.dir) < 0.0 ? intersect.hit.normal : intersect.hit.normal * -1.0;
