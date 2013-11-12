@@ -214,7 +214,7 @@ void BVH::Construct_internal(const CONSTRUCTION_TYPE type, const std::vector<Sce
 
       // calculate right area
       CalcBoundingBoxOfObjects(axisSortedRight[axis], boxTmp);
-      for (int i=axisSortedLeft[axis].size()-1; i>=0; i--) {
+      for (int i = static_cast<int>(axisSortedLeft[axis].size()) - 1; i >= 0; i--) {
         rightAreas[i] = boxTmp.CalcSurfaceArea();
         SceneObject *obj = axisSortedLeft[axis][i];
         boxTmp.MergeAnotherBox(obj->boundingBox);
@@ -228,7 +228,7 @@ void BVH::Construct_internal(const CONSTRUCTION_TYPE type, const std::vector<Sce
       CalcBoundingBoxOfObjects(axisSortedLeft[axis], boxTmp);
       
       const double leafCost = T_tri * targets.size();
-      for (int i=axisSortedRight[axis].size()-1, cutIndex=0; i>=0; i--, cutIndex++) {
+      for (int i=static_cast<int>(axisSortedRight[axis].size())-1, cutIndex=0; i>=0; i--, cutIndex++) {
         // calculate both surface area
         leftAreas[cutIndex] = boxTmp.CalcSurfaceArea();
         SceneObject *nextObj = axisSortedRight[axis].back();
