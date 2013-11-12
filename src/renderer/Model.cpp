@@ -49,6 +49,13 @@ void Model::SetTransform(const Vector3 &pos, const Vector3 &scale, const Matrix 
 bool Model::ReadFromObj(const std::string &filename) {
   ifstream ifs(filename.c_str());
 
+  string baseDir;
+  int pos = filename.find_last_of('/');
+  if (pos != string::npos) {
+    baseDir = filename.substr(0, pos);
+  }
+
+
   if (!ifs) return false;
 
   Clear();
@@ -81,7 +88,7 @@ bool Model::ReadFromObj(const std::string &filename) {
       //materialNames[line.substr(string("mtllib ").length())] = Material(Material::REFLECTION_TYPE_LAMBERT, Vector3(0,0,0), Vector3(0.999+index*0.001,0.99,0.99));
       //index++;
       // materialÇÉçÅ[ÉhÇ∑ÇÈ
-      if (!LoadMaterialFile(line.substr(string("mtlib ").length()+1), materialNames)) {
+      if (!LoadMaterialFile(baseDir + "/" + line.substr(string("mtlib ").length()+1), materialNames)) {
         cerr << "failed to load material file: " << line.substr(string("mtlib ").length()) << endl;
         return false;
       }

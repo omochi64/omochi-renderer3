@@ -20,6 +20,7 @@ namespace OmochiRenderer {
     if (!ReadHeaderFromRadianceFile(ifs, header)) return false;
     if (!ReadRLEPixelsFromRadianceFile(ifs, header.width, header.height)) return false;
 
+    m_imageInfo = header;
     return true;
   }
 
@@ -159,4 +160,18 @@ namespace OmochiRenderer {
     }
     return true;
   }
+
+  size_t HDRImage::GetHeight() const {
+    return m_imageInfo.height;
+  }
+  size_t HDRImage::GetWidth() const {
+    return m_imageInfo.width;
+  }
+
+  const Color &HDRImage::GetPixel(size_t x, size_t y) const {
+    assert(x < m_imageInfo.width && y < m_imageInfo.height);
+
+    return m_image[x + y*m_imageInfo.width];
+  }
+
 }

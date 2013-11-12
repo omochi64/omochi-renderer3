@@ -39,6 +39,10 @@ namespace OmochiRenderer {
 
     bool ReadFromRadianceFile(const std::string &file);
 
+    size_t GetHeight() const;
+    size_t GetWidth() const;
+    const Color &GetPixel(size_t x, size_t y) const;
+
   private:
     struct RGBE_Header {
       int valid;
@@ -66,6 +70,7 @@ namespace OmochiRenderer {
 
   private:
     std::vector<Color> m_image;
+    RGBE_Header m_imageInfo;
   };
 
 }

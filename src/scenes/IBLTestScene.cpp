@@ -10,8 +10,8 @@ namespace OmochiRenderer {
   IBLTestScene::IBLTestScene() {
     //AddObject(new Sphere(5.0, Vector3(50.0, 90.0, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(36, 36, 36), Color())), true, false);    // Æ–¾
 
-    HDRImage hdr;
-    hdr.ReadFromRadianceFile("input_data/grace_probe.hdr");
+    //HDRImage hdr;
+    //hdr.ReadFromRadianceFile("input_data/grace_probe.hdr");
 
     Model *cube = new Model;
     if (!cube->ReadFromObj("input_data/torii.obj")) {
