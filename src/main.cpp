@@ -22,7 +22,7 @@ static const int endSample = 1024;
 static const int stepSample = 2;
 
 static const int width = 1280;
-static const int height = 360;
+static const int height = 720;
 
 class SavePPM_callback : public PathTracer::RenderingFinishCallback {
   int w,h;
