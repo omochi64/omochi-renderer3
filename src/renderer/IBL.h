@@ -28,7 +28,8 @@ namespace OmochiRenderer {
       }
 
       const double u = phi / (2.0 * PI);
-      const double v = 1.0 - theta / PI;
+      //const double v = 1.0 - theta / PI;
+      const double v = theta / PI;
 
       return m_image.GetPixel(
         static_cast<int>(u * m_image.GetWidth()) % m_image.GetWidth(),
@@ -41,6 +42,7 @@ namespace OmochiRenderer {
 
       float u = (dir.x * r + 1.0f) / 2.0f;
       float v = (dir.y * r + 1.0f) / 2.0f;
+      //float v = 1 - (dir.y * r + 1.0f) / 2.0f;
 
       if (u < 0.0f)
         u += 1.0f;
@@ -56,5 +58,4 @@ namespace OmochiRenderer {
   private:
     HDRImage m_image;
   };
-
 }
