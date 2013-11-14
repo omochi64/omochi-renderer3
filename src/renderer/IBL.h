@@ -110,7 +110,7 @@ namespace OmochiRenderer {
       // (x, y) ピクセル => cos項を考慮したサンプル値 に変換
       // 各方向への放射輝度を、theta = a (aは任意) から見た時の放射輝度に変換している
       // E_{θ=a} = E_θ(cosθ)*cos(θ-a)
-      // 2v-1 = cosθ と変数変換 (y 方向へのサンプルがリニアになるようにするため？それとも計算が軽いから、というだけ？):
+      // 2v-1 = cosθ と変数変換 (pdf を計算するときにその計算を容易にするため)
       //  E_{θ=a} = E_θ(2v-1)*cos(θ-a)
       // これの E_θ(2v-1) をテーブルにしている (cos(θ-a)の部分は、実際にサンプリングするときに計算する)
       for (size_t yi = 0; yi < height; yi++) {
@@ -118,35 +118,52 @@ namespace OmochiRenderer {
           const double u = (xi + 0.5) / width;
           const double v = (yi + 0.5) / height;
 
-          //const double phi = u * 2.0 * PI;
-          //const double y = 2 * v - 1.0;
-          double phi, theta;
-          UVToPhiTheta(u, v, phi, theta);
-          const double y = cos(theta);
+          const double phi = u * 2.0 * PI;
+          const double y = 2 * v - 1.0;
+          //double phi, theta;
+          //UVToPhiTheta(u, v, phi, theta);
+          //const double y = cos(theta);
 
           xyToEnv[yi*width + xi] = Sample(Vector3(
             sqrt(1.0 - y*y) * cos(phi),
             y,
             sqrt(1.0 - y*y) * sin(phi)
-          ));
+            ));
         }
       }
 
-      const int width_scale = width / m_importance_map_size;
-      const int height_scale = height / m_importance_map_size;
+      const double width_scale = 1.0 * width / m_importance_map_size;
+      const double height_scale = 1.0 * height / m_importance_map_size;
 
-      for (size_t y = 0; y < m_importance_map_size; y++) {
-        for (size_t x = 0; x < m_importance_map_size; x++) {
-          const double u = (x + 0.5) / m_importance_map_size;
-          const double v = (y + 0.5) / m_importance_map_size;
+      m_luminance_map.clear(); m_luminance_map.resize(m_importance_map_size * m_importance_map_size);
+      m_direction_map.clear(); m_direction_map.resize(m_importance_map_size * m_importance_map_size);
 
-          double phi, theta;
-          UVToPhiTheta(u, v, phi, theta);
+      // importance map の作成
+      // map の index から accumulated luminance と ray direction を引けるようにしておく
+      for (size_t yi = 0; yi < m_importance_map_size; yi++) {
+        for (size_t xi = 0; xi < m_importance_map_size; xi++) {
+          const double u = (xi + 0.5) / m_importance_map_size;
+          const double v = (yi + 0.5) / m_importance_map_size;
 
-          double y = cos(theta);
+          //double phi, theta;
+          //UVToPhiTheta(u, v, phi, theta);
+          //double y = cos(theta);
+
+          const double phi = u * 2.0 * PI;
+          const double y = 2 * v - 1.0;
           const Vector3 vec(sqrt(1.0 - y*y)*cos(phi), y, sqrt(1.0 - y*y)*sin(phi));
 
+          size_t index = yi * m_importance_map_size + xi;
 
+          m_direction_map[index] = vec;
+
+          Color tmp;
+          for (int yi_ = static_cast<int>(yi * height_scale); yi_ < static_cast<int>((yi + 1)*height_scale); yi_++) {
+            for (int xi_ = static_cast<int>(xi * width_scale); xi_ < static_cast<int>((xi + 1)*width_scale); xi_++) {
+              tmp += xyToEnv[yi_ * width + xi_];
+            }
+          }
+          m_luminance_map[index] = 0.298912 * tmp.x + 0.586611 * tmp.y + 0.114478 * tmp.z;
         }
       }
 
@@ -155,7 +172,8 @@ namespace OmochiRenderer {
   private:
     HDRImage m_image;
     static const int m_importance_map_size = 64;
-    std::vector<double> m_luminamce_map;
+    std::vector<double> m_luminance_map;
+    std::vector<Vector3> m_direction_map;
 
     double m_radius;
     Vector3 m_center;
