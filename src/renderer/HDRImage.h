@@ -12,7 +12,7 @@ namespace OmochiRenderer {
       const Color &c) {
       float v;
       int e;
-      v = std::max(std::max(c.x, c.y), c.z);
+      v = static_cast<float>(std::max(std::max(c.x, c.y), c.z));
 
       if (v < 1e-32) {
         for (int i = 0; i < 4; i++) rgbe[i] = 0;
@@ -27,7 +27,7 @@ namespace OmochiRenderer {
 
     static void RGBE2Color(unsigned char rgbe[4], Color &c) {
       if (rgbe[3]) {
-        float f = ldexp(1.0, rgbe[3] - (128 + 8));
+        float f = static_cast<float>(ldexp(1.0, rgbe[3] - (128 + 8)));
         c.x = rgbe[0] * f;
         c.y = rgbe[1] * f;
         c.z = rgbe[2] * f;
