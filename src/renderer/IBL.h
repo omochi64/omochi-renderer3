@@ -150,7 +150,7 @@ namespace OmochiRenderer {
           //double y = cos(theta);
 
           const double phi = u * 2.0 * PI;
-          const double y = 2 * v - 1.0;
+          const double y = 2 * v - 1.0;   // cosθ
           const Vector3 vec(sqrt(1.0 - y*y)*cos(phi), y, sqrt(1.0 - y*y)*sin(phi));
 
           size_t index = yi * m_importance_map_size + xi;
@@ -166,6 +166,23 @@ namespace OmochiRenderer {
           m_luminance_map[index] = 0.298912 * tmp.x + 0.586611 * tmp.y + 0.114478 * tmp.z;
         }
       }
+
+      // importance map の (x,y) を選ぶ確率密度関数を
+      //  C * luminance_rate(x,y) (以降、luminance_rate(x,y) = l_{x,y})
+      // とする。これを積分する
+      //  C∬l_{x,y}*sinθdθdφ (θ:0->PI, φ:0->2PI)
+      // これらを、上記で変換しているように、
+      //  cosθ = 2*v - 1, φ = 2*u*PI
+      // と変数変換すると、
+      //  4*PI*C∬l_{x,y}*dudv (u:0->1, v:-0.5->0.5)
+      // となる。ここで、l_{x,y}はu,vについて、それぞれ1辺を 1/map_size とする正方形の代表値としてあらわされている
+      // つまり、その領域内では値が一定のため、上記の積分は
+      //  4PI*CΣl_{(0.5+xi)/map_size, (0.5+yi)/map_size}*ΔuΔv
+      // のように置き換えられる。ΔuΔvは l_{x,y} が代表値をとっている領域の面積なので、 1/map_size^2 となる。
+      // また、l は正規化されたものを使うので、その合計値は1となる。つまり、
+      //  C∬l_{x,y}*sinθdθdφ = 4PI/map_size^2 * C
+      // となるので、 C = map_size^2/4PI で、 pdf = luminance_rate(x,y) * map_size^2 / 4PI となる。
+      // 上記の map 作成時、 y (=cosθ) = 2v - 1 とせず、θ = v*PI とすると、また計算が異なってくる
 
     }
 
