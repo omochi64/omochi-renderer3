@@ -51,10 +51,11 @@ namespace OmochiRenderer {
 
     bool CreateNewWindow() {
       HWND hWnd = CreateNewWindow_impl();
+      m_hWnd = hWnd;
       if (hWnd != INVALID_HANDLE_VALUE) {
         RegisterWindow(hWnd, this);
+        ResetTimer();
         InitOpenGL(hWnd);
-        //ResetTimer();
         return true;
       }
       return false;
@@ -230,14 +231,14 @@ namespace OmochiRenderer {
       if (!fragShader.CompileShader()) fragShader.PrintShaderInfoLog();
 
       m_shader.Init(vertShader, fragShader);
-      m_shader.BindAttributeLocation(0, "position");
+
+      InitBuffer();
+
       if (!m_shader.LinkProgram()) m_shader.PrintProgramInfoLog();
 
       wglMakeCurrent(hdc, 0);
       ReleaseDC(hWnd, hdc);
       SendMessage(hWnd, WM_PAINT, NULL, NULL);
-
-      InitBuffer();
     }
 
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
@@ -284,24 +285,45 @@ namespace OmochiRenderer {
     }
 
     void InitBuffer() {
-
+      /*
       glGenBuffers(1, &buffer);
       glBindBuffer(GL_ARRAY_BUFFER, buffer);
       glBufferData(GL_ARRAY_BUFFER, sizeof(Position)* 4, NULL, GL_STATIC_DRAW);
 
       m_position = reinterpret_cast<Position *>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
 
-      m_position[0][0] = 0.9;
-      m_position[0][1] = 0.9;
-      m_position[1][0] = -0.9;
-      m_position[1][1] = 0.9;
-      m_position[2][0] = -0.9;
-      m_position[2][1] = -0.9;
-      m_position[3][0] = 0.9;
-      m_position[3][1] = -0.9;
+      m_position[0][0] = 0.5;
+      m_position[0][1] = 0.5;
+      m_position[1][0] = -0.5;
+      m_position[1][1] = 0.5;
+      m_position[2][0] = -0.5;
+      m_position[2][1] = -0.5;
+      m_position[3][0] = 0.5;
+      m_position[3][1] = -0.5;
 
       glUnmapBuffer(GL_ARRAY_BUFFER);
       glBindBuffer(GL_ARRAY_BUFFER, 0);
+      m_shader.BindAttributeLocation(0, "position");
+
+      glGenBuffers(1, &offsetbuffer);
+      glBindBuffer(GL_ARRAY_BUFFER, offsetbuffer);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(Position)* 4, NULL, GL_STATIC_READ);
+
+      Position *offsetp = reinterpret_cast<Position *>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+
+      offsetp[0][0] = 0.0;
+      offsetp[0][1] = 0.0;
+      offsetp[1][0] = 0.1;
+      offsetp[1][1] = 0.1;
+      offsetp[2][0] = 0.2;
+      offsetp[2][1] = 0.2;
+      offsetp[3][0] = 0.3;
+      offsetp[3][1] = 0.3;
+
+      glUnmapBuffer(GL_ARRAY_BUFFER);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      m_shader.BindAttributeLocation(1, "offset");
+      */
     }
 
     void Render(HDC hdc, HWND hWnd) {
@@ -309,40 +331,71 @@ namespace OmochiRenderer {
       glClearDepth(1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      m_shader.UseShader();
+/*      m_shader.UseShader();
 
       glEnableVertexAttribArray(0);
       glBindBuffer(GL_ARRAY_BUFFER, buffer);
       glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+      glEnableVertexAttribArray(1);
+      glBindBuffer(GL_ARRAY_BUFFER, offsetbuffer);
+      glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
       glDrawArrays(GL_LINE_LOOP, 0, 4);
 
       glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glDisableVertexAttribArray(1);
       glDisableVertexAttribArray(0);
 
       SwapBuffers(hdc);
-      /*
+      */
       int width = viewer.m_camera.GetScreenWidth();
       int height = viewer.m_camera.GetScreenHeight();
 
-      const Color *result = viewer.m_renderer.GetResult();
-      for (int y = 0; y<height; y++) {
-        for (int x = 0; x<width; x++) {
-          int index = x + y*width;
+      double gl_width = 2.0 / width, gl_height = 2.0 / height;
+      double gl_offset_x = gl_width / 2.0 - 1.0, gl_offset_y = gl_height / 2.0 - 1.0;
 
-          SetPixel(hdc, x, y,
-            RGB(viewer.m_mapper.Map(result[index].x),
-            viewer.m_mapper.Map(result[index].y),
-            viewer.m_mapper.Map(result[index].z)
-            ));
+
+
+      clock_t b = clock();
+      const Color *result = viewer.m_renderer.GetResult();
+      for (int y = 0; y<height-1; y++) {
+        for (int x = 0; x<width-1; x++) {
+          int index = x + y*width;
+          int index_x1 = x + 1 + y*width;
+          int index_y1 = x + (y + 1)*width;
+          int index_xy1 = x + 1 + (y + 1)*width;
+
+          double gl_x = gl_offset_x + gl_width*x;
+          double gl_x1 = gl_offset_x + gl_width*(x + 1);
+          double gl_y = gl_offset_y + gl_height*(height - y - 1);
+          double gl_y1 = gl_offset_y + gl_height*(height - y - 2);
+
+          glBegin(GL_TRIANGLE_FAN);
+          glColor3d(result[index].x, result[index].y, result[index].z);
+          glVertex2d(gl_x, gl_y);
+
+          glColor3d(result[index_x1].x, result[index_x1].y, result[index_x1].z);
+          glVertex2d(gl_x1, gl_y);
+
+          glColor3d(result[index_xy1].x, result[index_xy1].y, result[index_xy1].z);
+          glVertex2d(gl_x1, gl_y1);
+
+          glColor3d(result[index_y1].x, result[index_y1].y, result[index_y1].z);
+          glVertex2d(gl_x, gl_y1);
+
+          glEnd();
         }
       }
+      SwapBuffers(hdc);
 
       // draw information
       //SetBkMode(hdc, TRANSPARENT);
       wstring info = widen(viewer.m_renderer.GetCurrentRenderingInfo());
       RECT rc; GetClientRect(hWnd, &rc);
       DrawText(hdc, info.c_str(), -1, &rc, DT_LEFT | DT_WORDBREAK);
-      */
+
+      cerr << "time for rendering to window: " << 1.0*(clock() - b) / CLOCKS_PER_SEC << endl;
+
     }
   private:
     wstring wstr_title;
@@ -352,6 +405,7 @@ namespace OmochiRenderer {
 
     GLProgramUtils m_shader;
     GLuint buffer;
+    GLuint offsetbuffer;
     Position *m_position;
 
   };
