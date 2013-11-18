@@ -211,6 +211,12 @@ namespace OmochiRenderer {
       wglMakeCurrent(hdc, 0);
       ReleaseDC(hWnd, hdc);
       SendMessage(hWnd, WM_PAINT, NULL, NULL);
+
+      GLenum err = glewInit();
+      if (err != GLEW_OK) {
+        cerr << "failed to init GLEW!!:" << glewGetErrorString(err) << endl;
+        return;
+      }
     }
 
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
@@ -259,6 +265,7 @@ namespace OmochiRenderer {
     void Render(HDC hdc, HWND hWnd) {
       glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
       glClearDepth(1.0f);
+
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       SwapBuffers(hdc);
