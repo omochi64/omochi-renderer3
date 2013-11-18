@@ -348,6 +348,8 @@ namespace OmochiRenderer {
 
       SwapBuffers(hdc);
       */
+      m_shader.UseShader();
+
       int width = viewer.m_camera.GetScreenWidth();
       int height = viewer.m_camera.GetScreenHeight();
 

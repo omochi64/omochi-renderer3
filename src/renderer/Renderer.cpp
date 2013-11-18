@@ -110,7 +110,7 @@ void PathTracer::ScanPixelsAndCastRays(const Scene &scene, int previous_samples,
       m_result[index] = m_result[index] * (static_cast<double>(previous_samples) / next_samples) + accumulated_radiance / averaging_factor;
     }
     m_processed_y_counts++;
-    cerr << "y = " << y << ": " << static_cast<double>(m_processed_y_counts)/height*100 << "% finished" << endl;
+    //cerr << "y = " << y << ": " << static_cast<double>(m_processed_y_counts)/height*100 << "% finished" << endl;
 
   }
 }
