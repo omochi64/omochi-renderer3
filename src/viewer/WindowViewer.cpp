@@ -9,6 +9,11 @@
 
 using namespace std;
 
+#include "glew.h"
+#include "glext.h"
+#include <gl/GL.h>
+#pragma comment(lib, "opengl32.lib")
+
 namespace {
   wstring widen(const std::string &src) {
 	  wchar_t *wcs = new wchar_t[src.length() + 1];
@@ -28,6 +33,7 @@ namespace OmochiRenderer {
     wstring wstr_title;
     HWND m_hWnd;
     size_t m_timerID;
+    HGLRC m_glrc;
 
   public:
     explicit WindowImpl(WindowViewer &viewer_)
@@ -35,15 +41,20 @@ namespace OmochiRenderer {
       , wstr_title()
       , m_hWnd(NULL)
       , m_timerID(0)
+      , m_glrc(NULL)
     {
+    }
+    ~WindowImpl()
+    {
+      if (m_glrc != NULL) wglDeleteContext(m_glrc);
     }
 
     bool CreateNewWindow() {
       HWND hWnd = CreateNewWindow_impl();
-      m_hWnd = hWnd;
       if (hWnd != INVALID_HANDLE_VALUE) {
         RegisterWindow(hWnd, this);
-        ResetTimer();
+        InitOpenGL(hWnd);
+        //ResetTimer();
         return true;
       }
       return false;
@@ -59,6 +70,7 @@ namespace OmochiRenderer {
     }
 
     static void MessageLoop() {
+
       // メッセージループ
       MSG msg;
 	    while(true)
@@ -82,6 +94,7 @@ namespace OmochiRenderer {
 
   private:
     HWND CreateNewWindow_impl() {
+
       WNDCLASSEX wc;
       HWND hWnd;
       HINSTANCE hInst = static_cast<HINSTANCE>(GetModuleHandle(NULL));
@@ -157,6 +170,49 @@ namespace OmochiRenderer {
       handleToInstance[sizethWnd] = instance;
     }
 
+    void InitOpenGL(HWND hWnd) {
+      HDC hdc = GetDC(hWnd);
+
+      try {
+        // ピクセルフォーマットの設定
+        PIXELFORMATDESCRIPTOR pdf = {
+          sizeof(PIXELFORMATDESCRIPTOR),
+          1, // version
+          PFD_DRAW_TO_WINDOW |
+          PFD_SUPPORT_OPENGL |
+          PFD_DOUBLEBUFFER,
+          24,
+          0, 0, 0, 0, 0, 0,
+          0, 
+          0, 
+          0, 
+          0, 0, 0, 0, 
+          32, 
+          0, 
+          0, 
+          PFD_MAIN_PLANE,
+          0,
+          0, 0, 0
+        };
+        int format = ChoosePixelFormat(hdc, &pdf);
+        if (format == 0) throw "";
+
+        if (!SetPixelFormat(hdc, format, &pdf)) throw "";
+
+        // レンダリングコンテキスト作成
+        m_glrc = wglCreateContext(hdc);
+      }
+      catch (...) {
+        ReleaseDC(hWnd, hdc);
+        return;
+      }
+
+      wglMakeCurrent(hdc, m_glrc);
+      wglMakeCurrent(hdc, 0);
+      ReleaseDC(hWnd, hdc);
+      SendMessage(hWnd, WM_PAINT, NULL, NULL);
+    }
+
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
       size_t sizethWnd = reinterpret_cast<size_t>(hWnd);
       if (handleToInstance.find(sizethWnd) == handleToInstance.end()) {
@@ -183,30 +239,9 @@ namespace OmochiRenderer {
         {
           PAINTSTRUCT paint;
           HDC hdc = BeginPaint(hWnd, &paint);
-
-
-          int width = viewer.m_camera.GetScreenWidth();
-          int height = viewer.m_camera.GetScreenHeight();
-
-          const Color *result = viewer.m_renderer.GetResult();
-          for (int y=0; y<height; y++) {
-            for (int x=0; x<width; x++) {
-              int index = x+y*width;
-
-              SetPixel(hdc,x,y,
-                RGB(viewer.m_mapper.Map(result[index].x),
-                  viewer.m_mapper.Map(result[index].y),
-                  viewer.m_mapper.Map(result[index].z)
-                ));
-            }
-          }
-
-          // draw information
-          //SetBkMode(hdc, TRANSPARENT);
-          wstring info = widen(viewer.m_renderer.GetCurrentRenderingInfo());
-          RECT rc; GetClientRect(hWnd, &rc);
-          DrawText(hdc, info.c_str(), -1, &rc, DT_LEFT|DT_WORDBREAK);
-
+          wglMakeCurrent(hdc, m_glrc);
+          Render(hdc, hWnd);
+          wglMakeCurrent(hdc, NULL);
           EndPaint(hWnd, &paint);
         }
         return 0;
@@ -219,6 +254,37 @@ namespace OmochiRenderer {
       }
 
       return DefWindowProc( hWnd, msg, wp, lp );
+    }
+
+    void Render(HDC hdc, HWND hWnd) {
+      glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+      glClearDepth(1.0f);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+      SwapBuffers(hdc);
+      /*
+      int width = viewer.m_camera.GetScreenWidth();
+      int height = viewer.m_camera.GetScreenHeight();
+
+      const Color *result = viewer.m_renderer.GetResult();
+      for (int y = 0; y<height; y++) {
+        for (int x = 0; x<width; x++) {
+          int index = x + y*width;
+
+          SetPixel(hdc, x, y,
+            RGB(viewer.m_mapper.Map(result[index].x),
+            viewer.m_mapper.Map(result[index].y),
+            viewer.m_mapper.Map(result[index].z)
+            ));
+        }
+      }
+
+      // draw information
+      //SetBkMode(hdc, TRANSPARENT);
+      wstring info = widen(viewer.m_renderer.GetCurrentRenderingInfo());
+      RECT rc; GetClientRect(hWnd, &rc);
+      DrawText(hdc, info.c_str(), -1, &rc, DT_LEFT | DT_WORDBREAK);
+      */
     }
   };
 
