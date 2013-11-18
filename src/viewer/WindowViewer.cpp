@@ -3,6 +3,7 @@
 #include "renderer/Camera.h"
 #include "renderer/ToonMapper.h"
 #include "renderer/Renderer.h"
+#include "GLUtils.h"
 
 #include <iostream>
 #include <Windows.h>
@@ -30,10 +31,7 @@ namespace OmochiRenderer {
     WindowViewer &viewer;
     static unordered_map<size_t, WindowImpl *> handleToInstance;
 
-    wstring wstr_title;
-    HWND m_hWnd;
-    size_t m_timerID;
-    HGLRC m_glrc;
+    typedef GLfloat Position[2];
 
   public:
     explicit WindowImpl(WindowViewer &viewer_)
@@ -42,6 +40,8 @@ namespace OmochiRenderer {
       , m_hWnd(NULL)
       , m_timerID(0)
       , m_glrc(NULL)
+      , m_shader()
+      , buffer(0)
     {
     }
     ~WindowImpl()
@@ -208,15 +208,36 @@ namespace OmochiRenderer {
       }
 
       wglMakeCurrent(hdc, m_glrc);
-      wglMakeCurrent(hdc, 0);
-      ReleaseDC(hWnd, hdc);
-      SendMessage(hWnd, WM_PAINT, NULL, NULL);
 
       GLenum err = glewInit();
       if (err != GLEW_OK) {
         cerr << "failed to init GLEW!!:" << glewGetErrorString(err) << endl;
         return;
       }
+
+      // init shader
+      GLShaderUtils vertShader(GL_VERTEX_SHADER);
+      GLShaderUtils fragShader(GL_FRAGMENT_SHADER);
+
+      if (!vertShader.ReadShaderSource("shaders/simple.vert")) {
+        cerr << "failed to read shaders/simple.vert" << endl;
+      }
+      if (!vertShader.CompileShader()) vertShader.PrintShaderInfoLog();
+
+      if (!fragShader.ReadShaderSource("shaders/simple.frag")) {
+        cerr << "failed to read shaders/simple.frag" << endl;
+      }
+      if (!fragShader.CompileShader()) fragShader.PrintShaderInfoLog();
+
+      m_shader.Init(vertShader, fragShader);
+      m_shader.BindAttributeLocation(0, "position");
+      if (!m_shader.LinkProgram()) m_shader.PrintProgramInfoLog();
+
+      wglMakeCurrent(hdc, 0);
+      ReleaseDC(hWnd, hdc);
+      SendMessage(hWnd, WM_PAINT, NULL, NULL);
+
+      InitBuffer();
     }
 
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
@@ -262,11 +283,41 @@ namespace OmochiRenderer {
       return DefWindowProc( hWnd, msg, wp, lp );
     }
 
+    void InitBuffer() {
+
+      glGenBuffers(1, &buffer);
+      glBindBuffer(GL_ARRAY_BUFFER, buffer);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(Position)* 4, NULL, GL_STATIC_DRAW);
+
+      m_position = reinterpret_cast<Position *>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+
+      m_position[0][0] = 0.9;
+      m_position[0][1] = 0.9;
+      m_position[1][0] = -0.9;
+      m_position[1][1] = 0.9;
+      m_position[2][0] = -0.9;
+      m_position[2][1] = -0.9;
+      m_position[3][0] = 0.9;
+      m_position[3][1] = -0.9;
+
+      glUnmapBuffer(GL_ARRAY_BUFFER);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
     void Render(HDC hdc, HWND hWnd) {
       glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
       glClearDepth(1.0f);
-
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+      m_shader.UseShader();
+
+      glEnableVertexAttribArray(0);
+      glBindBuffer(GL_ARRAY_BUFFER, buffer);
+      glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+      glDrawArrays(GL_LINE_LOOP, 0, 4);
+
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glDisableVertexAttribArray(0);
 
       SwapBuffers(hdc);
       /*
@@ -293,6 +344,16 @@ namespace OmochiRenderer {
       DrawText(hdc, info.c_str(), -1, &rc, DT_LEFT | DT_WORDBREAK);
       */
     }
+  private:
+    wstring wstr_title;
+    HWND m_hWnd;
+    size_t m_timerID;
+    HGLRC m_glrc;
+
+    GLProgramUtils m_shader;
+    GLuint buffer;
+    Position *m_position;
+
   };
 
   unordered_map<size_t, WindowViewer::WindowImpl *> WindowViewer::WindowImpl::handleToInstance;
