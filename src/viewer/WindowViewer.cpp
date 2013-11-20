@@ -396,7 +396,7 @@ namespace OmochiRenderer {
       RECT rc; GetClientRect(hWnd, &rc);
       DrawText(hdc, info.c_str(), -1, &rc, DT_LEFT | DT_WORDBREAK);
 
-      cerr << "time for rendering to window: " << 1.0*(clock() - b) / CLOCKS_PER_SEC << endl;
+      //cerr << "time for rendering to window: " << 1.0*(clock() - b) / CLOCKS_PER_SEC << endl;
 
     }
   private:
