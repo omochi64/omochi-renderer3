@@ -31,6 +31,8 @@ public:
 
   const IBL *GetIBL() const { return m_ibl.get(); }
 
+  virtual bool IsValid() const { return true; }
+
 protected:
   Scene() : m_objects(), m_models(), m_inBVHObjects(), m_notInBVHObjects(), m_bvh(NULL), m_qbvh(NULL), m_ibl(NULL) {}
 
