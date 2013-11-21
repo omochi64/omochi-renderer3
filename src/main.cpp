@@ -13,6 +13,8 @@
 #include "tools/PPM.h"
 #include "viewer/WindowViewer.h"
 
+#include <omp.h>
+
 using namespace std;
 using namespace OmochiRenderer;
 
@@ -22,8 +24,10 @@ static const int startSample = 2;
 static const int endSample = 32;
 static const int stepSample = 2;
 
-static const int width = 480;
-static const int height = 320;
+static const int width = 1280;
+static const int height = 720;
+
+static const int number_of_threads = 1;
 
 class SavePPM_callback : public PathTracer::RenderingFinishCallback {
   int w,h;
@@ -50,13 +54,15 @@ int main(int argc, char *argv[]) {
   Camera camera(width, height);
   PathTracer renderer(camera, startSample, endSample, stepSample, supersampling, &callback);
 	//TestScene scene;
-  //IBLTestScene scene;
-  SceneFromExternalFile scene("input_data/cornell_box.scene");
-  if (!scene.IsValid()) {
-    cerr << "faild to load scene" << endl;
-    return -1;
-  }
+  IBLTestScene scene;
+  //SceneFromExternalFile scene("input_data/cornell_box.scene");
+  //if (!scene.IsValid()) {
+  //  cerr << "faild to load scene" << endl;
+  //  return -1;
+  //}
   //CornellBoxScene scene;
+
+  omp_set_num_threads(number_of_threads);
 
   clock_t startTime;
 
