@@ -27,7 +27,7 @@ static const int stepSample = 2;
 static const int width = 1280;
 static const int height = 720;
 
-static const int number_of_threads = 1;
+static const int number_of_threads = omp_get_num_procs() - 1; // default setting
 
 class SavePPM_callback : public PathTracer::RenderingFinishCallback {
   int w,h;
