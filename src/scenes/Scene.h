@@ -31,6 +31,7 @@ public:
 
   const IBL *GetIBL() const { return m_ibl.get(); }
 
+  virtual Color Background() const { return Color(0,0,0);  }
   virtual bool IsValid() const { return true; }
 
 protected:

@@ -122,18 +122,39 @@ Color PathTracer::Radiance(const Scene &scene, const Ray &ray, Random &rnd, cons
   Scene::IntersectionInformation intersect;
 
   m_checkIntersectionCount++;
-  if (!scene.CheckIntersection(ray, intersect)) {
-    //double v = fabs(ray.dir.dot(Vector3(0, 1, 0)));
-    //double v = 0;
+  bool intersected = scene.CheckIntersection(ray, intersect);
+
+  Vector3 normal;
+
+  if (intersected) {
+    normal = intersect.hit.normal.dot(ray.dir) < 0.0 ? intersect.hit.normal : intersect.hit.normal * -1.0;
+  }
+
+  Color income = DirectRadiance(scene, ray, rnd, depth, intersected, intersect, normal);
+  income += IndirectRadiance(scene, ray, rnd, depth, intersected, intersect, normal);
+
+
+  return income;
+}
+
+Color PathTracer::DirectRadiance(const Scene &scene, const Ray &ray, Random &rnd, const int depth, const bool intersected, Scene::IntersectionInformation &intersect, const Vector3 &normal) {
+  if (!intersected) {
     if (scene.GetIBL()) {
-      //return m_ibl->SampleOriginal(ray.dir);  // レイの始点が原点だと仮定して計算する
       return scene.GetIBL()->Sample(ray);    // 正確に背景との衝突位置を計算する
+      // return scene.GetIBL()->Sample(ray.dir); // レイが原点から始まっているとみなして計算する
     } else {
-      return Vector3(0, 0, 0);
+      return scene.Background();
     }
   }
 
-  Vector3 normal = intersect.hit.normal.dot(ray.dir) < 0.0 ? intersect.hit.normal : intersect.hit.normal * -1.0;
+  return intersect.object->material.emission;
+}
+
+Color PathTracer::IndirectRadiance(const Scene &scene, const Ray &ray, Random &rnd, const int depth, const bool intersected, Scene::IntersectionInformation &intersect, const Vector3 &normal) {
+  if (!intersected) {
+    return scene.Background();  // ignore direct radiance
+  }
+
   Color income;
 
   // この if 文を有効にすると、直接光のみ考慮するようになる
@@ -143,7 +164,7 @@ Color PathTracer::Radiance(const Scene &scene, const Ray &ray, Random &rnd, cons
 
   double russian_roulette_probability = std::max(intersect.object->material.color.x, std::max(intersect.object->material.color.y, intersect.object->material.color.z)); // 適当
   if (depth > MaxDepth) {
-    russian_roulette_probability *= pow(0.5, depth-MaxDepth);
+    russian_roulette_probability *= pow(0.5, depth - MaxDepth);
   }
   if (depth > MinDepth) {
     if (rnd.nextDouble() >= russian_roulette_probability) {
@@ -166,14 +187,11 @@ Color PathTracer::Radiance(const Scene &scene, const Ray &ray, Random &rnd, cons
     case Material::REFLECTION_TYPE_REFRACTION:
       income = Radiance_Refraction(scene, ray, rnd, depth, intersect, normal, russian_roulette_probability);
       break;
-
   }
-  
-  
-//  }
 
   return income;
 }
+
 
 Color PathTracer::Radiance_Lambert(const Scene &scene, const Ray &ray, Random &rnd, const int depth, Scene::IntersectionInformation &intersect, const Vector3 &normal, double russian_roulette_prob) {
   Vector3 w,u,v;
