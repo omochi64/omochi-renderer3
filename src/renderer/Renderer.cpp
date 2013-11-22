@@ -50,7 +50,7 @@ void PathTracer::RenderScene(const Scene &scene) {
   const Vector3 screen_center = m_camera.GetScreenCenterPosition();
 
   m_omittedRayCount = 0;
-  m_absorbedInObjectRayCount = 0;
+  m_hitToLightCount = 0;
   m_previous_samples = 0;
   for (int samples=m_min_samples; samples<=m_max_samples; samples+=m_step_samples) {
     clock_t t1, t2;
@@ -149,18 +149,92 @@ Color PathTracer::DirectRadiance(const Scene &scene, const Ray &ray, Random &rnd
 
   Color income;
 
-  switch (intersect.object->material.reflection_type) {
-  case Material::REFLECTION_TYPE_LAMBERT:
-    // ライトからサンプリングを行う
-    break;
+  if (intersect.object->material.emission.lengthSq() == 0) {
+    switch (intersect.object->material.reflection_type) {
+    case Material::REFLECTION_TYPE_LAMBERT:
+      // ライトからサンプリングを行う
+      // IBL も含める
+      if (depth <= 0) {
+        income = DirectRadiance_Lambert(scene, ray, rnd, depth, intersected, intersect, normal);
+      }
+      break;
 
-  case Material::REFLECTION_TYPE_SPECULAR:
-  case Material::REFLECTION_TYPE_REFRACTION:
-    // 間接光評価のみで良い
-    break;
+    case Material::REFLECTION_TYPE_SPECULAR:
+    case Material::REFLECTION_TYPE_REFRACTION:
+      // 間接光評価のみで良い
+      break;
+    }
+  } else {
+    m_hitToLightCount++;
   }
 
   return intersect.object->material.emission + income;
+}
+
+Color PathTracer::DirectRadiance_Lambert(const Scene &scene, const Ray &ray, Random &rnd, const int depth, const bool intersected, Scene::IntersectionInformation &intersect, const Vector3 &normal) {
+  assert(intersected);
+
+  const vector<LightBase *> &lights = scene.GetLights();
+  if (lights.size() == 0) return scene.Background();
+
+  // pick a random light according to light power
+  double totalPower = 0.0;
+  vector<double> eachLightProbability, accumulatedProbability;
+  for (size_t i = 0; i < lights.size(); i++) {
+    double power = lights[i]->TotalPower();
+    eachLightProbability.push_back(power);
+    accumulatedProbability.push_back(totalPower + power);
+    totalPower += power;
+  }
+
+  for (size_t i = 0; i < lights.size(); i++) {
+    eachLightProbability[i] /= totalPower;
+    accumulatedProbability[i] /= totalPower;
+  }
+
+  static const int NumberOfLightSamples = 64;
+  Color income;
+
+  for (int lightCount = 0; lightCount < NumberOfLightSamples; lightCount++) {
+
+    double next = rnd.nextDouble();
+    int index = 0;
+    for (size_t i = 0; i < lights.size(); i++) {
+      if (next <= accumulatedProbability[i]) {
+        index = i; break;
+      }
+    }
+
+    const LightBase *selectedLight = lights[index];
+
+    // pick a one point
+    Vector3 point; double pdf = 0.0;
+    selectedLight->SampleOnePoint(point, pdf, rnd);
+
+    Vector3 dir((point - intersect.hit.position)); dir.normalize();
+    double cos_shita = dir.dot(normal);
+    if (cos_shita < 0) {
+      // cannot reach to the light
+      continue;
+    }
+  
+    // check visibility
+    Scene::IntersectionInformation hit;
+    if (scene.CheckIntersection(Ray(intersect.hit.position, dir), hit)) {
+      if (dynamic_cast<LightBase *>(hit.object) == selectedLight) {
+        // visible
+        // BRDF = color/PI
+        double G = cos_shita * -hit.hit.normal.dot(dir) / (hit.hit.distance * hit.hit.distance);
+        Vector3 reflect_rate(intersect.object->material.color / PI * G / (pdf * accumulatedProbability[index]));
+        income.x += reflect_rate.x * hit.object->material.emission.x;
+        income.y += reflect_rate.y * hit.object->material.emission.y;
+        income.z += reflect_rate.z * hit.object->material.emission.z;
+        // direct_illum = 1/N*ΣL_e*BRDF*G*V/pdf(light)
+      }
+    }
+  }
+
+  return income / NumberOfLightSamples;
 }
 
 Color PathTracer::IndirectRadiance(const Scene &scene, const Ray &ray, Random &rnd, const int depth, const bool intersected, Scene::IntersectionInformation &intersect, const Vector3 &normal) {
@@ -181,11 +255,8 @@ Color PathTracer::IndirectRadiance(const Scene &scene, const Ray &ray, Random &r
   }
   if (depth > MinDepth) {
     if (rnd.nextDouble() >= russian_roulette_probability) {
-      if (intersect.object->material.emission.lengthSq() == 0) {
-        m_absorbedInObjectRayCount++;
-      }
-      //return intersect.object->material.emission; <= emission is considered in DirectRadiance
       return scene.Background();
+      //return intersect.object->material.emission;
     }
   } else {
     russian_roulette_probability = 1.0; // no roulette
@@ -203,7 +274,7 @@ Color PathTracer::IndirectRadiance(const Scene &scene, const Ray &ray, Random &r
       break;
   }
 
-  return income;
+  return income;// +intersect.object->material.emission;
 }
 
 
@@ -242,7 +313,7 @@ Color PathTracer::Radiance_Lambert(const Scene &scene, const Ray &ray, Random &r
   //Color weight = intersect.object->color / PI * r2 / pdf / russian_roulette_prob;
   Color weight = intersect.object->material.color / russian_roulette_prob;
   Color income = Radiance(scene, Ray(intersect.hit.position, dir), rnd, depth+1);
-  return intersect.object->material.emission + Vector3(weight.x*income.x, weight.y*income.y, weight.z*income.z);
+  return /*intersect.object->material.emission +*/ Vector3(weight.x*income.x, weight.y*income.y, weight.z*income.z);
 }
 
 // 鏡面反射
@@ -251,7 +322,7 @@ Color PathTracer::Radiance_Specular(const Scene &scene, const Ray &ray, Random &
   reflected_dir.normalize();
   Color income = Radiance(scene, Ray(intersect.hit.position, reflected_dir), rnd, depth+1);
   Color weight = intersect.object->material.color / russian_roulette_prob;
-  return intersect.object->material.emission + Vector3(weight.x*income.x, weight.y*income.y, weight.z*income.z);
+  return /*intersect.object->material.emission +*/ Vector3(weight.x*income.x, weight.y*income.y, weight.z*income.z);
 
 }
 
@@ -276,14 +347,14 @@ Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random
   }
 
   // 屈折方向
-  Vector3 refract_dir( (ray.dir - normal*dot)*n_ratio - normal*sqrt(cos2t) );
+  Vector3 refract_dir( ray.dir*n_ratio - intersect.hit.normal * (into ? 1.0 : -1.0) * (dot*n_ratio + sqrt(cos2t)) );
   refract_dir.normalize();
   const Ray refract_ray(intersect.hit.position, refract_dir);
 
   // Fresnel の式
   double F0 = (n_obj-n_vacuum)*(n_obj-n_vacuum)/((n_obj+n_vacuum)*(n_obj+n_vacuum));
   double c = 1 - ( into ? -dot : -refract_dir.dot(normal) );  // 1-cosθ
-  double Fr = F0 + (1-F0)*pow(1-c, 5.0);    // Fresnel (反射の割合)
+  double Fr = F0 + (1-F0)*pow(c, 5.0);    // Fresnel (反射の割合)
   double n_ratio2 = n_ratio*n_ratio;  // 屈折前後での放射輝度の変化率
   double Tr = (1-Fr)*n_ratio2;        // 屈折直後→直前の割合
 
@@ -294,8 +365,8 @@ Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random
     const double reflect_prob = 0.1 + 0.8 * Fr;
     if (rnd.nextDouble() < reflect_prob) {
       // 反射
-      income = Radiance(scene, Ray(intersect.hit.position, reflect_dir), rnd, depth+1) * Fr;
-      weight = intersect.object->material.color / (russian_roulette_prob * reflect_prob);
+      //income = Radiance(scene, Ray(intersect.hit.position, reflect_dir), rnd, depth+1) * Fr;
+      //weight = intersect.object->material.color / (russian_roulette_prob * reflect_prob);
     } else {
       // 屈折
       income = Radiance(scene, refract_ray, rnd, depth+1) * Tr;
@@ -305,12 +376,12 @@ Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random
     // 反射と屈折両方追跡
     m_omittedRayCount++;
     income =
-        Radiance(scene, Ray(intersect.hit.position, reflect_dir), rnd, depth+1) * Fr +
-        Radiance(scene, refract_ray, rnd, depth+1) * Tr;
+      Radiance(scene, Ray(intersect.hit.position, reflect_dir), rnd, depth+1) * Fr +
+      Radiance(scene, refract_ray, rnd, depth + 1);// *Tr;
     weight = intersect.object->material.color / russian_roulette_prob;
   }
 
-  return intersect.object->material.emission + Vector3(weight.x*income.x, weight.y*income.y, weight.z*income.z);
+  return /*intersect.object->material.emission +*/ Vector3(weight.x*income.x, weight.y*income.y, weight.z*income.z);
 }
 
 std::string PathTracer::GetCurrentRenderingInfo() const {
@@ -319,9 +390,9 @@ std::string PathTracer::GetCurrentRenderingInfo() const {
   ss << "(width, height) = (" << m_camera.GetScreenWidth() << ", " << m_camera.GetScreenHeight() << ")" << endl;
   ss << "previous samples / pixel = " << m_previous_samples << "x(" << m_supersamples << "x" << m_supersamples << ")" << endl;
   ss << "current rendering samples / pixel = " << (m_previous_samples+m_step_samples) << "x(" << m_supersamples << "x" << m_supersamples << ")" << endl;
-  ss << "absorbed ray / omitted ray = " << m_absorbedInObjectRayCount << " / " << m_omittedRayCount;
+  ss << "hit to light / omitted ray = " << m_hitToLightCount << " / " << m_omittedRayCount;
   if (m_omittedRayCount != 0) {
-    ss << " = " << static_cast<double>(m_absorbedInObjectRayCount*100.0) / m_omittedRayCount << "%";
+    ss << " = " << static_cast<double>(m_hitToLightCount*100.0) / m_omittedRayCount << "%";
   }
   ss << endl;
   ss << m_processed_y_counts*100.0/m_camera.GetScreenHeight() << "% finished." << endl;

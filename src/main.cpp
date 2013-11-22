@@ -20,12 +20,12 @@ using namespace OmochiRenderer;
 
 static const int supersampling = 4;
 
-static const int startSample = 2;
+static const int startSample = 4;
 static const int endSample = 32;
-static const int stepSample = 2;
+static const int stepSample = 4;
 
-static const int width = 480;
-static const int height = 320;
+static const int width = 320;
+static const int height = 240;
 
 static const int number_of_threads = omp_get_num_procs() - 1; // default setting
 
