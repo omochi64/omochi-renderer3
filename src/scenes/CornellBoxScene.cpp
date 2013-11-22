@@ -3,6 +3,7 @@
 #include "CornellBoxScene.h"
 #include "renderer/Sphere.h"
 #include "renderer/Polygon.h"
+#include "renderer/SphereLight.h"
 
 namespace OmochiRenderer {
 
@@ -18,7 +19,8 @@ CornellBoxScene::CornellBoxScene()
   AddObject(new Sphere(20,Vector3(65, 20, 20),           Material(Material::REFLECTION_TYPE_LAMBERT,    Color(), Color(0.25, 0.75, 0.25))));    // óŒãÖ
   AddObject(new Sphere(16.5,Vector3(27, 16.5, 47),       Material(Material::REFLECTION_TYPE_SPECULAR,   Color(), Color(0.99, 0.99, 0.99))));   // ãæ
   AddObject(new Sphere(16.5,Vector3(77, 16.5, 78),       Material(Material::REFLECTION_TYPE_REFRACTION, Color(), Color(0.99, 0.99, 0.99), REFRACTIVE_INDEX_OBJECT))); // ÉKÉâÉX
-	AddObject(new Sphere(15.0,Vector3(50.0, 90.0, 81.6),   Material(Material::REFLECTION_TYPE_LAMBERT, Color(36,36,36), Color())));    // è∆ñæ
+  SphereLight *sphereLight = new SphereLight(15.0, Vector3(50.0, 90.0, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(36, 36, 36), Color()));
+  AddObject(sphereLight);    // è∆ñæ
 
   ConstructBVH();
 }

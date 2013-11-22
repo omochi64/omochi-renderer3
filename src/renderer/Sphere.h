@@ -50,7 +50,7 @@ public:
     return true;
   }
 
-private:
+protected:
   double m_radius;
 };
 

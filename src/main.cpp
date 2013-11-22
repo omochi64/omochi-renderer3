@@ -55,12 +55,12 @@ int main(int argc, char *argv[]) {
   PathTracer renderer(camera, startSample, endSample, stepSample, supersampling, &callback);
 	//TestScene scene;
   //IBLTestScene scene;
-  SceneFromExternalFile scene("input_data/cornell_box.scene");
-  if (!scene.IsValid()) {
-    cerr << "faild to load scene" << endl;
-    return -1;
-  }
-  //CornellBoxScene scene;
+  //SceneFromExternalFile scene("input_data/cornell_box.scene");
+  //if (!scene.IsValid()) {
+  //  cerr << "faild to load scene" << endl;
+  //  return -1;
+  //}
+  CornellBoxScene scene;
 
   omp_set_num_threads(number_of_threads);
 

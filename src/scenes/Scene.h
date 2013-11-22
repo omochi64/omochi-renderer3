@@ -6,6 +6,7 @@
 #include "renderer/Model.h"
 #include "tools/Constant.h"
 #include "renderer/IBL.h"
+#include "renderer/LightBase.h"
 
 namespace OmochiRenderer {
 
@@ -29,13 +30,14 @@ public:
 
   bool CheckIntersection(const Ray &ray, IntersectionInformation &info) const;
 
+  const std::vector<LightBase *> GetLights() const { return m_lights; }
   const IBL *GetIBL() const { return m_ibl.get(); }
 
   virtual Color Background() const { return Color(0,0,0);  }
   virtual bool IsValid() const { return true; }
 
 protected:
-  Scene() : m_objects(), m_models(), m_inBVHObjects(), m_notInBVHObjects(), m_bvh(NULL), m_qbvh(NULL), m_ibl(NULL) {}
+  Scene() : m_objects(), m_models(), m_inBVHObjects(), m_notInBVHObjects(), m_lights(), m_bvh(NULL), m_qbvh(NULL), m_ibl(NULL) {}
 
   void AddObject(SceneObject *obj, bool doDelete = true, bool containedInBVH = true) {
     m_objects.push_back(SceneObjectInfo(obj, doDelete, containedInBVH));
@@ -43,6 +45,10 @@ protected:
       m_inBVHObjects.push_back(obj);
     } else {
       m_notInBVHObjects.push_back(obj);
+    }
+
+    if (dynamic_cast<LightBase *>(obj) != NULL) {
+      m_lights.push_back(dynamic_cast<LightBase *>(obj));
     }
   }
 
@@ -80,9 +86,9 @@ protected:
     Model *model;
     bool doDelete;
   };
-
   std::vector<SceneObject *> m_inBVHObjects;
   std::vector<SceneObject *> m_notInBVHObjects;
+  std::vector<LightBase *> m_lights;
   std::vector<SceneObjectInfo> m_objects;
   std::vector<ModelObjectInfo> m_models;
 
