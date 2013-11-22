@@ -147,7 +147,20 @@ Color PathTracer::DirectRadiance(const Scene &scene, const Ray &ray, Random &rnd
     }
   }
 
-  return intersect.object->material.emission;
+  Color income;
+
+  switch (intersect.object->material.reflection_type) {
+  case Material::REFLECTION_TYPE_LAMBERT:
+    // ライトからサンプリングを行う
+    break;
+
+  case Material::REFLECTION_TYPE_SPECULAR:
+  case Material::REFLECTION_TYPE_REFRACTION:
+    // 間接光評価のみで良い
+    break;
+  }
+
+  return intersect.object->material.emission + income;
 }
 
 Color PathTracer::IndirectRadiance(const Scene &scene, const Ray &ray, Random &rnd, const int depth, const bool intersected, Scene::IntersectionInformation &intersect, const Vector3 &normal) {
@@ -171,7 +184,8 @@ Color PathTracer::IndirectRadiance(const Scene &scene, const Ray &ray, Random &r
       if (intersect.object->material.emission.lengthSq() == 0) {
         m_absorbedInObjectRayCount++;
       }
-      return intersect.object->material.emission;
+      //return intersect.object->material.emission; <= emission is considered in DirectRadiance
+      return scene.Background();
     }
   } else {
     russian_roulette_probability = 1.0; // no roulette

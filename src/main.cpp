@@ -24,8 +24,8 @@ static const int startSample = 2;
 static const int endSample = 32;
 static const int stepSample = 2;
 
-static const int width = 1280;
-static const int height = 720;
+static const int width = 480;
+static const int height = 320;
 
 static const int number_of_threads = omp_get_num_procs() - 1; // default setting
 
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
   PathTracer renderer(camera, startSample, endSample, stepSample, supersampling, &callback);
 	//TestScene scene;
   //IBLTestScene scene;
-  SceneFromExternalFile scene("input_data/default.scene");
+  SceneFromExternalFile scene("input_data/cornell_box.scene");
   if (!scene.IsValid()) {
     cerr << "faild to load scene" << endl;
     return -1;
