@@ -1,0 +1,82 @@
+Base Dir:input_data
+
+Objects:
+
+# ç∂
+Sphere {
+	Radius: 1e5
+	Position: 100001, 40.8, 81.6
+	Material: 0, 0, 0, LAMBERT, 0.75, 0.25, 0.25
+	Space Partitioning: False
+}
+
+# âE
+Sphere {
+	Radius: 1e5
+	Position: -99901, 40.8, 81.6
+	Material: 0, 0, 0, LAMBERT, 0.25, 0.25, 0.75
+	Space Partitioning: False
+}
+
+# âú
+Sphere {
+	Radius: 1e5
+	Position: 50, 40.8, 100000
+	Material: 0, 0, 0, LAMBERT, 0.75, 0.75, 0.75
+	Space Partitioning: False
+}
+
+# éËëO
+Sphere {
+	Radius: 1e5
+	Position: 50, 40.8, -1e250
+	Material: 0, 0, 0, LAMBERT, 0, 0, 0
+	Space Partitioning: False
+}
+
+# â∫
+Sphere {
+	Radius: 1e5
+	Position: 50, 1e5, 81.6
+	Material: 0, 0, 0, LAMBERT, 0.75, 0.75, 0.75
+	Space Partitioning: False
+}
+
+# è„
+Sphere {
+	Radius: 1e5
+	Position: 50, -99918.4, 81.6
+	Material: 0, 0, 0, LAMBERT, 0.75, 0.75, 0.75
+	Space Partitioning: False
+}
+
+
+Sphere {
+	Radius: 20
+	Position: 65, 20, 20
+	Material: 0, 0, 0, LAMBERT, 0.25, 0.75, 0.25
+	Space Partitioning: False
+}
+
+Sphere {
+	Radius: 16.5
+	Position: 27, 16.5, 47
+	Material: 0, 0, 0, SPECULAR, 0.99, 0.99, 0.99
+	Space Partitioning: False
+}
+
+Sphere {
+	Radius: 16.5
+	Position: 77, 16.5, 78
+	Material: 0, 0, 0, REFRACTION, 0.99, 0.99, 0.99, 2.0
+	Space Partitioning: False
+}
+
+# åıåπ
+Sphere {
+	Radius: 15.0
+	Position: 50.0, 90.0, 81.6
+	Material: 36, 36, 36, LAMBERT, 0, 0, 0
+	Space Partitioning: False
+}
+

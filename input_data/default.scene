@@ -1,0 +1,32 @@
+Base Dir:input_data
+IBL: Alexs_Apt_2k.hdr
+
+Objects:
+
+Floor {
+	Size: 100, 100
+	Position: 50, 0, 0
+	Material: 0, 0, 0, LAMBERT, 0.7, 0.7, 0.7
+	Space Partitioning: False
+}
+
+Sphere {
+	Radius: 20
+	Position: 65, 20, -30
+	Material: 0, 0, 0, LAMBERT, 0.25, 0.75, 0.25
+	Space Partitioning: False
+}
+
+Sphere {
+	Radius: 16.5
+	Position: 27, 16.5, -3
+	Material: 0, 0, 0, SPECULAR, 0.99, 0.99, 0.99
+	Space Partitioning: False
+}
+
+Sphere {
+	Radius: 16.5
+	Position: 77, 16.5, 28
+	Material: 0, 0, 0, REFRACTION, 0.99, 0.99, 0.99, 2.0
+	Space Partitioning: False
+}

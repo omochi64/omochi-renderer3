@@ -1,4 +1,3 @@
-
 *.user
 *.sdf
 *.sln
@@ -16,4 +15,4 @@ Release/
 /bun_zipper.mtl
 *.obj
 *.mtl
-input_data/
+*.hdr
