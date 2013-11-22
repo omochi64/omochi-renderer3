@@ -192,7 +192,7 @@ Color PathTracer::DirectRadiance_Lambert(const Scene &scene, const Ray &ray, Ran
     accumulatedProbability[i] /= totalPower;
   }
 
-  static const int NumberOfLightSamples = 64;
+  static const int NumberOfLightSamples = 2;
   Color income;
 
   for (int lightCount = 0; lightCount < NumberOfLightSamples; lightCount++) {
