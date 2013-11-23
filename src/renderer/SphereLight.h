@@ -17,7 +17,7 @@ namespace OmochiRenderer {
     virtual void SampleOnePoint(Vector3 &point, double &pdf, const Random &rnd) const {
       // 全球から uniform にサンプリング
       // pdf = 1.0 / 半径rの球の表面積
-      pdf = 1.0 / (4 * PI);// *m_radius * m_radius);
+      pdf = 1.0 / (4 * PI *m_radius * m_radius);
        
       // F(θ, φ) = φ/2π*(1-cosθ)/2
       double phi = 2 * PI*rnd.nextDouble();
