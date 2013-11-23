@@ -267,7 +267,7 @@ Color PathTracer::Radiance_internal(const Scene &scene, const Ray &ray, Random &
     if (rnd.nextDouble() >= russian_roulette_probability) {
       // 各 radiance を計算するときに直接光を計算しているので、
       // 「eye から直接 light に hit した場合」のみ、emission を income に加える
-      if (depth == 0) {
+      if (depth == 0 || !m_performNextEventEstimation) {
         if (intersect.object->material.emission.lengthSq() != 0) {
           m_hitToLightCount++;
         }
@@ -293,7 +293,7 @@ Color PathTracer::Radiance_internal(const Scene &scene, const Ray &ray, Random &
 
   // 各 radiance を計算するときに直接光を計算しているので、
   // 「eye から直接 light に hit した場合」のみ、emission を income に加える
-  if (depth == 0) {
+  if (depth == 0 || !m_performNextEventEstimation) {
     // --> eye から直接 light に hit し、 light 自身が反射率を持つ場合にここが有効になる
     income += intersect.object->material.emission;
     if (intersect.object->material.emission.lengthSq() != 0) {
@@ -310,7 +310,7 @@ Color PathTracer::Radiance_Lambert(const Scene &scene, const Ray &ray, Random &r
   Color direct;
 
   // 直接光を評価する
-  if (intersect.object->material.emission.lengthSq() == 0) {
+  if (m_performNextEventEstimation && intersect.object->material.emission.lengthSq() == 0) {
     direct = DirectRadiance_Lambert(scene, ray, rnd, depth, true, intersect, normal);
   }
 
@@ -363,7 +363,7 @@ Color PathTracer::Radiance_Specular(const Scene &scene, const Ray &ray, Random &
 
   // 直接光の評価
   Scene::IntersectionInformation newhit;
-  if (scene.CheckIntersection(newray, newhit)) {
+  if (m_performNextEventEstimation && scene.CheckIntersection(newray, newhit)) {
     income += newhit.object->material.emission;
   }
 
@@ -389,7 +389,7 @@ Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random
   Color reflect_direct;
   Ray reflect_ray(intersect.hit.position, reflect_dir);
   Scene::IntersectionInformation reflected_hit;
-  if (scene.CheckIntersection(reflect_ray, reflected_hit)) {
+  if (m_performNextEventEstimation && scene.CheckIntersection(reflect_ray, reflected_hit)) {
     reflect_direct = reflected_hit.object->material.emission;
   }
 
@@ -406,7 +406,7 @@ Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random
   const Ray refract_ray(intersect.hit.position, refract_dir);
   // 屈折方向の直接光の評価
   Color refract_direct;
-  if (scene.CheckIntersection(refract_ray, reflected_hit)) {
+  if (m_performNextEventEstimation && scene.CheckIntersection(refract_ray, reflected_hit)) {
     refract_direct = reflected_hit.object->material.emission;
   }
 

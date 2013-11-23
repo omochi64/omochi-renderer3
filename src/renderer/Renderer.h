@@ -59,6 +59,8 @@ private:
   int m_hitToLightCount;
 
 	Color *m_result;
+
+  const static bool m_performNextEventEstimation = false;
 };
 
 }

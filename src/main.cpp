@@ -21,7 +21,7 @@ using namespace OmochiRenderer;
 static const int supersampling = 4;
 
 static const int startSample = 4;
-static const int endSample = 32;
+static const int endSample = 64;
 static const int stepSample = 4;
 
 static const int width = 640;
