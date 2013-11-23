@@ -15,7 +15,7 @@ class PathTracer {
 public:
   class RenderingFinishCallback {
   public:
-    virtual void operator()(int samples, const Color *result) = 0;
+    virtual void operator()(int samples, const Color *result, double renderingDiffTimeInMinutes) = 0;
   };
 public:
 	PathTracer(const Camera &camera, int samples, int supersamples);

@@ -31,19 +31,22 @@ static const int number_of_threads = omp_get_num_procs() - 1; // default setting
 
 class SavePPM_callback : public PathTracer::RenderingFinishCallback {
   int w,h;
+  double accumulatedRenderingTime;
 public:
-  SavePPM_callback(int width, int height):w(width),h(height){};
-  void operator()(int samples, const Color *img) {
+  SavePPM_callback(int width, int height):w(width),h(height),accumulatedRenderingTime(0){};
+  void operator()(int samples, const Color *img, double renderingDiffTimeInMinutes) {
+    accumulatedRenderingTime += renderingDiffTimeInMinutes;
   	cerr << "save ppm file for sample " << samples << " ..." << endl;
     char name[1024];
-    sprintf_s(name, 1024, "result_ibl_test_w%d_h%d_%04d_%dx%d.ppm", 
+    sprintf_s(name, 1024, "result_ibl_test_w%d_h%d_%04d_%dx%d_%.2fmin.ppm", 
       width, height,
-      samples, supersampling, supersampling);
+      samples, supersampling, supersampling, accumulatedRenderingTime);
     clock_t begin,end;
     begin = clock();
     PPM::Save(name, img, w, h);
     end = clock();
     cerr << "saving time = " << (double)(end - begin)/CLOCKS_PER_SEC << endl;
+    cerr << "rendering time (diff) = " << renderingDiffTimeInMinutes << " min. Total rendering time = " << accumulatedRenderingTime << " min." << endl;
   };
 };
 

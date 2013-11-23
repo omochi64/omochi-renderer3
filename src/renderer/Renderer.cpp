@@ -64,7 +64,7 @@ void PathTracer::RenderScene(const Scene &scene) {
     cerr << "rendering time = " << (1.0/60)*pastsec << " min." << endl;
     cerr << "speed = " << m_checkIntersectionCount/pastsec*(samples-m_previous_samples) << " rays (intersection check)/sec" << endl;
     if (m_renderFinishCallback) {
-      (*m_renderFinishCallback)(samples, m_result);
+      (*m_renderFinishCallback)(samples, m_result, pastsec/60.0);
     }
   }
 }
