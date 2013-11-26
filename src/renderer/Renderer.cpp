@@ -211,12 +211,13 @@ Color PathTracer::DirectRadiance_Lambert(const Scene &scene, const Ray &ray, Ran
     const LightBase *selectedLight = lights[index];
 
     // pick a one point
-    Vector3 point; double pdf = 0.0;
-    selectedLight->SampleOnePoint(point, pdf, rnd);
+    Vector3 point, light_normal; double pdf = 0.0;
+    selectedLight->SampleOnePoint(point, light_normal, pdf, rnd);
 
     Vector3 dir((point - intersect.hit.position)); dir.normalize();
     double cos_shita = dir.dot(normal);
-    if (cos_shita < 0) {
+    double light_cos_shita = -dir.dot(light_normal);
+    if (cos_shita < 0 || light_cos_shita < 0) {
       // cannot reach to the light
       continue;
     }
@@ -227,7 +228,7 @@ Color PathTracer::DirectRadiance_Lambert(const Scene &scene, const Ray &ray, Ran
       if (dynamic_cast<LightBase *>(hit.object) == selectedLight) {
         // visible
         // BRDF = color/PI
-        double G = cos_shita * -hit.hit.normal.dot(dir) / (hit.hit.distance * hit.hit.distance);
+        double G = cos_shita * light_cos_shita / (hit.hit.distance * hit.hit.distance);
         Vector3 reflect_rate(intersect.object->material.color / PI * G / (pdf * eachLightProbability[index]));
         income.x += reflect_rate.x * hit.object->material.emission.x;
         income.y += reflect_rate.y * hit.object->material.emission.y;
