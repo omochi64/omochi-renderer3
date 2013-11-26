@@ -60,7 +60,7 @@ private:
 
 	Color *m_result;
 
-  const static bool m_performNextEventEstimation = false;
+  const static bool m_performNextEventEstimation = true;
 };
 
 }
