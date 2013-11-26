@@ -21,11 +21,11 @@ using namespace OmochiRenderer;
 static const int supersampling = 4;
 
 static const int startSample = 4;
-static const int endSample = 34;
+static const int endSample = 1024;
 static const int stepSample = 4;
 
-static const int width = 320;
-static const int height = 240;
+static const int width = 640;
+static const int height = 480;
 
 static const int number_of_threads = omp_get_num_procs() - 1; // default setting
 
@@ -38,7 +38,7 @@ public:
     accumulatedRenderingTime += renderingDiffTimeInMinutes;
   	cerr << "save ppm file for sample " << samples << " ..." << endl;
     char name[1024];
-    sprintf_s(name, 1024, "result_ibl_test_w%d_h%d_%04d_%dx%d_%.2fmin.ppm", 
+    sprintf_s(name, 1024, "results_normalpathtracer/result_ibl_test_w%d_h%d_%04d_%dx%d_%.2fmin.ppm", 
       width, height,
       samples, supersampling, supersampling, accumulatedRenderingTime);
     clock_t begin,end;
