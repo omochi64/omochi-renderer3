@@ -65,12 +65,12 @@ int main(int argc, char *argv[]) {
 
   //TestScene scene;
   //IBLTestScene scene;
-  //SceneFromExternalFile scene("input_data/cornell_box.scene");
-  //if (!scene.IsValid()) {
-  //  cerr << "faild to load scene" << endl;
-  //  return -1;
-  //}
-  CornellBoxScene scene;
+  SceneFromExternalFile scene(settings.GetSceneFile());
+  if (!scene.IsValid()) {
+    cerr << "faild to load scene: " << settings.GetSceneFile() << endl;
+    return -1;
+  }
+  //CornellBoxScene scene;
 
   omp_set_num_threads(settings.GetNumberOfThreads());
 

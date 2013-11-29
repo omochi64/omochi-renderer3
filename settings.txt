@@ -4,10 +4,10 @@ Supersamples = 4
 Sample Start = 2
 Sample End = 4
 Sample Step = 1
-Scene file = input_data/cornell_box.h
+Scene file = input_data/cornell_box.scene
 number of threads = 2
 Show Preview = True
 Save filename format = results/result_ibl_test_w%d_h%d_%04d_%dx%d_%.2fmin.ppm
 
 # for pathtracer
-Next Event Estimation = False
+Next Event Estimation = True
