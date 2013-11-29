@@ -22,6 +22,10 @@ public:
   PathTracer(const Camera &camera, int min_samples, int max_samples, int step, int supersamples, RenderingFinishCallback *callback);
 	~PathTracer();
 
+  void EnableNextEventEstimation(bool enable = true) {
+    m_performNextEventEstimation = enable;
+  }
+
 	void SetCamera(const Camera &cam) {
     m_camera = cam;
 	}
@@ -60,7 +64,7 @@ private:
 
 	Color *m_result;
 
-  const static bool m_performNextEventEstimation = false;
+  bool m_performNextEventEstimation = false;
 };
 
 }

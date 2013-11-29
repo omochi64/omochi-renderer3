@@ -60,6 +60,14 @@ public:
 
     return vec;
   }
+
+  static bool parseBoolean(const std::string &str) {
+    if (Utils::tolower(str) == "false" || str == "0" || str.empty()) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 };
 
 }

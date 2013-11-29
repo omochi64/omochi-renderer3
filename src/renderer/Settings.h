@@ -40,6 +40,8 @@ namespace OmochiRenderer {
       do {
         std::getline(ifs, line);
         std::vector<std::string> data(Utils::split(Utils::trim(line, " \t\r\n"), '='));
+        if (data.size() == 0) continue;
+        if (data.size() == 1 && data[0].at(0) == '#') continue;
         if (data.size() != 2) {
           std::cerr << "Failed to parse line " << line_number << ":" << line << std::endl;
           return false;
@@ -78,14 +80,7 @@ namespace OmochiRenderer {
           m_numThreads = atoi(value.c_str());
           if (m_numThreads < 1) m_numThreads = 1;
         } else if (keyword == "show preview") {
-          if (Utils::tolower(value) == "true" || value == "1") {
-            m_showPreview = true;
-          } else if (Utils::tolower(value) == "false" || value == "0") {
-            m_showPreview = false;
-          } else {
-            std::cerr << "Unknown value '" << value << "'for 'show preview': line " << line_number << std::endl;
-            return false;
-          }
+          m_showPreview = Utils::parseBoolean(value);
         } else {
           //std::cerr << "Unknown keyword: " << keyword << std::endl;
         }

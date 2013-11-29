@@ -49,8 +49,10 @@ public:
 int main(int argc, char *argv[]) {
 
   // set renderer and scene
-  if (!settings.LoadFromFile("settings.txt")) {
-    std::cerr << "Failed to load settings.txt" << std::endl;
+  std::string settingfile = "settings.txt";
+  if (argc >= 2) { settingfile = argv[1]; }
+  if (!settings.LoadFromFile(settingfile)) {
+    std::cerr << "Failed to load " << settingfile << std::endl;
     return -1;
   }
 
@@ -59,7 +61,9 @@ int main(int argc, char *argv[]) {
     settings.GetCameraUp(), settings.GetScreenHeightInWorldCoordinate(), settings.GetDistanceFromCameraToScreen());
 
   PathTracer renderer(camera, settings.GetSampleStart(), settings.GetSampleEnd(), settings.GetSampleStep(), settings.GetSuperSamples(), &callback);
-	//TestScene scene;
+  renderer.EnableNextEventEstimation(Utils::parseBoolean(settings.GetRawSetting("next event estimation")));
+
+  //TestScene scene;
   //IBLTestScene scene;
   //SceneFromExternalFile scene("input_data/cornell_box.scene");
   //if (!scene.IsValid()) {
