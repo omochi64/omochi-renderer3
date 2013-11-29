@@ -12,22 +12,14 @@
 #include "tools/Vector.h"
 #include "tools/PPM.h"
 #include "viewer/WindowViewer.h"
+#include "renderer/Settings.h"
 
 #include <omp.h>
 
 using namespace std;
 using namespace OmochiRenderer;
 
-static const int supersampling = 4;
-
-static const int startSample = 4;
-static const int endSample = 34;
-static const int stepSample = 4;
-
-static const int width = 320;
-static const int height = 240;
-
-static const int number_of_threads = omp_get_num_procs() - 1; // default setting
+static Settings settings;
 
 class SavePPM_callback : public PathTracer::RenderingFinishCallback {
   int w,h;
@@ -38,9 +30,13 @@ public:
     accumulatedRenderingTime += renderingDiffTimeInMinutes;
   	cerr << "save ppm file for sample " << samples << " ..." << endl;
     char name[1024];
-    sprintf_s(name, 1024, "result_ibl_test_w%d_h%d_%04d_%dx%d_%.2fmin.ppm", 
-      width, height,
-      samples, supersampling, supersampling, accumulatedRenderingTime);
+    if (settings.GetRawSetting("save filename format").empty()) {
+      sprintf_s(name, 1024, "result_ibl_test_w%d_h%d_%04d_%dx%d_%.2fmin.ppm",
+        settings.GetWidth(), settings.GetHeight(), samples, settings.GetSuperSamples(), settings.GetSuperSamples(), accumulatedRenderingTime);
+    } else {
+      sprintf_s(name, 1024, settings.GetRawSetting("save filename format").c_str(),
+        settings.GetWidth(), settings.GetHeight(), samples, settings.GetSuperSamples(), settings.GetSuperSamples(), accumulatedRenderingTime);
+    }
     clock_t begin,end;
     begin = clock();
     PPM::Save(name, img, w, h);
@@ -53,9 +49,16 @@ public:
 int main(int argc, char *argv[]) {
 
   // set renderer and scene
-  SavePPM_callback callback(width, height);
-  Camera camera(width, height);
-  PathTracer renderer(camera, startSample, endSample, stepSample, supersampling, &callback);
+  if (!settings.LoadFromFile("settings.txt")) {
+    std::cerr << "Failed to load settings.txt" << std::endl;
+    return -1;
+  }
+
+  SavePPM_callback callback(settings.GetWidth(), settings.GetHeight());
+  Camera camera(settings.GetWidth(), settings.GetHeight(), settings.GetCameraPosition(), settings.GetCameraDirection(),
+    settings.GetCameraUp(), settings.GetScreenHeightInWorldCoordinate(), settings.GetDistanceFromCameraToScreen());
+
+  PathTracer renderer(camera, settings.GetSampleStart(), settings.GetSampleEnd(), settings.GetSampleStep(), settings.GetSuperSamples(), &callback);
 	//TestScene scene;
   //IBLTestScene scene;
   //SceneFromExternalFile scene("input_data/cornell_box.scene");
@@ -65,20 +68,22 @@ int main(int argc, char *argv[]) {
   //}
   CornellBoxScene scene;
 
-  omp_set_num_threads(number_of_threads);
+  omp_set_num_threads(settings.GetNumberOfThreads());
 
   clock_t startTime;
 
   // set window viewer
   LinearGammaToonMapper mapper;
   WindowViewer viewer("OmochiRenderer", camera, renderer, mapper);
-  viewer.StartViewerOnNewThread();
-  viewer.SetCallbackFunctionWhenWindowClosed(std::function<void(void)>(
-    [&startTime]{
-      cerr << "total time = " << (1.0 / 60 * (clock() - startTime) / CLOCKS_PER_SEC) << " (min)." << endl;
-      exit(0);
-    }
-  ));
+  if (settings.DoShowPreview()) {
+    viewer.StartViewerOnNewThread();
+    viewer.SetCallbackFunctionWhenWindowClosed(std::function<void(void)>(
+      [&startTime]{
+        cerr << "total time = " << (1.0 / 60 * (clock() - startTime) / CLOCKS_PER_SEC) << " (min)." << endl;
+        exit(0);
+      }
+    ));
+  }
 
   // start
   cerr << "begin rendering..." << endl;
@@ -86,5 +91,8 @@ int main(int argc, char *argv[]) {
 	renderer.RenderScene(scene);
   cerr << "total time = " << (1.0 / 60 * (clock() - startTime) / CLOCKS_PER_SEC) << " (min)." << endl;
 
+  if (settings.DoShowPreview()) {
+    viewer.WaitWindowFinish();
+  }
 	return 0;
 }

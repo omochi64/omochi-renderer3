@@ -44,7 +44,7 @@ public:
       }
     }
 
-    for (size_t i = 0; i < height; i++) {
+    for (int i = 0; i < height; i++) {
       ofs << lines[i];
     }
 	}
