@@ -14,7 +14,7 @@ namespace OmochiRenderer {
     }
     virtual ~SphereLight() {}
 
-    virtual void SampleOnePoint(Vector3 &point, double &pdf, const Random &rnd) const {
+    virtual void SampleOnePoint(Vector3 &point, Vector3 &normal, double &pdf, const Random &rnd) const {
       // 全球から uniform にサンプリング
       // pdf = 1.0 / 半径rの球の表面積
       pdf = 1.0 / (4 * PI *m_radius * m_radius);
@@ -26,7 +26,8 @@ namespace OmochiRenderer {
 
       Vector3 dir(sin_shita*cos(phi), cos_shita, sin_shita*sin(phi));
 
-      point = this->position + dir * m_radius;
+      point = this->position + dir * (m_radius + EPS);
+      normal = dir;
     }
     virtual double TotalPower() const {
       return 4 * PI * m_radius * m_radius * material.emission.length();
