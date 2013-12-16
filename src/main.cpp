@@ -30,7 +30,7 @@ public:
     accumulatedRenderingTime += renderingDiffTimeInMinutes;
   	cerr << "save ppm file for sample " << samples << " ..." << endl;
     char name[1024];
-    if (settings.GetRawSetting("save filename format").empty()) {
+    if (settings.GetRawSetting("save filename format for pathtracer").empty()) {
       sprintf_s(name, 1024, "result_ibl_test_w%d_h%d_%04d_%dx%d_%.2fmin.ppm",
         settings.GetWidth(), settings.GetHeight(), samples, settings.GetSuperSamples(), settings.GetSuperSamples(), accumulatedRenderingTime);
     } else {
