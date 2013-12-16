@@ -2,7 +2,7 @@
 #include <sstream>
 #include <ctime>
 
-#include "renderer/Renderer.h"
+#include "renderer/PathTracer.h"
 #include "renderer/Camera.h"
 #include "renderer/LinearGammaToonMapper.h"
 #include "scenes/CornellBoxScene.h"
