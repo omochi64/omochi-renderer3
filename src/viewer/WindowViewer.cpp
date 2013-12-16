@@ -2,7 +2,7 @@
 #include <unordered_map>
 #include "renderer/Camera.h"
 #include "renderer/ToonMapper.h"
-#include "renderer/Renderer.h"
+#include "renderer/PathTracer.h"
 #include "GLUtils.h"
 
 #include <iostream>

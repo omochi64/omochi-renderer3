@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Renderer.h"
 #include "Color.h"
 #include "scenes/Scene.h"
 #include "Camera.h"
@@ -11,7 +12,7 @@ class Ray;
 class Random;
 class IBL;
 
-class PathTracer {
+class PathTracer : public Renderer {
 public:
   class RenderingFinishCallback {
   public:
@@ -20,17 +21,17 @@ public:
 public:
 	PathTracer(const Camera &camera, int samples, int supersamples);
   PathTracer(const Camera &camera, int min_samples, int max_samples, int step, int supersamples, RenderingFinishCallback *callback);
-	~PathTracer();
+	virtual ~PathTracer();
 
 	void SetCamera(const Camera &cam) {
     m_camera = cam;
 	}
 
-	void RenderScene(const Scene &scene);
+	virtual void RenderScene(const Scene &scene);
 
-	const Color *GetResult() const {return m_result;}
+	virtual const Color *GetResult() const {return m_result;}
 
-  std::string GetCurrentRenderingInfo() const;
+  virtual std::string GetCurrentRenderingInfo() const;
 
 private:
   void init(const Camera &camera, int min_samples, int max_samples, int step, int supersamples, RenderingFinishCallback *callback);

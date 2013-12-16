@@ -2,7 +2,7 @@
 #include <ctime>
 #include "Color.h"
 #include "scenes/Scene.h"
-#include "Renderer.h"
+#include "PathTracer.h"
 #include "Ray.h"
 #include "tools/Random.h"
 #include "IBL.h"
