@@ -23,10 +23,6 @@ public:
   PathTracer(const Camera &camera, int min_samples, int max_samples, int step, int supersamples, RenderingFinishCallback *callback);
 	virtual ~PathTracer();
 
-	void SetCamera(const Camera &cam) {
-    m_camera = cam;
-	}
-
 	virtual void RenderScene(const Scene &scene);
 
 	virtual const Color *GetResult() const {return m_result;}
@@ -35,6 +31,9 @@ public:
 
 private:
   void init(const Camera &camera, int min_samples, int max_samples, int step, int supersamples, RenderingFinishCallback *callback);
+  void SetCamera(const Camera &cam) {
+    m_camera = cam;
+  }
 
   void ScanPixelsAndCastRays(const Scene &scene, int previous_samples, int next_samples);
   Color Radiance(const Scene &scene, const Ray &ray, Random &rnd, const int depth);
