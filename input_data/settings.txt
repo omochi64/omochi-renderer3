@@ -1,0 +1,21 @@
+[General]
+Base Dir = input_data
+Renderer Type = PathTracer
+
+[Camera]
+Width = 640
+Height = 480
+Position = 50.0, 52.0, 220.0
+Dir = 0.0, -0.04, -1.0
+Up = 0,1,0
+Distance to Screen = 40
+Screen Height in World Coordinate = 30
+
+[PathTracer]
+# SuperSampling X SuperSampling で、格子状にスーパーサンプリングされる
+SuperSampling = 4
+Sample Begin = 4
+Sample End = 1024
+Sample Step = 4
+
+[PhotonMapping]
