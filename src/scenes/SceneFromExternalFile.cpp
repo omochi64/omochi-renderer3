@@ -1,6 +1,7 @@
 #include "SceneFromExternalFile.h"
 #include "tools/Utils.h"
 #include "renderer/Sphere.h"
+#include "renderer/SphereLight.h"
 
 #include <fstream>
 
@@ -66,7 +67,7 @@ namespace OmochiRenderer {
     // Read Objects in this scene
     //
     enum OBJ_TYPE {
-      MESH, SPHERE, FLOOR, NONE
+      MESH, SPHERE, FLOOR, SPHERE_LIGHT, NONE
     };
     OBJ_TYPE type = NONE;
     bool isInObjectDefineSection = false;
@@ -94,6 +95,7 @@ namespace OmochiRenderer {
         if (type_str == "Obj Mesh") type = MESH;
         else if (type_str == "Sphere") type = SPHERE;
         else if (type_str == "Floor") type = FLOOR;
+        else if (type_str == "SphereLight") type = SPHERE_LIGHT;
 
         if (type == NONE) {
           cerr << "Undefined object type: " << type_str << " line " << line_number << endl;
@@ -113,7 +115,8 @@ namespace OmochiRenderer {
         case FLOOR:
           ret = ReadFloor(readLines); break;
         case SPHERE:
-          ret = ReadSphere(readLines); break;
+        case SPHERE_LIGHT:
+          ret = ReadSphere(readLines, type == SPHERE_LIGHT); break;
         }
         if (!ret) {
           cerr << "failed to load object: line " << line_number << endl;
@@ -215,7 +218,7 @@ namespace OmochiRenderer {
     return true;
   }
 
-  bool SceneFromExternalFile::ReadSphere(const std::vector<LinePair> &lines) {
+  bool SceneFromExternalFile::ReadSphere(const std::vector<LinePair> &lines, bool isLight) {
     double radius = 0.0;
     Vector3 position;
     bool valid = true;
@@ -248,8 +251,11 @@ namespace OmochiRenderer {
 
     if (!valid) return false;
 
-    AddObject(new Sphere(radius, position, newMat), true, inSpacePartitioning);
-
+    if (isLight) {
+      AddObject(new SphereLight(radius, position, newMat), true, inSpacePartitioning);
+    } else {
+      AddObject(new Sphere(radius, position, newMat), true, inSpacePartitioning);
+    }
     return true;
   }
 

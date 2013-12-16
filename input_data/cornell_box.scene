@@ -73,7 +73,7 @@ Sphere {
 }
 
 # ŒõŒ¹
-Sphere {
+SphereLight {
 	Radius: 15.0
 	Position: 50.0, 90.0, 81.6
 	Material: 36, 36, 36, LAMBERT, 0, 0, 0

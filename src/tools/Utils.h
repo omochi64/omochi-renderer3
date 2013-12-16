@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <cctype>
+#include <algorithm>
 
 namespace OmochiRenderer {
 
@@ -34,6 +36,37 @@ public:
 
   static std::string trim(const std::string &target, const std::string &delimiters = std::string(" \t")) {
     return ltrim(rtrim(target, delimiters), delimiters);
+  }
+
+  static std::string toupper(const std::string &str) {
+    std::string newstr(str);
+    std::transform(newstr.begin(), newstr.end(), newstr.begin(), std::toupper);
+    return newstr;
+  }
+
+  static std::string tolower(const std::string &str) {
+    std::string newstr(str);
+    std::transform(newstr.begin(), newstr.end(), newstr.begin(), std::tolower);
+    return newstr;
+  }
+
+  static Vector3 splitVector(const std::string &str) {
+    std::vector<std::string> data(split(str, ','));
+    Vector3 vec;
+
+    if (data.size() >= 1) vec.x = atof(trim(data[0]).c_str());
+    if (data.size() >= 2) vec.y = atof(trim(data[1]).c_str());
+    if (data.size() >= 3) vec.z = atof(trim(data[2]).c_str());
+
+    return vec;
+  }
+
+  static bool parseBoolean(const std::string &str) {
+    if (Utils::tolower(str) == "false" || str == "0" || str.empty()) {
+      return false;
+    } else {
+      return true;
+    }
   }
 };
 
