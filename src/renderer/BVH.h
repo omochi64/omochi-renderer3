@@ -34,7 +34,7 @@ public:
   explicit BVH() : m_root() {}
   ~BVH();
 
-  void Construct(const CONSTRUCTION_TYPE type, const std::vector<SceneObject *> &targets);
+  bool Construct(const CONSTRUCTION_TYPE type, const std::vector<SceneObject *> &targets);
   bool CheckIntersection(const Ray &ray, Scene::IntersectionInformation &info) const;
 
   void CollectBoundingBoxes(int depth, std::vector<BoundingBox> &result); // for Visualization

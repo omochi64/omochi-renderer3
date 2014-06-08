@@ -13,7 +13,11 @@ namespace OmochiRenderer {
 
   class WindowViewer {
   public:
-    explicit WindowViewer(const std::string &windowTitle, const Camera &camera, const PathTracer &renderer, const ToonMapper &mapper, const size_t refreshSpanInMsec = 1500);
+    explicit WindowViewer(const std::string &windowTitle,
+      const Camera &camera,
+      const PathTracer &renderer,
+      const ToonMapper &mapper,
+      const size_t refreshSpanInMsec = 1500);
     virtual ~WindowViewer();
 
     void StartViewerOnThisThread();

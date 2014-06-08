@@ -12,6 +12,7 @@ namespace OmochiRenderer {
 
     virtual void RenderScene(const Scene &scene) = 0;
     virtual const Color *GetResult() const = 0;
+    virtual const int GetCurrentSampleCount() const = 0;
     virtual std::string GetCurrentRenderingInfo() const { return ""; };
   };
 }

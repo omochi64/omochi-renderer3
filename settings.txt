@@ -1,6 +1,9 @@
-Scene file = input_data/cornell_box.scene
-number of threads = 7
+Scene type = TestScene
+Scene information = input_data/cornell_box.scene
+number of threads = 6
 Show Preview = True
+Save Span = 60
+Save On Each Sample Ended = false
 
 # for camera
 Width = 640

@@ -15,7 +15,7 @@ namespace OmochiRenderer {
     explicit QBVH() : m_root(NULL), m_allocatedQBVHNodeSize(0), m_usedNodeCount(0), m_leafObjectArray(NULL) {}
     ~QBVH();
 
-    void Construct(const std::vector<SceneObject *> &targets);
+    bool Construct(const std::vector<SceneObject *> &targets);
     bool CheckIntersection(const Ray &ray, Scene::IntersectionInformation &info) const;
 
     void CollectBoundingBoxes(int depth, std::vector<BoundingBox> &result); // for Visualization

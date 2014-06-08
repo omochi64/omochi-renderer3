@@ -132,10 +132,12 @@ namespace OmochiRenderer {
     return (nearestDist >= 0);
   }
 
-  void QBVH::Construct(const std::vector<SceneObject *> &targets) {
+  bool QBVH::Construct(const std::vector<SceneObject *> &targets) {
+    if (targets.size() == 0) return false;
+
     // at first, construct BVH
     BVH bvh;
-    bvh.Construct(BVH::CONSTRUCTION_OBJECT_SAH, targets);
+    if (!bvh.Construct(BVH::CONSTRUCTION_OBJECT_SAH, targets)) return false;
 
     // allocate memory
     ReallocateQBVH_root(bvh.GetBVHNodeCount());
@@ -156,6 +158,8 @@ namespace OmochiRenderer {
     const BVH::BVH_structure *bvh_root = bvh.GetRootNode();
 
     Construct_internal(0, bvh, bvh_root);
+
+    return true;
   }
 
   void QBVH::ReallocateQBVH_root(size_t addSize) {

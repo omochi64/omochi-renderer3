@@ -27,6 +27,7 @@ PathTracer::PathTracer(const Camera &camera, int min_samples, int max_samples, i
 void PathTracer::init(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallbackFunction callback)
 {
   SetCamera(camera);
+  m_currentSamples = 0;
 	m_min_samples = (min_samples);
   m_max_samples = max_samples;
   m_step_samples = steps;
@@ -51,19 +52,19 @@ void PathTracer::RenderScene(const Scene &scene) {
   m_omittedRayCount = 0;
   m_hitToLightCount = 0;
   m_previous_samples = 0;
-  for (int samples=m_min_samples; samples<=m_max_samples; samples+=m_step_samples) {
+  for (m_currentSamples = m_min_samples; m_currentSamples <= m_max_samples; m_currentSamples += m_step_samples) {
     clock_t t1, t2;
     t1 = clock();
     m_checkIntersectionCount = 0;
-    ScanPixelsAndCastRays(scene, m_previous_samples, samples);
+    ScanPixelsAndCastRays(scene, m_previous_samples, m_currentSamples);
     t2 = clock();
-    m_previous_samples = samples;
-    cerr << "samples = " << samples << " rendering finished." << endl;
+    m_previous_samples = m_currentSamples;
+    cerr << "samples = " << m_currentSamples << " rendering finished." << endl;
     double pastsec = 1.0*(t2-t1)/CLOCKS_PER_SEC;
     cerr << "rendering time = " << (1.0/60)*pastsec << " min." << endl;
-    cerr << "speed = " << m_checkIntersectionCount/pastsec*(samples-m_previous_samples) << " rays (intersection check)/sec" << endl;
+    cerr << "speed = " << m_checkIntersectionCount / pastsec*(m_currentSamples - m_previous_samples) << " rays (intersection check)/sec" << endl;
     if (m_renderFinishCallback) {
-      m_renderFinishCallback(samples, m_result, pastsec/60.0);
+      m_renderFinishCallback(m_currentSamples, m_result, pastsec / 60.0);
     }
   }
 }

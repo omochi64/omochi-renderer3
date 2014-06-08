@@ -37,7 +37,10 @@ void Scene::ConstructQBVH()
   if (m_qbvh) delete m_qbvh;
 
   m_qbvh = new QBVH();
-  m_qbvh->Construct(m_inBVHObjects);
+  if (!m_qbvh->Construct(m_inBVHObjects))
+  {
+    delete m_qbvh; m_qbvh = nullptr;
+  }
 }
 
 bool Scene::CheckIntersection(const Ray &ray, IntersectionInformation &info) const {

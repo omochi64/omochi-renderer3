@@ -16,12 +16,15 @@ namespace OmochiRenderer {
       , m_sampleStart(8), m_sampleEnd(8), m_sampleStep(1)
       , m_width(640), m_height(480)
       , m_numThreads(omp_get_num_procs()-1)
-      , m_sceneFile("input_data/default.scene")
+      , m_sceneType("SceneFromExternalFile")
+      , m_sceneInfo("input_data/default.scene")
       , m_camPos(50.0, 52.0, 220.0)
       , m_camDir(0.0, -0.04, -1.0)
       , m_camUp(0, 1, 0)
       , m_screenHeightInWorldCoordinate(30.0)
       , m_distanceFromCameraToScreen(40.0)
+      , m_saveSpan(0)
+      , m_doSaveOnEachSampleEnded(false)
       , m_showPreview(true)
       , m_rawSettings()
     {
@@ -62,8 +65,10 @@ namespace OmochiRenderer {
           m_width = atoi(value.c_str());
         } else if (keyword == "height") {
           m_height = atoi(value.c_str());
-        } else if (keyword == "scene file") {
-          m_sceneFile = value;
+        } else if (keyword == "scene type") {
+          m_sceneType = value;
+        } else if (keyword == "scene information") {
+          m_sceneInfo = value;
         } else if (keyword == "camera position") {
           m_camPos = Utils::splitVector(value);
         } else if (keyword == "camera direction") {
@@ -81,6 +86,10 @@ namespace OmochiRenderer {
           if (m_numThreads < 1) m_numThreads = 1;
         } else if (keyword == "show preview") {
           m_showPreview = Utils::parseBoolean(value);
+        } else if (keyword == "save span") {
+          m_saveSpan = atof(value.c_str());
+        } else if (keyword == "save on each sample ended") {
+          m_doSaveOnEachSampleEnded = Utils::parseBoolean(value);
         } else {
           //std::cerr << "Unknown keyword: " << keyword << std::endl;
         }
@@ -99,12 +108,16 @@ namespace OmochiRenderer {
     int GetSampleStep() const { return m_sampleStep; }
     int GetWidth() const { return m_width; }
     int GetHeight() const { return m_height; }
-    const std::string &GetSceneFile() const { return m_sceneFile; }
+    const std::string &GetSceneType() const { return m_sceneType; }
+    const std::string &GetSceneInformation() const { return m_sceneInfo; }
     const Vector3 &GetCameraPosition() const { return m_camPos; }
     const Vector3 &GetCameraDirection() const { return m_camDir; }
     const Vector3 &GetCameraUp() const { return m_camUp; }
     int GetNumberOfThreads() const { return m_numThreads; }
     bool DoShowPreview() const { return m_showPreview; }
+
+    double GetSaveSpan() const { return m_saveSpan; }
+    bool DoSaveOnEachSampleEnded() const { return m_doSaveOnEachSampleEnded; }
 
     double GetScreenHeightInWorldCoordinate() const { return m_screenHeightInWorldCoordinate; }
     double GetDistanceFromCameraToScreen() const { return m_distanceFromCameraToScreen; }
@@ -122,11 +135,14 @@ namespace OmochiRenderer {
     int m_sampleStart, m_sampleEnd, m_sampleStep;
     int m_width, m_height;
     int m_numThreads;
-    std::string m_sceneFile;
+    std::string m_sceneType, m_sceneInfo;
 
     Vector3 m_camPos, m_camDir, m_camUp;
     double m_screenHeightInWorldCoordinate;
     double m_distanceFromCameraToScreen;
+
+    double m_saveSpan;
+    bool m_doSaveOnEachSampleEnded;
 
     bool m_showPreview;
 

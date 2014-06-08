@@ -79,8 +79,12 @@ bool BVH::CheckIntersection(const Ray &ray, Scene::IntersectionInformation &info
   return info.hit.distance != INF;
 }
 
-void BVH::Construct(const BVH::CONSTRUCTION_TYPE type, const std::vector<SceneObject *> &targets)
+bool BVH::Construct(const BVH::CONSTRUCTION_TYPE type, const std::vector<SceneObject *> &targets)
 {
+  if (targets.size() == 0)
+  {
+    return false;
+  }
   //if (m_root != NULL) {
   //  delete [] m_root;
   //}
@@ -96,6 +100,8 @@ void BVH::Construct(const BVH::CONSTRUCTION_TYPE type, const std::vector<SceneOb
   m_root.push_back(BVH_structure());
 
   Construct_internal(type, targets, 0);
+
+  return true;
 }
 
 namespace {

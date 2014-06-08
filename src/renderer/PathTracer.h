@@ -33,6 +33,7 @@ public:
 	virtual void RenderScene(const Scene &scene);
 
 	virtual const Color *GetResult() const {return m_result;}
+  virtual const int GetCurrentSampleCount() const { return m_currentSamples; }
 
   virtual std::string GetCurrentRenderingInfo() const;
 
@@ -61,6 +62,7 @@ private:
 
 private:
   Camera m_camera;
+  int m_currentSamples;
 	int m_min_samples,m_max_samples,m_step_samples;
 	int m_supersamples;
   int m_previous_samples;
