@@ -16,16 +16,16 @@ namespace OmochiRenderer {
 PathTracer::PathTracer(const Camera &camera, int samples, int supersamples)
   : m_camera(camera)
 {
-  init(camera, samples, samples, 1, supersamples, NULL);
+  init(camera, samples, samples, 1, supersamples, nullptr);
 }
 
-PathTracer::PathTracer(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallback *callback)
+PathTracer::PathTracer(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallbackFunction callback)
   : m_camera(camera)
 {
   init(camera, min_samples, max_samples, steps, supersamples, callback);
 }
 
-void PathTracer::init(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallback *callback)
+void PathTracer::init(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallbackFunction callback)
 {
   SetCamera(camera);
 	m_min_samples = (min_samples);
@@ -64,7 +64,7 @@ void PathTracer::RenderScene(const Scene &scene) {
     cerr << "rendering time = " << (1.0/60)*pastsec << " min." << endl;
     cerr << "speed = " << m_checkIntersectionCount/pastsec*(samples-m_previous_samples) << " rays (intersection check)/sec" << endl;
     if (m_renderFinishCallback) {
-      (*m_renderFinishCallback)(samples, m_result, pastsec/60.0);
+      m_renderFinishCallback(samples, m_result, pastsec/60.0);
     }
   }
 }
