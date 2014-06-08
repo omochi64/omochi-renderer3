@@ -23,14 +23,14 @@ TestScene::TestScene()
   //addObject(new Sphere(1e5, Vector3(50, 40.8,  1e5),      Color(), Color(0.75, 0.75, 0.75), SceneObject::REFLECTION_TYPE_SPECULAR));  // ‰œ
   //addObject(new Sphere(1e5, Vector3(50, 40.8, -1e250),    Color(), Color(0.75, 0.75, 0.75), SceneObject::REFLECTION_TYPE_SPECULAR));  // Žè‘O
   
- /* Model *cube = new Model;
+  Model *cube = new Model;
   if (!cube->ReadFromObj("input_data/shrine.obj")) {
     std::cerr << "failed to load cube.obj!!!" << std::endl;
     getchar();
     exit(-1);
   }
-  cube->SetTransform(Vector3(50, 10, 80), Vector3(2.5, 2.5, 2.5) , Matrix::RotateAroundVector(Vector3(0, 1, 0), 0.0 / 180 * PI));
-  AddModel(cube);*/
+  cube->SetTransform(Vector3(50, 10, 50), Vector3(0.08, 0.08, 0.08), Matrix::RotateAroundVector(Vector3(0, 1, 0), 135.0 / 180 * PI));
+  AddModel(cube);
   
   //addObject(new Sphere(10,Vector3(),           Material(Material::REFLECTION_TYPE_LAMBERT,    Color(), Color(0.25, 0.75, 0.25))));    // —Î‹…
   //addObject(new Sphere(16.5,Vector3(27, 16.5, 47),       Material(Material::REFLECTION_TYPE_SPECULAR,   Color(), Color(0.99, 0.99, 0.99))));   // ‹¾

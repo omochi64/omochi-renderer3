@@ -13,6 +13,4 @@ Release/
 /Release_Profile
 /bun_zipper.obj
 /bun_zipper.mtl
-*.obj
-*.mtl
 *.hdr
