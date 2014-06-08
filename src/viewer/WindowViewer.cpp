@@ -1,11 +1,11 @@
+#include "stdafx.h"
+
 #include "WindowViewer.h"
-#include <unordered_map>
 #include "renderer/Camera.h"
 #include "renderer/ToonMapper.h"
 #include "renderer/PathTracer.h"
 #include "GLUtils.h"
 
-#include <iostream>
 #include <Windows.h>
 
 using namespace std;

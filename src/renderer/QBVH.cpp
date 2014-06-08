@@ -1,5 +1,6 @@
+#include "stdafx.h"
+
 #include <iostream>
-#include <vector>
 #include <limits>
 #include <malloc.h>
 #include "QBVH.h"

@@ -1,6 +1,4 @@
-#include <iostream>
-#include <sstream>
-#include <ctime>
+#include "stdafx.h"
 
 #include "renderer/PathTracer.h"
 #include "renderer/Camera.h"

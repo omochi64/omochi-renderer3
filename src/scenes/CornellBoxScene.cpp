@@ -1,5 +1,5 @@
+#include "stdafx.h"
 
-#include <iostream>
 #include "CornellBoxScene.h"
 #include "renderer/Sphere.h"
 #include "renderer/Polygon.h"

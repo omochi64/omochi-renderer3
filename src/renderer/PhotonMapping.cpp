@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "PhotonMapping.h"
 #include "scenes/Scene.h"
 

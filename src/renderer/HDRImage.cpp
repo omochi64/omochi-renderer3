@@ -1,8 +1,8 @@
+#include "stdafx.h"
 
 #include "HDRImage.h"
 
 #include <fstream>
-#include <memory>
 
 using namespace std;
 

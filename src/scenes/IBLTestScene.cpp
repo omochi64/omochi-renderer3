@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "IBLTestScene.h"
 #include "renderer/AxisAlignedPlane.h"
 #include "renderer/Model.h"

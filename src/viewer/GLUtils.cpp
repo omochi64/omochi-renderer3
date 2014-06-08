@@ -1,10 +1,10 @@
+#include "stdafx.h"
+
 #include "GLUtils.h"
 
 #include <gl/GL.h>
 #include <sstream>
 #include <fstream>
-#include <iostream>
-#include <memory>
 
 using namespace std;
 

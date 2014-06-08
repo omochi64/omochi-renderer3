@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "SceneFromExternalFile.h"
 #include "tools/Utils.h"
 #include "renderer/Sphere.h"

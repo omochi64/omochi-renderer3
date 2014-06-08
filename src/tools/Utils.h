@@ -17,7 +17,7 @@ public:
   }
 
   static std::string ltrim(const std::string &target, const std::string &delimiters = std::string(" \t")) {
-    int index = 0;
+    size_t index = 0;
     while (target.length() > index && delimiters.find(target[index]) != std::string::npos) {
       index++;
     }

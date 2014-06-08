@@ -1,6 +1,5 @@
-#include <iostream>
-#include <ctime>
-#include "Color.h"
+#include "stdafx.h"
+
 #include "scenes/Scene.h"
 #include "PathTracer.h"
 #include "Ray.h"

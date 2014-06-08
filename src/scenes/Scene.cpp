@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "Scene.h"
 #include "renderer/BVH.h"
 #include "renderer/QBVH.h"

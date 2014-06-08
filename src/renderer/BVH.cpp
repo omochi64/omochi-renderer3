@@ -1,7 +1,6 @@
-#include <iostream>
+#include "stdafx.h"
+
 #include "BVH.h"
-#include <stack>
-#include <algorithm>
 #include <emmintrin.h>
 
 using namespace std;

@@ -1,4 +1,5 @@
-#include <iostream>
+#include "stdafx.h"
+
 #include <fstream>
 #include "Model.h"
 #include "Polygon.h"
