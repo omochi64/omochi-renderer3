@@ -16,6 +16,9 @@ namespace OmochiRenderer {
   }
 
   bool QBVH::CheckIntersection(const Ray &ray, Scene::IntersectionInformation &info) const {
+
+    info.hit.distance = INF;
+
     // initialize
     const int rayDirSign[3] = {
       ray.dir.x >= 0 ? 0 : 1,
@@ -49,6 +52,11 @@ namespace OmochiRenderer {
       _mm_load1_ps(raydir+2)  // z
     };
 
+    __m128 distancesToAABB;
+
+    float inf = INF;
+    __m128 currentShortestDistance = _mm_load1_ps(&inf);
+
     const QBVH_structure *root = m_root.get();
 
     // search loop
@@ -64,7 +72,7 @@ namespace OmochiRenderer {
       const QBVH_structure *node = &root[nextIndex];
 
       if (BoundingBox::CheckIntersection4floatAABB(
-          node->bboxes, rayOrg, inversedRayDir, rayDirSign, zero_m128, inf_m128, intersection_results)) {
+        node->bboxes, rayOrg, inversedRayDir, rayDirSign, zero_m128, inf_m128, intersection_results, distancesToAABB)) {
         // intersected
         // perform ordering according to axis and ray dir
         size_t ordering[4];
@@ -87,9 +95,15 @@ namespace OmochiRenderer {
           ordering[rightIndexFirst] = 3; ordering[rightIndexFirst+1] = 2;
         }
 
+        // ret が0なら、すべてのAABBは現在の shortest distance より遠い位置でレイと衝突している
+        int shortestCheckRes = _mm_movemask_ps(_mm_cmpge_ps(currentShortestDistance, distancesToAABB));
+
+        if (shortestCheckRes == 0) continue;
+
         for (int i = 0; i < 4; i++) {
           int childindex = ordering[i];
-          if (intersection_results[childindex] && IsValidIndex(node->children[childindex])) {
+          bool aabbIsNearThanShortest = (((shortestCheckRes >> childindex) & 0x01) != 0); // childindex が指すAABBが現在の shortest より近いかどうか
+          if (intersection_results[childindex] && aabbIsNearThanShortest && IsValidIndex(node->children[childindex])) {
             // intersected. check it
             if (IsChildindexLeaf(node->children[childindex])) {
               // this child node is a leaf
@@ -97,8 +111,11 @@ namespace OmochiRenderer {
               //cerr << "orig:" << node->children[childindex] << " converted:" << leafstartindex << endl;
               Scene::IntersectionInformation infoTmp;
               if (CheckIntersection_Leaf(ray, leafstartindex, infoTmp)) {
+                if (info.hit.distance > infoTmp.hit.distance) {
                   info = infoTmp;
-                  return true; // early return: no need further search
+                  float dist = static_cast<float>(info.hit.distance);
+                  currentShortestDistance = _mm_load1_ps(&dist);
+                }
               }
             } else {
               // this child node is not a leaf

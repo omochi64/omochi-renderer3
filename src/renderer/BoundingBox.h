@@ -92,7 +92,8 @@ public:
 	  const __m128 rayInverseDir[3], // ray inversed dir
 	  const int raySign[3],         // ray xyz direction => +:0, -:1
 	  __m128 tmin, __m128 tmax,     // ray range tmin-tmax
-	  bool results[4]               // intersection results
+	  bool results[4],              // intersection results
+    __m128 &distances
 	  ) {
 
     // tmin = max(tmin, (box[min or max]-rayOrig)/rayDir)
@@ -122,6 +123,9 @@ public:
     tmax = _mm_min_ps(
       tmax, _mm_mul_ps(_mm_sub_ps(bboxes[1 - raySign[2]][2], rayOrig[2]), rayInverseDir[2])
       );
+
+    // tmin ‚ª‚»‚ê‚¼‚ê distance ‚É‚È‚é
+    distances = tmin;
 
     int ret = _mm_movemask_ps(_mm_cmpge_ps(tmax, tmin));
     if (ret == 0) return false;
