@@ -11,12 +11,12 @@ namespace OmochiRenderer {
 
 TestScene::TestScene()
 {
-  //AddObject(new Sphere(1e5, Vector3(1e5 + 1, 40.8, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.25, 0.25))), true, false);  // 左
-  //AddObject(new Sphere(1e5, Vector3(-1e5 + 99, 40.8, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.25, 0.25, 0.75))), true, false);  // 右
-  //AddObject(new Sphere(1e5, Vector3(50, 40.8, 1e5), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75))), true, false);  // 奥
-  //AddObject(new Sphere(1e5, Vector3(50, 40.8, -1e5 + 250), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color())), true, false);                  // 手前
-  //AddObject(new Sphere(1e5, Vector3(50, 1e5, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75))), true, false);  // 下
-  //AddObject(new Sphere(1e5, Vector3(50, -1e5 + 81.6, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75))), true, false);  // 上
+  AddObject(new Sphere(1e5, Vector3(1e5 + 1, 40.8, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.25, 0.25))), true, false);  // 左
+  AddObject(new Sphere(1e5, Vector3(-1e5 + 99, 40.8, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.25, 0.25, 0.75))), true, false);  // 右
+  AddObject(new Sphere(1e5, Vector3(50, 40.8, 1e5), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75))), true, false);  // 奥
+  AddObject(new Sphere(1e5, Vector3(50, 40.8, -1e5 + 250), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color())), true, false);                  // 手前
+  AddObject(new Sphere(1e5, Vector3(50, 1e5, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75))), true, false);  // 下
+  AddObject(new Sphere(1e5, Vector3(50, -1e5 + 81.6, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75))), true, false);  // 上
 
   //addObject(new Sphere(1e5, Vector3( 1e5+1, 40.8, 81.6),  Color(), Color(0.75, 0.75, 0.75), SceneObject::REFLECTION_TYPE_SPECULAR));  // 左
   //addObject(new Sphere(1e5, Vector3(-1e5+99, 40.8, 81.6), Color(), Color(0.75, 0.75, 0.75), SceneObject::REFLECTION_TYPE_SPECULAR));  // 右
@@ -30,7 +30,7 @@ TestScene::TestScene()
     exit(-1);
   }
   //cube->SetTransform(Vector3(50, 10, 50), Vector3(0.08, 0.08, 0.08), Matrix::RotateAroundVector(Vector3(0, 1, 0), 180.0 / 180 * PI));
-  cube->SetTransform(Vector3(50, 0, 0), Vector3(0.08, 0.08, 0.08), Matrix::RotateAroundVector(Vector3(0, 1, 0), 30.0 / 180 * PI));
+  cube->SetTransform(Vector3(50, 10, 50), Vector3(0.05, 0.05, 0.05), Matrix::RotateAroundVector(Vector3(0, 1, 0), 30.0 / 180 * PI));
   //cube->SetTransform(Vector3(0, 0, -30), Vector3(5, 5, 5), Matrix::RotateAroundVector(Vector3(0, 1, 0), 90.0 / 180 * PI));
   AddModel(cube);
   
