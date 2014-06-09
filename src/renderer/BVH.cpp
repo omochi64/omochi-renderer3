@@ -54,9 +54,6 @@ bool BVH::CheckIntersection(const Ray &ray, Scene::IntersectionInformation &info
           }
         }
       }
-      if (isHit && info.hit.distance < nextCheckData.nextCheckBoundingBoxDist) {
-        return true;
-      }
     } else {
       // internal node
       // check intersection with children
@@ -70,11 +67,11 @@ bool BVH::CheckIntersection(const Ray &ray, Scene::IntersectionInformation &info
       }
       if (hit1 && hit2) {
         //cerr << dist1 << "," << dist2 << endl;
-        if (dist1 < dist2) {
+        if (dist1 < dist2 && info.hit.distance >= dist1) {
           // check child1 at first
           next_list.push_back(CheckData(next->children[1], nextCheckData.nextCheckBoundingBoxDist));
           next_list.push_back(CheckData(next->children[0], dist2));
-        } else {
+        } else if (dist1 >= dist2 && info.hit.distance >= dist2) {
           // check child2 at first
           next_list.push_back(CheckData(next->children[0], nextCheckData.nextCheckBoundingBoxDist));
           next_list.push_back(CheckData(next->children[1], dist1));
