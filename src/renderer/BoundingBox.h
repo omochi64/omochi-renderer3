@@ -65,6 +65,10 @@ public:
       FLOATING inv = rayDir[i] != 0 ? 1.0f/rayDir[i] : static_cast<FLOATING>(INF);
       FLOATING t1 = (minbox[i] - rayOrig[i])*inv;
       FLOATING t2 = (maxbox[i] - rayOrig[i])*inv;
+      if (fabs(inv) > 999999.0f) {
+        t1 = (minbox[i] - rayOrig[i]) > 0 ? INF : -INF;
+        t2 = (maxbox[i] - rayOrig[i]) > 0 ? INF : -INF;
+      }
       t_min = std::min(t1, t2);
       t_max = std::max(t1, t2);
       fastest_out_t = std::min(fastest_out_t, t_max);

@@ -87,6 +87,11 @@ void PathTracer::ScanPixelsAndCastRays(const Scene &scene, int previous_samples,
       const int index = x + (height - y - 1)*width;
 
       Color accumulated_radiance;
+
+      if (x == 268 && y == 480-310) {
+        int a = 10;
+        cout << "!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+      }
        
       // super-sampling
       for (int sy=0; sy<m_supersamples; sy++) for (int sx=0; sx < m_supersamples; sx++) {

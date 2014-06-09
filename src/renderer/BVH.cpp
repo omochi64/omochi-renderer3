@@ -20,15 +20,25 @@ bool BVH::CheckIntersection(const Ray &ray, Scene::IntersectionInformation &info
   info.hit.distance = INF;
   info.object = NULL;
 
-  std::vector<size_t> next_list;
+  struct CheckData {
+    size_t index;
+    double nextCheckBoundingBoxDist;
+    CheckData(size_t index_, float bbdist)
+      : index(index_), nextCheckBoundingBoxDist(bbdist)
+    {
+    }
+  };
+
+  std::vector<CheckData> next_list;
   next_list.reserve(m_root.size());
-  next_list.push_back(0);
+  next_list.push_back(CheckData(0, INF));
 
   const float rayDir[3] = {static_cast<float>(ray.dir.x), static_cast<float>(ray.dir.y), static_cast<float>(ray.dir.z)};
   const float rayOrig[3] = {static_cast<float>(ray.orig.x), static_cast<float>(ray.orig.y), static_cast<float>(ray.orig.z)};
 
   while (!next_list.empty()) {
-    const BVH_structure *next = &m_root[next_list.back()];
+    auto nextCheckData = next_list.back();
+    const BVH_structure *next = &m_root[nextCheckData.index];
     next_list.pop_back();
 
     if (next->children[0] == -1) {
@@ -44,7 +54,7 @@ bool BVH::CheckIntersection(const Ray &ray, Scene::IntersectionInformation &info
           }
         }
       }
-      if (isHit) {
+      if (isHit && info.hit.distance < nextCheckData.nextCheckBoundingBoxDist) {
         return true;
       }
     } else {
@@ -56,22 +66,23 @@ bool BVH::CheckIntersection(const Ray &ray, Scene::IntersectionInformation &info
       bool hit2 = false;
       if (next->children[1] >= 0) {
         const BVH_structure *next2 = &m_root[next->children[1]];
-        hit2 = BoundingBox::CheckIntersection(rayDir, rayOrig, next2->box[0], next2->box[1], dist1); //m_root[next->children[1]].box.Intersect(ray, dist2);
+        hit2 = BoundingBox::CheckIntersection(rayDir, rayOrig, next2->box[0], next2->box[1], dist2); //m_root[next->children[1]].box.Intersect(ray, dist2);
       }
       if (hit1 && hit2) {
+        //cerr << dist1 << "," << dist2 << endl;
         if (dist1 < dist2) {
           // check child1 at first
-          next_list.push_back(next->children[1]);
-          next_list.push_back(next->children[0]);
+          next_list.push_back(CheckData(next->children[1], nextCheckData.nextCheckBoundingBoxDist));
+          next_list.push_back(CheckData(next->children[0], dist2));
         } else {
           // check child2 at first
-          next_list.push_back(next->children[0]);
-          next_list.push_back(next->children[1]);
+          next_list.push_back(CheckData(next->children[0], nextCheckData.nextCheckBoundingBoxDist));
+          next_list.push_back(CheckData(next->children[1], dist1));
         }
       } else if (hit1) {
-        next_list.push_back(next->children[0]);
+        next_list.push_back(CheckData(next->children[0], nextCheckData.nextCheckBoundingBoxDist));
       } else if (hit2) {
-        next_list.push_back(next->children[1]);
+        next_list.push_back(CheckData(next->children[1], nextCheckData.nextCheckBoundingBoxDist));
       }
     }
   }
@@ -191,6 +202,7 @@ void BVH::Construct_internal(const CONSTRUCTION_TYPE type, const std::vector<Sce
     switch (type) {
     case CONSTRUCTION_OBJECT_MEDIAN:
       if (targets.size() > 2)
+      //if (index <= 0)
       {
         // select the media of the objects
         int select = axisSortedLeft[axis].size()/2-1;
