@@ -4,9 +4,11 @@
 #include <vector>
 #include <algorithm>
 
+#include "Image.h"
+
 namespace OmochiRenderer {
 
-  class HDRImage {
+  class HDRImage : public Image {
   public:
     static void Color2RGBE(unsigned char rgbe[4],
       const Color &c) {
@@ -39,10 +41,7 @@ namespace OmochiRenderer {
 
     bool ReadFromRadianceFile(const std::string &file);
 
-    size_t GetHeight() const;
-    size_t GetWidth() const;
-    const Color &GetPixel(size_t x, size_t y) const;
-
+   
   private:
     struct RGBE_Header {
       int valid;
@@ -69,7 +68,6 @@ namespace OmochiRenderer {
     bool ReadRLEPixelsFromRadianceFile(std::ifstream &ifs, int width, int height);
 
   private:
-    std::vector<Color> m_image;
     RGBE_Header m_imageInfo;
   };
 

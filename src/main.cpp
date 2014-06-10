@@ -67,6 +67,7 @@ int main(int argc, char *argv[]) {
 
   FileSaverCallerWithTimer timeSaver(renderer, saver);
   timeSaver.SetSaveTimerInformation(settings->GetSaveSpan());
+  timeSaver.StartTimer();
 
   // ƒV[ƒ“¶¬
   auto sceneFactory = SceneFactoryManager::GetInstance().Get(settings->GetSceneType());
@@ -101,7 +102,6 @@ int main(int argc, char *argv[]) {
   }
 
   // start
-  timeSaver.StartTimer();
   cerr << "begin rendering..." << endl;
   startTime = clock();
 	renderer->RenderScene(*scene);
