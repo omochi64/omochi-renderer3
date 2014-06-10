@@ -68,6 +68,24 @@ public:
       return true;
     }
   }
+
+  static double Clamp(double x) {
+    if (x<0.0) return 0.0;
+    if (x>1.0) return 1.0;
+    return x;
+  }
+
+  static double GammaRev(double x) {
+    return pow(Utils::Clamp(x), 1.0 / 2.2);
+  }
+
+  static double InvGammaRev(double x) {
+    return pow(Utils::Clamp(x), 2.2);
+  }
+
+  static int ToRgb(double v_0_1) {
+    return static_cast<int>(v_0_1 * 255 + 0.5);
+  }
 };
 
 }

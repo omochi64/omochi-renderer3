@@ -13,17 +13,8 @@ namespace OmochiRenderer {
 
 class PPM {
 private:
-	static double Clamp(double x) {
-		if (x<0.0) return 0.0;
-		if (x>1.0) return 1.0;
-		return x;
-	}
-	static double GammaRev(double x) {
-		return pow(Clamp(x), 1.0/2.2);
-	}
-	static int ToRgb(double v_0_1) {
-		return static_cast<int>(v_0_1 * 255 + 0.5);
-	}
+	
+	
 public:
 	static void Save(const std::string &filename, const Color *image, const int width, const int height) {
 		std::ofstream ofs(filename.c_str());
@@ -38,7 +29,9 @@ public:
         std::stringstream ss;
         for (int x = 0; x < width; x++) {
           int index = x + y*width;
-          ss << ToRgb(GammaRev(image[index].x)) << " " << ToRgb(GammaRev(image[index].y)) << " " << ToRgb(GammaRev(image[index].z)) << std::endl;
+          ss << Utils::ToRgb(Utils::GammaRev(image[index].x)) << " " <<
+            Utils::ToRgb(Utils::GammaRev(image[index].y)) << " " <<
+            Utils::ToRgb(Utils::GammaRev(image[index].z)) << std::endl;
         }
         lines[y] = ss.str();
       }

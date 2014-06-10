@@ -33,9 +33,9 @@ namespace OmochiRenderer
 
       if (doReverseGamma)
       {
-        image->m_image[i].x = pow(image->m_image[i].x, 2.2);
-        image->m_image[i].y = pow(image->m_image[i].y, 2.2);
-        image->m_image[i].z = pow(image->m_image[i].z, 2.2);
+        image->m_image[i].x = Utils::InvGammaRev(image->m_image[i].x);
+        image->m_image[i].y = Utils::InvGammaRev(image->m_image[i].y);
+        image->m_image[i].z = Utils::InvGammaRev(image->m_image[i].z);
       }
     }
 
