@@ -14,3 +14,4 @@ Release/
 /bun_zipper.obj
 /bun_zipper.mtl
 *.hdr
+results_*/
