@@ -1,9 +1,5 @@
 #pragma once
 
-#include "Color.h"
-#include <vector>
-#include <algorithm>
-
 #include "Image.h"
 
 namespace OmochiRenderer {

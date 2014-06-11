@@ -4,7 +4,7 @@
 #include "renderer/AxisAlignedPlane.h"
 #include "renderer/Model.h"
 #include "renderer/Sphere.h"
-#include "renderer/HDRImage.h"
+#include "tools//HDRImage.h"
 #include "renderer/IBL.h"
 
 #include <iostream>

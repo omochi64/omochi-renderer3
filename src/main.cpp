@@ -9,10 +9,10 @@
 #include "scenes/SceneFromExternalFile.h"
 #include "scenes/SceneFromExternalFileFactory.h"
 #include "tools/Vector.h"
-#include "tools/PPM.h"
 #include "viewer/WindowViewer.h"
 #include "renderer/Settings.h"
 #include "tools/PPMSaver.h"
+#include "tools/PNGSaver.h"
 #include "tools/FileSaverCallerWithTimer.h"
 
 #include <omp.h>
@@ -45,7 +45,8 @@ int main(int argc, char *argv[]) {
   }
 
   // ファイル保存用インスタンス
-  std::shared_ptr<PPMSaver> saver = std::make_shared<PPMSaver>(settings);
+  //std::shared_ptr<PPMSaver> saver = std::make_shared<PPMSaver>(settings);
+  std::shared_ptr<PNGSaver> saver = std::make_shared<PNGSaver>(settings);
 
   PathTracer::RenderingFinishCallbackFunction callback([&saver](int samples, const Color *img, double accumulatedRenderingTime) {
       // レンダリング完了時に呼ばれるコールバックメソッド

@@ -2,7 +2,7 @@
 #include <ctime>
 
 #include "FileSaver.h"
-#include "PPM.h"
+#include "ImageHandler.h"
 
 namespace OmochiRenderer {
   class PPMSaver : public FileSaver {
@@ -11,15 +11,24 @@ namespace OmochiRenderer {
       : FileSaver(settings)
     {
     }
+    virtual ~PPMSaver()
+    {
+    }
 
-    void Save(int samples, const Color *img, double accumulatedPastTime) const {
+    virtual void Save(int samples, const Color *img, double accumulatedPastTime) {
+      if (m_img == nullptr) return;
+
       std::string name(P_CreateFileName(samples, accumulatedPastTime));
       clock_t begin, end;
       begin = clock();
-      PPM::Save(name, img, m_settings->GetWidth(), m_settings->GetHeight());
+
+      CopyColorArrayToImage(img);
+
+      ImageHandler::GetInstance().SaveToPpmFile(name + ".ppm", m_img);
+
       end = clock();
-      cerr << "saving time = " << (double)(end - begin) / CLOCKS_PER_SEC << endl;
-      //cerr << "Total rendering time = " << accumulatedPastTime << " min." << endl;
+
+      std::cerr << "saving time = " << (double)(end - begin) / CLOCKS_PER_SEC << std::endl;
     }
   };
 }

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include "Color.h"
-#include "HDRImage.h"
+#include "tools/HDRImage.h"
 #include "tools/Constant.h"
 
 namespace OmochiRenderer {
