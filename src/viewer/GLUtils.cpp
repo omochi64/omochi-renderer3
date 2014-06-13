@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#ifndef NO_PREVIEW_WINDOW
+
 #include "GLUtils.h"
 
 #include <gl/GL.h>
@@ -134,3 +136,5 @@ namespace OmochiRenderer {
     }
   }
 }
+
+#endif // NO_PREVIEW_WINDOW

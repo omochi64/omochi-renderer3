@@ -4,6 +4,7 @@
 
 namespace OmochiRenderer {
 
+  // reference: http://www.graphics.cornell.edu/online/formats/rgbe/
   class HDRImage : public Image {
   public:
     static void Color2RGBE(unsigned char rgbe[4],
@@ -62,6 +63,9 @@ namespace OmochiRenderer {
     bool ReadHeaderFromRadianceFile(std::ifstream &ifs, RGBE_Header &header_result);
     bool ReadPixelsFromRadianceFile(std::ifstream &ifs, int pixel_count, int startoffset = 0);
     bool ReadRLEPixelsFromRadianceFile(std::ifstream &ifs, int width, int height);
+
+    bool WriteHeaderToRadianceFile(std::ofstream &ifs, const RGBE_Header &header);
+    bool WritePixelsToRadianceFile(std::ofstream &ofs, const Color *data, int numpixels);
 
   private:
     RGBE_Header m_imageInfo;

@@ -10,10 +10,14 @@
 
 using namespace std;
 
+#ifndef NO_PREVIEW_WINDOW
+
 #include "glew.h"
 #include "glext.h"
 #include <gl/GL.h>
 #pragma comment(lib, "opengl32.lib")
+
+#endif // NO_PREVIEW_WINDOW
 
 namespace {
   wstring widen(const std::string &src) {
@@ -28,6 +32,9 @@ namespace {
 
 namespace OmochiRenderer {
   class WindowViewer::WindowImpl {
+
+#ifndef NO_PREVIEW_WINDOW
+
     WindowViewer &viewer;
     static unordered_map<size_t, WindowImpl *> handleToInstance;
 
@@ -410,9 +417,12 @@ namespace OmochiRenderer {
     GLuint offsetbuffer;
     Position *m_position;
 
+#endif // NO_PREVIEW_WINDOW
   };
 
+#ifndef NO_PREVIEW_WINDOW
   unordered_map<size_t, WindowViewer::WindowImpl *> WindowViewer::WindowImpl::handleToInstance;
+#endif
 
   WindowViewer::WindowViewer(
     const std::string &windowTitle,
@@ -434,6 +444,9 @@ namespace OmochiRenderer {
   }
 
   void WindowViewer::StartViewerOnThisThread() {
+
+#ifndef NO_PREVIEW_WINDOW
+
     m_pWindow.reset(new WindowImpl(*this));
     m_pWindow->CreateNewWindow();
 
@@ -442,9 +455,15 @@ namespace OmochiRenderer {
     if (m_callbackWhenClosed) {
       m_callbackWhenClosed();
     }
+
+#endif // NO_PREVIEW_WINDOW
+
   }
 
   void WindowViewer::StartViewerOnNewThread() {
+
+#ifndef NO_PREVIEW_WINDOW
+
     m_windowThread.reset(new std::thread(
       [this]{
         m_pWindow.reset(new WindowImpl(*this));
@@ -455,12 +474,18 @@ namespace OmochiRenderer {
         }
     }
     ));
+#endif // NO_PREVIEW_WINDOW
   }
 
   void WindowViewer::WaitWindowFinish() {
+
+#ifndef NO_PREVIEW_WINDOW
+
     if (m_windowThread) {
       m_windowThread->join();
       m_windowThread.reset();
     }
+
+#endif // NO_PREVIEW_WINDOW
   }
 }

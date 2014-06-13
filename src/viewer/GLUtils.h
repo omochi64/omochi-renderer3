@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef NO_PREVIEW_WINDOW
+
 #include <string>
 #include "glew.h"
 
@@ -36,3 +38,5 @@ namespace OmochiRenderer {
     GLuint m_program;
   };
 }
+
+#endif // NO_PREVIEW_WINDOW
