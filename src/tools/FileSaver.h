@@ -55,9 +55,9 @@ namespace OmochiRenderer {
           for (size_t x = 0; x < width; x++)
           {
             size_t index = x + y*width;
-            copyTo[index].x = img[index].x;
-            copyTo[index].y = img[index].y;
-            copyTo[index].z = img[index].z;
+            copyTo[index].x = Utils::Clamp(img[index].x);
+            copyTo[index].y = Utils::Clamp(img[index].y);
+            copyTo[index].z = Utils::Clamp(img[index].z);
           }
         }
 
