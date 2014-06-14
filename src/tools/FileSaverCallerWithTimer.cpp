@@ -13,12 +13,13 @@ namespace OmochiRenderer {
 
   FileSaverCallerWithTimer::FileSaverCallerWithTimer(std::weak_ptr<Renderer> renderer, std::shared_ptr<FileSaver> saver)
     : m_renderer(renderer)
-    , m_saver(saver)
+    , m_savers()
     , m_thread()
     , m_stopSignal(false)
     , m_saveSpan(0)
     , m_lastSaveTime(0)
   {
+    m_savers.push_back(saver);
   }
 
   bool FileSaverCallerWithTimer::StartTimer()
@@ -26,7 +27,7 @@ namespace OmochiRenderer {
     // タイマーを始められる条件をチェック
     if (m_saveSpan == 0) return false;
     if (m_renderer.expired()) return false;
-    if (m_saver == nullptr) return false;
+    if (m_savers.size() == 0) return false;
 
     // 2つ以上走らせない
     if (m_thread != nullptr) {
@@ -53,7 +54,10 @@ namespace OmochiRenderer {
           double tmpAccTime = accTime + 1000.0*(clock() - start) / CLOCKS_PER_SEC;
           if (std::shared_ptr<Renderer> render = m_renderer.lock())
           {
-            m_saver->Save(render->GetCurrentSampleCount(), render->GetResult(), tmpAccTime / 1000.0 / 60);
+            for (auto it = m_savers.begin(); it != m_savers.end(); it++)
+            {
+              (*it)->Save(render->GetCurrentSampleCount(), render->GetResult(), tmpAccTime / 1000.0 / 60);
+            }
           }
           else
           {

@@ -30,15 +30,37 @@ namespace OmochiRenderer {
 
     void CopyColorArrayToImage(const Color *img)
     {
-      for (size_t y = 0; y < m_img->m_height; y++)
+      CopyColorArrayToImage(img, m_img->m_image, m_img->GetWidth(), m_img->GetHeight());
+    }
+    static void CopyColorArrayToImage(const Color *img, std::vector<Color> &copyTo, int width, int height, bool gamma = true)
+    {
+      copyTo.resize(width*height);
+      if (gamma)
       {
-        for (size_t x = 0; x < m_img->m_width; x++)
+        for (size_t y = 0; y < height; y++)
         {
-          size_t index = x + y*m_img->m_width;
-          m_img->m_image[index].x = Utils::GammaRev(Utils::Clamp(img[index].x));
-          m_img->m_image[index].y = Utils::GammaRev(Utils::Clamp(img[index].y));
-          m_img->m_image[index].z = Utils::GammaRev(Utils::Clamp(img[index].z));
+          for (size_t x = 0; x < width; x++)
+          {
+            size_t index = x + y*width;
+            copyTo[index].x = Utils::GammaRev(Utils::Clamp(img[index].x));
+            copyTo[index].y = Utils::GammaRev(Utils::Clamp(img[index].y));
+            copyTo[index].z = Utils::GammaRev(Utils::Clamp(img[index].z));
+          }
         }
+      }
+      else
+      {
+        for (size_t y = 0; y < height; y++)
+        {
+          for (size_t x = 0; x < width; x++)
+          {
+            size_t index = x + y*width;
+            copyTo[index].x = img[index].x;
+            copyTo[index].y = img[index].y;
+            copyTo[index].z = img[index].z;
+          }
+        }
+
       }
     }
 

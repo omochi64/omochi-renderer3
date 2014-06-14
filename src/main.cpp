@@ -13,6 +13,7 @@
 #include "renderer/Settings.h"
 #include "tools/PPMSaver.h"
 #include "tools/PNGSaver.h"
+#include "tools/RadianceSaver.h"
 #include "tools/FileSaverCallerWithTimer.h"
 
 #include <omp.h>
@@ -45,13 +46,14 @@ int main(int argc, char *argv[]) {
   }
 
   // ファイル保存用インスタンス
-  //std::shared_ptr<PPMSaver> saver = std::make_shared<PPMSaver>(settings);
-  std::shared_ptr<PNGSaver> saver = std::make_shared<PNGSaver>(settings);
+  auto saver = std::make_shared<RadianceSaver>(settings);
+  auto saver2 = std::make_shared<PNGSaver>(settings);
 
-  PathTracer::RenderingFinishCallbackFunction callback([&saver](int samples, const Color *img, double accumulatedRenderingTime) {
+  PathTracer::RenderingFinishCallbackFunction callback([&saver, &saver2](int samples, const Color *img, double accumulatedRenderingTime) {
       // レンダリング完了時に呼ばれるコールバックメソッド
       cerr << "save ppm file for sample " << samples << " ..." << endl;
       saver->Save(samples, img, accumulatedRenderingTime);
+      saver2->Save(samples, img, accumulatedRenderingTime);
       cerr << "Total rendering time = " << accumulatedRenderingTime << " min." << endl;
   });
 
@@ -67,6 +69,7 @@ int main(int argc, char *argv[]) {
   renderer->EnableNextEventEstimation(Utils::parseBoolean(settings->GetRawSetting("next event estimation")));
 
   FileSaverCallerWithTimer timeSaver(renderer, saver);
+  timeSaver.AddSaver(saver2);
   timeSaver.SetSaveTimerInformation(settings->GetSaveSpan());
   timeSaver.StartTimer();
 

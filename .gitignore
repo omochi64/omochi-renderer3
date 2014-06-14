@@ -15,3 +15,8 @@ Release/
 /bun_zipper.mtl
 *.hdr
 results_*/
+x64/
+*.psess
+*.vspx
+results/
+*.vsp

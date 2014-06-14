@@ -37,6 +37,7 @@ namespace OmochiRenderer {
     }
 
     bool ReadFromRadianceFile(const std::string &file);
+    bool WriteToRadianceFile(const std::string &file);
 
    
   private:
@@ -66,6 +67,8 @@ namespace OmochiRenderer {
 
     bool WriteHeaderToRadianceFile(std::ofstream &ifs, const RGBE_Header &header);
     bool WritePixelsToRadianceFile(std::ofstream &ofs, const Color *data, int numpixels);
+    bool WriteBytes_RLE(std::ofstream &ofs, unsigned char *data, int numbytes);
+    bool WritePixels_RLE(std::ofstream &ofs, const Color *data, int scanline_width, int num_scanlines);
 
   private:
     RGBE_Header m_imageInfo;
