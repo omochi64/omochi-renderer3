@@ -30,13 +30,13 @@ namespace OmochiRenderer {
     }
 
     ifs.seekg(0, fstream::end);
-    size_t eofPos = ifs.tellg();
+    auto eofPos = ifs.tellg();
 
     ifs.clear();
     ifs.seekg(0, fstream::beg);
-    size_t begPos = ifs.tellg();
+    auto begPos = ifs.tellg();
 
-    GLint size = eofPos - begPos;
+    GLint size = static_cast<GLint>(eofPos) - static_cast<GLint>(begPos);
 
     shared_ptr<GLchar> source(new GLchar[size+1], std::default_delete<GLchar[]>());
     //GLchar *source = new GLchar[size+1];

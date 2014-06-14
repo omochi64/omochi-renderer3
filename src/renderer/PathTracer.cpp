@@ -81,9 +81,9 @@ void PathTracer::ScanPixelsAndCastRays(const Scene &scene, int previous_samples,
   // trace all pixels
   const double averaging_factor = next_samples * m_supersamples * m_supersamples;
 #pragma omp parallel for schedule(dynamic, 1)
-  for (int y=0; y<height; y++) {
+  for (int y=0; y<(signed)height; y++) {
     Random rnd(y+1+previous_samples*height);
-    for (int x=0; x<width; x++) {
+    for (int x = 0; x<(signed)width; x++) {
       const int index = x + (height - y - 1)*width;
 
       Color accumulated_radiance;
@@ -254,7 +254,7 @@ namespace {
       {
         double u = uv.x;
         double v = uv.y;
-        auto &pixel = img->GetPixel((img->GetWidth() - 1) * u, (img->GetHeight() - 1) * v);
+        auto &pixel = img->GetPixelByUV(u, v);
 
         c.x *= pixel.x;
         c.y *= pixel.y;

@@ -44,11 +44,11 @@ namespace OmochiRenderer {
       copyTo.resize(width*height);
       if (gamma)
       {
-        for (size_t y = 0; y < height; y++)
+        for (int y = 0; y < height; y++)
         {
-          for (size_t x = 0; x < width; x++)
+          for (int x = 0; x < width; x++)
           {
-            size_t index = x + y*width;
+            int index = x + y*width;
             copyTo[index].x = Utils::GammaRev(Utils::Clamp(img[index].x));
             copyTo[index].y = Utils::GammaRev(Utils::Clamp(img[index].y));
             copyTo[index].z = Utils::GammaRev(Utils::Clamp(img[index].z));
@@ -57,11 +57,11 @@ namespace OmochiRenderer {
       }
       else
       {
-        for (size_t y = 0; y < height; y++)
+        for (int y = 0; y < height; y++)
         {
-          for (size_t x = 0; x < width; x++)
+          for (int x = 0; x < width; x++)
           {
-            size_t index = x + y*width;
+            int index = x + y*width;
             copyTo[index].x = Utils::Clamp(img[index].x);
             copyTo[index].y = Utils::Clamp(img[index].y);
             copyTo[index].z = Utils::Clamp(img[index].z);

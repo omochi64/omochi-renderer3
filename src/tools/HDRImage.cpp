@@ -273,7 +273,7 @@ namespace OmochiRenderer {
   {
     unsigned char rgbe[4];
     unsigned char *buffer;
-    int i, err;
+    int i;
 
     if ((scanline_width < 8) || (scanline_width > 0x7fff))
       /* run length encoding is not allowed so write flat*/

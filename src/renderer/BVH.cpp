@@ -23,7 +23,7 @@ bool BVH::CheckIntersection(const Ray &ray, Scene::IntersectionInformation &info
   struct CheckData {
     size_t index;
     double nextCheckBoundingBoxDist;
-    CheckData(size_t index_, float bbdist)
+    CheckData(size_t index_, double bbdist)
       : index(index_), nextCheckBoundingBoxDist(bbdist)
     {
     }

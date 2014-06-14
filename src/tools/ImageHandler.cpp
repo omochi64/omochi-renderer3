@@ -74,7 +74,7 @@ namespace OmochiRenderer
   // ‰ð•ú
   void ImageHandler::ReleaseImage(IMAGE_ID id)
   {
-    if (id < 0 || id >= m_images.size()) {
+    if (id < 0 || id >= (signed)m_images.size()) {
       return;
     }
 
@@ -98,7 +98,7 @@ namespace OmochiRenderer
 
   Image * ImageHandler::GetImage(IMAGE_ID id)
   {
-    if (id < 0 || id >= m_images.size())
+    if (id < 0 || id >= (signed)m_images.size())
       return nullptr;
 
     return m_images[id];
@@ -106,7 +106,7 @@ namespace OmochiRenderer
 
   const Image * ImageHandler::GetImage(IMAGE_ID id) const
   {
-    if (id < 0 || id >= m_images.size())
+    if (id < 0 || id >= (signed)m_images.size())
       return nullptr;
 
     return m_images[id];
