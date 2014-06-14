@@ -13,14 +13,14 @@ namespace OmochiRenderer {
   public:
     explicit FileSaver(std::shared_ptr<Settings> settings)
       : m_settings(settings)
-      , m_img(nullptr)
+      , m_img(ImageHandler::INVALID_IMAGE_ID)
     {
       m_img = ImageHandler::GetInstance().CreateImage(settings->GetWidth(), settings->GetHeight());
     }
     virtual ~FileSaver()
     {
       ImageHandler::GetInstance().ReleaseImage(m_img);
-      m_img = nullptr;
+      m_img = ImageHandler::INVALID_IMAGE_ID;
     }
 
     // 保存時に呼ばれる関数
@@ -28,10 +28,17 @@ namespace OmochiRenderer {
 
   protected:
 
+    // 内部用。引数のデータをこのインスタンスのデータにコピー
     void CopyColorArrayToImage(const Color *img)
     {
-      CopyColorArrayToImage(img, m_img->m_image, m_img->GetWidth(), m_img->GetHeight());
+      auto myImg = ImageHandler::GetInstance().GetImage(m_img);
+      if (myImg)
+      {
+        CopyColorArrayToImage(img, myImg->m_image, myImg->GetWidth(), myImg->GetHeight());
+      }
     }
+
+    // 引数に与えた変数間でColorデータコピー
     static void CopyColorArrayToImage(const Color *img, std::vector<Color> &copyTo, int width, int height, bool gamma = true)
     {
       copyTo.resize(width*height);
@@ -80,7 +87,7 @@ namespace OmochiRenderer {
     }
 
     std::shared_ptr<Settings> m_settings;
-    Image * m_img;
+    ImageHandler::IMAGE_ID m_img;
   };
 
 }

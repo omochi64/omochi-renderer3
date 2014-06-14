@@ -36,7 +36,9 @@ namespace OmochiRenderer {
       }
     }
 
+    // HDR ‰æ‘œ‚Ì“Ç‚İ‚İ
     bool ReadFromRadianceFile(const std::string &file);
+    // HDR ‰æ‘œ‚Ì‘‚«‚İ
     bool WriteToRadianceFile(const std::string &file);
 
    
@@ -61,10 +63,12 @@ namespace OmochiRenderer {
       const static int RGBE_VALID_EXPOSURE = 0x04;
     };
 
+    // “Ç‚İ‚İ‚Ì‚½‚ß‚Ì“à•”ŠÖ”
     bool ReadHeaderFromRadianceFile(std::ifstream &ifs, RGBE_Header &header_result);
     bool ReadPixelsFromRadianceFile(std::ifstream &ifs, int pixel_count, int startoffset = 0);
     bool ReadRLEPixelsFromRadianceFile(std::ifstream &ifs, int width, int height);
 
+    // ‘‚«‚İ‚Ì‚½‚ß‚Ì“à•”ŠÖ”
     bool WriteHeaderToRadianceFile(std::ofstream &ifs, const RGBE_Header &header);
     bool WritePixelsToRadianceFile(std::ofstream &ofs, const Color *data, int numpixels);
     bool WriteBytes_RLE(std::ofstream &ofs, unsigned char *data, int numbytes);

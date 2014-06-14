@@ -32,7 +32,7 @@ namespace OmochiRenderer {
     AddObject(new Sphere(16.5, Vector3(77, 16.5, 28), Material(Material::REFLECTION_TYPE_REFRACTION, Color(), Color(0.99, 0.99, 0.99), REFRACTIVE_INDEX_OBJECT))); // ƒKƒ‰ƒX
 
     // floor
-    AddFloor(100.0, 100.0, objectsCenter,
+    AddFloorXZ_yUp(100.0, 100.0, objectsCenter,
       Material(Material::REFLECTION_TYPE_LAMBERT, Vector3::Zero(), Vector3(0.7, 0.7, 0.7)));
 
     //AddObject(new AxisAlignedPlane(Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.7, 0.7, 0.7)), AxisAlignedPlane::PLANE_XZ), true, false);

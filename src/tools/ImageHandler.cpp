@@ -10,12 +10,33 @@
 
 namespace OmochiRenderer
 {
-  Image * ImageHandler::LoadFromFile(const std::string &fname, bool doReverseGamma) const
+  ImageHandler::~ImageHandler()
+  {
+  }
+
+  // 色々読み込み。stb が対応しているものなら何でも読み込み可能
+  ImageHandler::IMAGE_ID ImageHandler::LoadFromFile(const std::string &fname, bool doReverseGamma)
   {
     int bpp;
     int width, height;
+
+    // 既に読み込んでないか確認
+    auto findIt = m_filenameToImageIndex.find(fname);
+    if (findIt != m_filenameToImageIndex.end())
+    {
+      auto p = m_images[findIt->second];
+      if (p != nullptr)
+      {
+        return findIt->second;
+      }
+    }
+
+    // 読み込み実体
     
     auto pixels = stbi_load(fname.c_str(), &width, &height, &bpp, 0);
+    if (pixels == nullptr) {
+      return INVALID_IMAGE_ID;
+    }
 
     int bytePerPixel = bpp;
 
@@ -43,15 +64,26 @@ namespace OmochiRenderer
 
     stbi_image_free(pixels);
 
-    return image;
+    m_images.push_back(image);
+    auto id = m_images.size() - 1;
+    m_filenameToImageIndex[fname] = id;
+
+    return id;
   }
 
-  void ImageHandler::ReleaseImage(Image *p) const
+  // 解放
+  void ImageHandler::ReleaseImage(IMAGE_ID id)
   {
-    delete p;
+    if (id < 0 || id >= m_images.size()) {
+      return;
+    }
+
+    delete m_images[id];
+    m_images[id] = nullptr;
   }
 
-  Image * ImageHandler::CreateImage(size_t width, size_t height) const
+  // 空の画像作成
+  ImageHandler::IMAGE_ID ImageHandler::CreateImage(size_t width, size_t height)
   {
     Image *img = new Image;
     img->m_width = width;
@@ -59,7 +91,25 @@ namespace OmochiRenderer
 
     img->m_image.resize(width * height);
 
-    return img;
+    m_images.push_back(img);
+
+    return m_images.size()-1;
+  }
+
+  Image * ImageHandler::GetImage(IMAGE_ID id)
+  {
+    if (id < 0 || id >= m_images.size())
+      return nullptr;
+
+    return m_images[id];
+  }
+
+  const Image * ImageHandler::GetImage(IMAGE_ID id) const
+  {
+    if (id < 0 || id >= m_images.size())
+      return nullptr;
+
+    return m_images[id];
   }
 
   bool ImageHandler::SaveToPngFile(const std::string &fname, const Image *image) const

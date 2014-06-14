@@ -299,7 +299,7 @@ namespace OmochiRenderer {
 
     if (!valid) return false;
 
-    AddFloor(size_x, size_z, position, newMat);
+    AddFloorXZ_yUp(size_x, size_z, position, newMat);
 
     return true;
   }

@@ -16,7 +16,7 @@ namespace OmochiRenderer {
     }
 
     virtual void Save(int samples, const Color *img, double accumulatedPastTime) {
-      if (m_img == nullptr) return;
+      if (m_img == ImageHandler::INVALID_IMAGE_ID) return;
 
       std::string name(P_CreateFileName(samples, accumulatedPastTime));
       clock_t begin, end;
@@ -24,7 +24,10 @@ namespace OmochiRenderer {
 
       CopyColorArrayToImage(img);
 
-      ImageHandler::GetInstance().SaveToPpmFile(name + ".ppm", m_img);
+      if (auto myImg = ImageHandler::GetInstance().GetImage(m_img))
+      {
+        ImageHandler::GetInstance().SaveToPpmFile(name + ".ppm", myImg);
+      }
 
       end = clock();
 

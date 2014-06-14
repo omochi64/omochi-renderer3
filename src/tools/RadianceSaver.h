@@ -17,8 +17,6 @@ namespace OmochiRenderer {
     }
 
     virtual void Save(int samples, const Color *img, double accumulatedPastTime) {
-      if (m_img == nullptr) return;
-
       HDRImage hdrImage;
       hdrImage.m_width = m_settings->GetWidth();
       hdrImage.m_height = m_settings->GetHeight();

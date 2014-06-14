@@ -5,7 +5,7 @@
 #include "Polygon.h"
 #include "tools/Utils.h"
 #include "tools/Matrix.h"
-
+#include "tools/ImageHandler.h"
 
 using namespace std;
 
@@ -171,12 +171,30 @@ bool Model::ReadFromObj(const std::string &filename) {
 bool Model::LoadMaterialFile(const std::string &filename, std::unordered_map<string, Material> &materials) {
   ifstream ifs(filename.c_str());
 
+  // get the basedir
+  std::string fname(filename);
+  {
+    std::string::size_type pos = 0;
+    while (pos = fname.find("\\", pos), pos != std::string::npos) {
+      fname.replace(pos, 1, "/");
+      pos++;
+    }
+  }
+
+  std::string basedir;
+  std::string::size_type pos = fname.find_last_of('/');
+  if (pos != std::string::npos && pos > 0)
+  {
+    basedir = fname.substr(0, pos);
+  }
+
   if (!ifs) return false;
 
   string currentMaterialName = "";
   Material currentMaterial;
 
   Color ambient, diffuse, specular;
+  ImageHandler::IMAGE_ID texture_id = ImageHandler::INVALID_IMAGE_ID;
 
   while (!ifs.eof()) {
     string line;
@@ -249,6 +267,11 @@ bool Model::LoadMaterialFile(const std::string &filename, std::unordered_map<str
       specular.z = atof(values[2].c_str());
     } else if (line.find("map_Kd ") == 0) {
       // texture name
+      string file = line.substr(string("map_Kd ").length());
+      string fullpath = file;
+      if (!basedir.empty()) fullpath = basedir + "/" + fullpath;
+
+      texture_id = ImageHandler::GetInstance().LoadFromFile(fullpath);
     }
   }
 
@@ -261,6 +284,7 @@ bool Model::LoadMaterialFile(const std::string &filename, std::unordered_map<str
     currentMaterial.color = specular;
     break;
   }
+  currentMaterial.texture_id = texture_id;
   materials[currentMaterialName] = currentMaterial;
 
   return true;
@@ -284,7 +308,7 @@ std::vector<Model::PolygonPtr> Model::load4verticesFace(const vector<string> &fa
 Model::PolygonPtr Model::Load3verticesFace(const vector<string> &face, const vector<Vector3> &verticesInGroup, 
   const vector<Vector3> &normalsInGroup, 
   const vector<Vector3> &uvCoordinatesInGroup, const Material &mat) {
-  Vector3 vec[3], normals[3];
+  Vector3 vec[3], normals[3], uvs[3];
 
   for (size_t i=0; i<face.size(); i++) {
     vector<string> data(Utils::split(face[i], '/'));
@@ -310,6 +334,9 @@ Model::PolygonPtr Model::Load3verticesFace(const vector<string> &face, const vec
       normals[index] = normalsInGroup[normal_number];
       //normals[index].z *= -1;
     }
+    if (uv_numver != -1) {
+      uvs[index] = uvCoordinatesInGroup[uv_numver];
+    }
   }
 
   Vector3 averaged_normal;
@@ -320,10 +347,10 @@ Model::PolygonPtr Model::Load3verticesFace(const vector<string> &face, const vec
   PolygonPtr ret_p;
   if (averaged_normal.x == 0 && averaged_normal.y == 0 && averaged_normal.z == 0) {
     // normal ‚ÌŽw’è‚È‚©‚Á‚½
-    ret_p = ( new Polygon(vec[0], vec[1], vec[2], Polygon::CalculateNormal(vec[0], vec[1], vec[2]), mat, Vector3(0,0,0)) );
+    ret_p = (new Polygon(vec[0], vec[1], vec[2], uvs[0], uvs[1], uvs[2], Polygon::CalculateNormal(vec[0], vec[1], vec[2]), mat, Vector3(0, 0, 0)));
   } else {
     averaged_normal /= 3.0;
-    ret_p = ( new Polygon(vec[0], vec[1], vec[2], averaged_normal*-1, mat, Vector3(0,0,0)) );
+    ret_p = (new Polygon(vec[0], vec[1], vec[2], uvs[0], uvs[1], uvs[2], averaged_normal*-1, mat, Vector3(0, 0, 0)));
   }
 
   return ret_p;

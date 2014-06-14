@@ -10,13 +10,18 @@ namespace OmochiRenderer {
 
 class Polygon : public SceneObject {
 public:
-  Polygon(const Vector3 &pos1, const Vector3 &pos2, const Vector3 &pos3, const Vector3 &normal, const Material &mat, const Vector3 &pos)
+  Polygon(const Vector3 &pos1, const Vector3 &pos2, const Vector3 &pos3,
+    const Vector3 &uv1, const Vector3 &uv2, const Vector3 &uv3,
+    const Vector3 &normal, const Material &mat, const Vector3 &pos)
     : SceneObject(mat)
     , m_normal(normal)
   {
     m_pos[0] = m_rotatedPos[0] = pos1;
     m_pos[1] = m_rotatedPos[1] = pos2;
     m_pos[2] = m_rotatedPos[2] = pos3;
+    m_uvs[0] = uv1;
+    m_uvs[1] = uv2;
+    m_uvs[2] = uv3;
     position = pos;
     reconstruct_boundingbox();
   }
@@ -26,6 +31,7 @@ public:
     for (int i=0; i<3; i++) {
       m_pos[i] = polygon.m_pos[i];
       m_rotatedPos[i] = polygon.m_rotatedPos[i];
+      m_uvs[i] = polygon.m_uvs[i];
     }
     m_normal = polygon.m_normal;
     reconstruct_boundingbox();
@@ -72,9 +78,13 @@ public:
           double t = Q.dot(edge2) / det;
 
           if (t>=EPS) {
+            Vector3 uvEdge1(m_uvs[1] - m_uvs[0]);
+            Vector3 uvEdge2(m_uvs[2] - m_uvs[0]);
+
             hit.distance = t;
             hit.position = ray.orig + ray.dir*t;
             hit.normal = m_normal;
+            hit.uv = uvEdge1 * (u/det) + uvEdge2 * (v/det) + m_uvs[0];
 
             return true;
           }
@@ -87,6 +97,7 @@ public:
   }
 
   Vector3 m_pos[3];
+  Vector3 m_uvs[3];
   Vector3 m_normal;
 
 private:

@@ -20,6 +20,7 @@ public:
   struct IntersectionInformation {
     HitInformation hit;
     SceneObject *object;
+    Color texturedHitpointColor;
   };
 
 public:
@@ -28,17 +29,22 @@ public:
   void ConstructBVH();
   void ConstructQBVH();
 
+  // シーン中のオブジェクトに対して交差判定を行う
   bool CheckIntersection(const Ray &ray, IntersectionInformation &info) const;
 
+  // ライトリスト取得
   const std::vector<LightBase *> GetLights() const { return m_lights; }
-  const IBL *GetIBL() const { return m_ibl.get(); }
 
+  // 背景取得
+  const IBL *GetIBL() const { return m_ibl.get(); }
   virtual Color Background() const { return Color(0,0,0);  }
+
   virtual bool IsValid() const { return true; }
 
 protected:
   Scene() : m_objects(), m_models(), m_inBVHObjects(), m_notInBVHObjects(), m_lights(), m_bvh(NULL), m_qbvh(NULL), m_ibl(NULL) {}
 
+  // シーンへオブジェクト追加
   void AddObject(SceneObject *obj, bool doDelete = true, bool containedInBVH = true) {
     m_objects.push_back(SceneObjectInfo(obj, doDelete, containedInBVH));
     if (containedInBVH) {
@@ -52,8 +58,21 @@ protected:
     }
   }
 
-  void AddFloor(const double size_x, const double size_z, const Vector3 &position, const Material &material);
+  // ヘルパー
+  // XZ平面上に、yUPで床を追加
+  void AddFloorXZ_yUp(const double size_x, const double size_z, const Vector3 &position, const Material &material);
+  // XY平面上に、zUPで床を追加
+  void AddFloorXY_zUp(const double size_x, const double size_y, const Vector3 &position, const Material &material);
+  // YZ平面上に、xUPで床を追加
+  void AddFloorYZ_xUp(const double size_y, const double size_z, const Vector3 &position, const Material &material);
+  // XZ平面上に、yDownで床を追加
+  void AddFloorXZ_yDown(const double size_x, const double size_z, const Vector3 &position, const Material &material);
+  // XY平面上に、zDownで床を追加
+  void AddFloorXY_zDown(const double size_x, const double size_y, const Vector3 &position, const Material &material);
+  // YZ平面上に、xDownで床を追加
+  void AddFloorYZ_xDown(const double size_y, const double size_z, const Vector3 &position, const Material &material);
 
+  // 読み込んだモデルを追加
   void AddModel(Model *obj, bool doDelete = true, bool containedInBVH = true) {
     m_models.push_back(ModelObjectInfo(obj, doDelete));
 
