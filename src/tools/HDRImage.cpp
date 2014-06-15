@@ -235,17 +235,18 @@ namespace OmochiRenderer {
         beg_run += run_count;
         old_run_count = run_count;
         run_count = 1;
-        while ((data[beg_run] == data[beg_run + run_count])
-          && (beg_run + run_count < numbytes) && (run_count < 127))
+        while ((beg_run + run_count < numbytes) && 
+          (data[beg_run] == data[beg_run + run_count]) &&
+          (run_count < 127))
           run_count++;
       }
       /* if data before next big run is a short run then write it as such */
-      if ((old_run_count > 1) && (old_run_count == beg_run - cur) && cur < numbytes) {
-        buf[0] = 128 + old_run_count;   /*write short run*/
-        buf[1] = data[cur];
-        ofs.write(reinterpret_cast<const char *>(buf), sizeof(buf[0]));
-        cur = beg_run;
-      }
+      //if ((old_run_count > 1) && (old_run_count == beg_run - cur) && cur < numbytes) {
+      //  buf[0] = 128 + old_run_count;   /*write short run*/
+      //  buf[1] = data[cur];
+      //  ofs.write(reinterpret_cast<const char *>(buf), sizeof(buf[0]));
+      //  cur = beg_run;
+      //}
       /* write out bytes until we reach the start of the next run */
       while (cur < beg_run && cur < numbytes) {
         nonrun_count = beg_run - cur;
