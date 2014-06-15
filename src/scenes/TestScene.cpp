@@ -27,25 +27,21 @@ TestScene::TestScene()
   //AddObject(new Sphere(1e5, Vector3(50, -1e5 + 81.6, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75))), true, false);  // ã
   AddFloorXZ_yDown(200, 200, Vector3(50, 81.6, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75)));
 
-  auto mat = Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(1, 1, 1));
-  mat.texture_id = tex;
-  //AddFloorXZ_yUp(107, 60, Vector3(50, 15, 71), mat);
-  //AddFloorXZ_yDown(107, 60, Vector3(50, 75, 71), mat);
-
-  //Model *cube = new Model;
-  //if (!cube->ReadFromObj("input_data/shrine.obj")) {
-  //  std::cerr << "failed to load cube.obj!!!" << std::endl;
-  //  getchar();
-  //  exit(-1);
-  //}
-  ////cube->SetTransform(Vector3(50, 10, 50), Vector3(0.08, 0.08, 0.08), Matrix::RotateAroundVector(Vector3(0, 1, 0), 180.0 / 180 * PI));
-  //cube->SetTransform(Vector3(50, 10, 50), Vector3(0.05, 0.05, 0.05), Matrix::RotateAroundVector(Vector3(0, 1, 0), 30.0 / 180 * PI));
-  ////cube->SetTransform(Vector3(0, 0, -30), Vector3(5, 5, 5), Matrix::RotateAroundVector(Vector3(0, 1, 0), 90.0 / 180 * PI));
-  //AddModel(cube);
+ 
+  Model *cube = new Model;
+  if (!cube->ReadFromObj("input_data/shrine.obj", true)) {
+    std::cerr << "failed to load cube.obj!!!" << std::endl;
+    getchar();
+    exit(-1);
+  }
+  //cube->SetTransform(Vector3(50, 10, 50), Vector3(0.08, 0.08, 0.08), Matrix::RotateAroundVector(Vector3(0, 1, 0), 180.0 / 180 * PI));
+  cube->SetTransform(Vector3(50, 10, 50), Vector3(0.05, 0.05, 0.05), Matrix::RotateAroundVector(Vector3(0, 1, 0), 30.0 / 180 * PI));
+  //cube->SetTransform(Vector3(0, 0, -30), Vector3(5, 5, 5), Matrix::RotateAroundVector(Vector3(0, 1, 0), 90.0 / 180 * PI));
+  AddModel(cube);
   
-  //addObject(new Sphere(10,Vector3(),           Material(Material::REFLECTION_TYPE_LAMBERT,    Color(), Color(0.25, 0.75, 0.25))));    // —Î‹…
-  AddObject(new Sphere(16.5,Vector3(27, 16.5, 47),       Material(Material::REFLECTION_TYPE_SPECULAR,   Color(), Color(0.99, 0.99, 0.99))));   // ‹¾
-  AddObject(new Sphere(16.5,Vector3(77, 16.5, 78),       Material(Material::REFLECTION_TYPE_REFRACTION, Color(), Color(0.99, 0.99, 0.99), REFRACTIVE_INDEX_OBJECT))); // ƒKƒ‰ƒX
+  //AddObject(new Sphere(10,Vector3(),           Material(Material::REFLECTION_TYPE_LAMBERT,    Color(), Color(0.25, 0.75, 0.25))));    // —Î‹…
+  //AddObject(new Sphere(16.5,Vector3(27, 16.5, 47),       Material(Material::REFLECTION_TYPE_SPECULAR,   Color(), Color(0.99, 0.99, 0.99))));   // ‹¾
+  //AddObject(new Sphere(16.5,Vector3(77, 16.5, 78),       Material(Material::REFLECTION_TYPE_REFRACTION, Color(), Color(0.99, 0.99, 0.99), REFRACTIVE_INDEX_OBJECT))); // ƒKƒ‰ƒX
 
 
   SphereLight *sphereLight = new SphereLight(7.5, Vector3(50.0, 72.5, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(26, 26, 26), Color()));

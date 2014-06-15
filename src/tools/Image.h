@@ -20,7 +20,8 @@ namespace OmochiRenderer {
     }
     const Color &GetPixelByUV(double u, double v) const {
       u = Utils::Clamp(u) * 0.99999;  // [0, 1) ‚Ö—}‚¦‚é
-      v = Utils::Clamp(v) * 0.99999;  // [0, 1) ‚Ö—}‚¦‚é
+      // [0, 1) ‚Ö—}‚¦‚é
+      v = Utils::Clamp(v) * 0.99999;
 
       int x = static_cast<int>(u * m_width);
       int y = static_cast<int>(v * m_height);

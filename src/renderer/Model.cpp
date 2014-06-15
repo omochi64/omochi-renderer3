@@ -47,7 +47,7 @@ void Model::SetTransform(const Vector3 &pos, const Vector3 &scale, const Matrix 
   }
 }
 
-bool Model::ReadFromObj(const std::string &filename) {
+bool Model::ReadFromObj(const std::string &filename, bool flipV_of_UV) {
   ifstream ifs(filename.c_str());
 
   string baseDir;
@@ -131,7 +131,9 @@ bool Model::ReadFromObj(const std::string &filename) {
         cerr << "not correct .obj file!!: " << line << endl;
         return false;
       } else {
-        uvCoordinatesInGroup.push_back(Vector3(atof(vertex[0].c_str()), atof(vertex[1].c_str()), 0.0));
+        auto vt = Vector3(atof(vertex[0].c_str()), atof(vertex[1].c_str()), 0.0);
+        if (flipV_of_UV) vt.y = 1 - vt.y;
+        uvCoordinatesInGroup.push_back(vt);
       }
     } else if (line.find("vn ") == 0) {
       // normal coordinate
@@ -336,6 +338,7 @@ Model::PolygonPtr Model::Load3verticesFace(const vector<string> &face, const vec
     }
     if (uv_numver != -1) {
       uvs[index] = uvCoordinatesInGroup[uv_numver];
+      uvs[index].y = uvs[index].y;
     }
   }
 
@@ -350,6 +353,7 @@ Model::PolygonPtr Model::Load3verticesFace(const vector<string> &face, const vec
     ret_p = (new Polygon(vec[0], vec[1], vec[2], uvs[0], uvs[1], uvs[2], Polygon::CalculateNormal(vec[0], vec[1], vec[2]), mat, Vector3(0, 0, 0)));
   } else {
     averaged_normal /= 3.0;
+    averaged_normal.normalize();
     ret_p = (new Polygon(vec[0], vec[1], vec[2], uvs[0], uvs[1], uvs[2], averaged_normal*-1, mat, Vector3(0, 0, 0)));
   }
 

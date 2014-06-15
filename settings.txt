@@ -11,9 +11,9 @@ Width = 640
 Height = 480
 
 # for pathtracer
-Supersamples = 1
+Supersamples = 2
 Sample Start = 1
-Sample End = 1024
+Sample End = 4096
 Sample Step = 1
 Next Event Estimation = True
 # format: width,height,samples,supersmp,supersmp,time

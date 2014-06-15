@@ -28,7 +28,8 @@ public:
   void SetTransform(const Vector3 &pos, const Vector3 &scale = Vector3::One(), const Matrix &rot = Matrix::Identity());
   //void setRotation(const Matrix &matrix);
 
-  bool ReadFromObj(const std::string &filename);
+  // obj ÉtÉ@ÉCÉãÇ©ÇÁÇÃì«Ç›çûÇ›
+  bool ReadFromObj(const std::string &filename, bool flipV_of_UV = false);
 
   size_t GetMaterialCount() const {
     return m_materials.size();
