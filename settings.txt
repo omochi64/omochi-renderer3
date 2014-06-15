@@ -2,9 +2,11 @@ Scene type = TestScene
 #Scene type = IBLTestScene
 Scene information = input_data/cornell_box.scene
 number of threads = 4
-Show Preview = True
+Show Preview = False
 Save Span = 60
+Max Save Count For periodic save= 30
 Save On Each Sample Ended = false
+Time to stop renderer = 1800
 
 # for camera
 Width = 640

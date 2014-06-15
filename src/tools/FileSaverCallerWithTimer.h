@@ -18,6 +18,10 @@ namespace OmochiRenderer {
       m_savers.push_back(saver);
     }
 
+    void SetMaxSaveCount(int maxCount) {
+      m_maxSaveCount = maxCount;
+    }
+
     // 別スレッドでのタイマー監視を開始する。必要な設定が行われていなかった場合は失敗して false が返ってくる
     bool StartTimer();
 
@@ -33,5 +37,7 @@ namespace OmochiRenderer {
     bool m_stopSignal;
     double m_saveSpan;
     double m_lastSaveTime;
+    int m_saveCount;
+    int m_maxSaveCount;
   };
 }

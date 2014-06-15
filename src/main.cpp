@@ -15,6 +15,7 @@
 #include "tools/PNGSaver.h"
 #include "tools/RadianceSaver.h"
 #include "tools/FileSaverCallerWithTimer.h"
+#include "tools/StopRendererWithTimer.h"
 
 #include <omp.h>
 
@@ -61,17 +62,28 @@ int main(int argc, char *argv[]) {
     callback = nullptr;
   }
 
+  // カメラ設定
   Camera camera(settings->GetWidth(), settings->GetHeight(), settings->GetCameraPosition(), settings->GetCameraDirection(),
     settings->GetCameraUp(), settings->GetScreenHeightInWorldCoordinate(), settings->GetDistanceFromCameraToScreen());
 
+  // レンダラ生成
   std::shared_ptr<PathTracer> renderer = std::make_shared<PathTracer>(
     camera, settings->GetSampleStart(), settings->GetSampleEnd(), settings->GetSampleStep(), settings->GetSuperSamples(), callback);
   renderer->EnableNextEventEstimation(Utils::parseBoolean(settings->GetRawSetting("next event estimation")));
 
+  // 時間監視してファイルを保存するインスタンス
   FileSaverCallerWithTimer timeSaver(renderer, saver);
   timeSaver.AddSaver(saver2);
   timeSaver.SetSaveTimerInformation(settings->GetSaveSpan());
+  timeSaver.SetMaxSaveCount(settings->GetMaxSaveCountForPeriodicSave());
   timeSaver.StartTimer();
+
+  // 時間監視してレンダラをストップするインスタンス
+  StopRendererWithTimer stopTimer(renderer);
+  if (settings->GetTimeToStopRenderer() > 0) {
+    stopTimer.SetTimer(settings->GetTimeToStopRenderer());
+    stopTimer.StartTimer();
+  }
 
   // シーン生成
   auto sceneFactory = SceneFactoryManager::GetInstance().Get(settings->GetSceneType());
@@ -80,13 +92,6 @@ int main(int argc, char *argv[]) {
     return -1;
   }
   std::shared_ptr<Scene> scene = sceneFactory->Create(settings->GetSceneInformation());
-  //IBLTestScene scene;
-  /*SceneFromExternalFile scene(settings->GetSceneFile());
-  if (!scene.IsValid()) {
-    cerr << "faild to load scene: " << settings->GetSceneFile() << endl;
-    return -1;
-  }*/
-  //CornellBoxScene scene;
 
   omp_set_num_threads(settings->GetNumberOfThreads());
 
@@ -111,10 +116,13 @@ int main(int argc, char *argv[]) {
 	renderer->RenderScene(*scene);
   cerr << "total time = " << (1.0 / 60 * (clock() - startTime) / CLOCKS_PER_SEC) << " (min)." << endl;
 
+  // wait renderer, window, saver
   if (settings->DoShowPreview()) {
     viewer.WaitWindowFinish();
   }
   timeSaver.StopAndWaitStopping();
+
+  renderer.reset();
 
   return 0;
 }

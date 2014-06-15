@@ -25,6 +25,8 @@ namespace OmochiRenderer {
       , m_distanceFromCameraToScreen(40.0)
       , m_saveSpan(0)
       , m_doSaveOnEachSampleEnded(false)
+      , m_maxSaveCountForPeriodicSave(0)
+      , m_timeToStopRenderer(0)
       , m_showPreview(true)
       , m_rawSettings()
     {
@@ -90,6 +92,10 @@ namespace OmochiRenderer {
           m_saveSpan = atof(value.c_str());
         } else if (keyword == "save on each sample ended") {
           m_doSaveOnEachSampleEnded = Utils::parseBoolean(value);
+        } else if (keyword == "max save count for periodic save") {
+          m_maxSaveCountForPeriodicSave = atoi(value.c_str());
+        } else if (keyword == "time to stop renderer") {
+          m_timeToStopRenderer = atof(value.c_str());
         } else {
           //std::cerr << "Unknown keyword: " << keyword << std::endl;
         }
@@ -118,6 +124,9 @@ namespace OmochiRenderer {
 
     double GetSaveSpan() const { return m_saveSpan; }
     bool DoSaveOnEachSampleEnded() const { return m_doSaveOnEachSampleEnded; }
+    int GetMaxSaveCountForPeriodicSave() const { return m_maxSaveCountForPeriodicSave; }
+
+    double GetTimeToStopRenderer() const { return m_timeToStopRenderer; }
 
     double GetScreenHeightInWorldCoordinate() const { return m_screenHeightInWorldCoordinate; }
     double GetDistanceFromCameraToScreen() const { return m_distanceFromCameraToScreen; }
@@ -143,6 +152,9 @@ namespace OmochiRenderer {
 
     double m_saveSpan;
     bool m_doSaveOnEachSampleEnded;
+    int m_maxSaveCountForPeriodicSave;
+
+    double m_timeToStopRenderer;
 
     bool m_showPreview;
 

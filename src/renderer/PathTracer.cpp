@@ -13,13 +13,15 @@ using namespace std;
 namespace OmochiRenderer {
 
 PathTracer::PathTracer(const Camera &camera, int samples, int supersamples)
-  : m_camera(camera)
+  : Renderer()
+  , m_camera(camera)
 {
   init(camera, samples, samples, 1, supersamples, nullptr);
 }
 
 PathTracer::PathTracer(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallbackFunction callback)
-  : m_camera(camera)
+  : Renderer()
+  , m_camera(camera)
 {
   init(camera, min_samples, max_samples, steps, supersamples, callback);
 }
@@ -52,7 +54,7 @@ void PathTracer::RenderScene(const Scene &scene) {
   m_omittedRayCount = 0;
   m_hitToLightCount = 0;
   m_previous_samples = 0;
-  for (m_currentSamples = m_min_samples; m_currentSamples <= m_max_samples; m_currentSamples += m_step_samples) {
+  for (m_currentSamples = m_min_samples; m_currentSamples <= m_max_samples && m_enableRendering; m_currentSamples += m_step_samples) {
     clock_t t1, t2;
     t1 = clock();
     m_checkIntersectionCount = 0;
@@ -81,15 +83,15 @@ void PathTracer::ScanPixelsAndCastRays(const Scene &scene, int previous_samples,
   // trace all pixels
   const double averaging_factor = next_samples * m_supersamples * m_supersamples;
 #pragma omp parallel for schedule(dynamic, 1)
-  for (int y=0; y<(signed)height; y++) {
+  for (int y = 0; y<(signed)height; y++) {
     Random rnd(y+1+previous_samples*height);
-    for (int x = 0; x<(signed)width; x++) {
+    for (int x = 0; x<(signed)width && m_enableRendering; x++) {
       const int index = x + (height - y - 1)*width;
 
       Color accumulated_radiance;
 
       // super-sampling
-      for (int sy=0; sy<m_supersamples; sy++) for (int sx=0; sx < m_supersamples; sx++) {
+      for (int sy = 0; sy<m_supersamples && m_enableRendering; sy++) for (int sx = 0; sx < m_supersamples && m_enableRendering; sx++) {
         // (x,y)ピクセル内での位置: [0,1]
         const double rx = (2.0*sx + 1.0)/(2*m_supersamples);
         const double ry = (2.0*sy + 1.0)/(2*m_supersamples);
@@ -174,6 +176,7 @@ Color PathTracer::DirectRadiance(const Scene &scene, const Ray &ray, Random &rnd
 }
 */
 
+// 直接光による Radiance の評価
 Color PathTracer::DirectRadiance_Lambert(const Scene &scene, const Ray &ray, Random &rnd, const int depth, const bool intersected, Scene::IntersectionInformation &intersect, const Vector3 &normal) {
   assert(intersected);
 
@@ -190,6 +193,7 @@ Color PathTracer::DirectRadiance_Lambert(const Scene &scene, const Ray &ray, Ran
     totalPower += power;
   }
 
+  // 確率へ正規化
   for (size_t i = 0; i < lights.size(); i++) {
     eachLightProbability[i] /= totalPower;
     accumulatedProbability[i] /= totalPower;
@@ -331,7 +335,7 @@ Color PathTracer::Radiance_internal(const Scene &scene, const Ray &ray, Random &
   return income;
 }
 
-
+// Lambert 面の Radiance の評価
 Color PathTracer::Radiance_Lambert(const Scene &scene, const Ray &ray, Random &rnd, const int depth, Scene::IntersectionInformation &intersect, const Vector3 &normal, double russian_roulette_prob) {
 
   Color direct;
@@ -470,6 +474,7 @@ Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random
   return /*intersect.object->material.emission +*/ Vector3(weight.x*income.x, weight.y*income.y, weight.z*income.z);
 }
 
+// 画面表示用の情報取得メソッド
 std::string PathTracer::GetCurrentRenderingInfo() const {
 
   stringstream ss;

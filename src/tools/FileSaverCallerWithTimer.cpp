@@ -18,6 +18,8 @@ namespace OmochiRenderer {
     , m_stopSignal(false)
     , m_saveSpan(0)
     , m_lastSaveTime(0)
+    , m_saveCount(0)
+    , m_maxSaveCount(0)
   {
     m_savers.push_back(saver);
   }
@@ -34,6 +36,7 @@ namespace OmochiRenderer {
       StopAndWaitStopping();
     }
 
+    m_saveCount = 0;
     m_stopSignal = false;
     m_thread = std::shared_ptr<std::thread>(new std::thread(
       [this]() {
@@ -74,9 +77,15 @@ namespace OmochiRenderer {
           cerr << pastTime << " second past." << endl;
           accTime += pastTime;
 
+          // 保存回数制限チェック
+          m_saveCount++;
+          if (m_maxSaveCount > 0 && m_saveCount >= m_maxSaveCount) {
+            break;
+          }
+
         }
 
-        m_thread.reset();
+        //m_thread.reset();
       }
     ));
 
@@ -88,6 +97,9 @@ namespace OmochiRenderer {
     if (m_thread == nullptr) return;
 
     m_stopSignal = true;
-    m_thread->join();
+    if (m_thread->joinable()) {
+      m_thread->join();
+    }
+    m_thread.reset();
   }
 }
