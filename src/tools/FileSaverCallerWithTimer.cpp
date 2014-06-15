@@ -59,7 +59,7 @@ namespace OmochiRenderer {
           {
             for (auto it = m_savers.begin(); it != m_savers.end(); it++)
             {
-              (*it)->Save(render->GetCurrentSampleCount(), render->GetResult(), tmpAccTime / 1000.0 / 60);
+              (*it)->Save(render->GetCurrentSampleCount(), m_saveCount, render->GetResult(), tmpAccTime / 1000.0 / 60);
             }
           }
           else

@@ -15,10 +15,10 @@ namespace OmochiRenderer {
     {
     }
 
-    virtual void Save(int samples, const Color *img, double accumulatedPastTime) {
+    virtual void Save(int samples, int saveCount, const Color *img, double accumulatedPastTime) {
       if (m_img == ImageHandler::INVALID_IMAGE_ID) return;
 
-      std::string name(P_CreateFileName(samples, accumulatedPastTime));
+      std::string name(P_CreateFileName(samples, saveCount, accumulatedPastTime));
       clock_t begin, end;
       begin = clock();
 

@@ -53,8 +53,8 @@ int main(int argc, char *argv[]) {
   PathTracer::RenderingFinishCallbackFunction callback([&saver, &saver2](int samples, const Color *img, double accumulatedRenderingTime) {
       // レンダリング完了時に呼ばれるコールバックメソッド
       cerr << "save ppm file for sample " << samples << " ..." << endl;
-      saver->Save(samples, img, accumulatedRenderingTime);
-      saver2->Save(samples, img, accumulatedRenderingTime);
+      saver->Save(samples, 9999999, img, accumulatedRenderingTime);
+      saver2->Save(samples, 9999999, img, accumulatedRenderingTime);
       cerr << "Total rendering time = " << accumulatedRenderingTime << " min." << endl;
   });
 

@@ -2,7 +2,7 @@ Scene type = TestScene
 #Scene type = IBLTestScene
 Scene information = input_data/cornell_box.scene
 number of threads = 4
-Show Preview = False
+Show Preview = True
 Save Span = 60
 Max Save Count For periodic save= 30
 Save On Each Sample Ended = false
@@ -18,7 +18,7 @@ Sample Start = 1
 Sample End = 4096
 Sample Step = 1
 Next Event Estimation = True
-# format: width,height,samples,supersmp,supersmp,time
-Save filename format for PathTracer = results/result_ibl_test_w%d_h%d_%04d_%dx%d_%.2fmin
+Save filename format for PathTracer = results/result(_savecount02_)_w(_width_)_h(_height_)_(_samples04_)_(_supersamples02_)x(_supersamples02_)_(_accumulatedTime03_)min
+#Save filename format for PathTracer = (_savecount02_)
 
 # for PhotonMapping

@@ -86,6 +86,18 @@ public:
   static int ToRgb(double v_0_1) {
     return static_cast<int>(v_0_1 * 255 + 0.5);
   }
+
+  static std::string replace(const std::string &target, const std::string &from, const std::string &to)
+  {
+    std::string replaced(target);
+
+    std::string::size_type pos = replaced.find(from);
+    while (pos != std::string::npos) {
+      replaced.replace(pos, from.length(), to);
+      pos = replaced.find(from);
+    }
+    return replaced;
+  }
 };
 
 }

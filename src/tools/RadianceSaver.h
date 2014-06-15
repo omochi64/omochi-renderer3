@@ -16,12 +16,12 @@ namespace OmochiRenderer {
     {
     }
 
-    virtual void Save(int samples, const Color *img, double accumulatedPastTime) {
+    virtual void Save(int samples, int saveCount, const Color *img, double accumulatedPastTime) {
       HDRImage hdrImage;
       hdrImage.m_width = m_settings->GetWidth();
       hdrImage.m_height = m_settings->GetHeight();
 
-      std::string name(P_CreateFileName(samples, accumulatedPastTime));
+      std::string name(P_CreateFileName(samples, saveCount, accumulatedPastTime));
       clock_t begin, end;
       begin = clock();
 

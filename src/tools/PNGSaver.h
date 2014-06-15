@@ -17,7 +17,7 @@ namespace OmochiRenderer {
     {
     }
 
-    virtual void Save(int samples, const Color *img, double accumulatedPastTime);
+    virtual void Save(int samples, int saveCount, const Color *img, double accumulatedPastTime);
   };
 
 }
