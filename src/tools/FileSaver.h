@@ -75,24 +75,24 @@ namespace OmochiRenderer {
     std::string P_CreateFileName(int samples, int saveCount, double accumulatedPastTime) const {
       const static std::string file_format_key = "save filename format for pathtracer";
 
-      const static std::string samples01Keyword = "(_samples01_)";
-      const static std::string samples02Keyword = "(_samples02_)";
-      const static std::string samples03Keyword = "(_samples03_)";
-      const static std::string samples04Keyword = "(_samples04_)";
-      const static std::string superSamples01Keyword = "(_supersamples01_)";
-      const static std::string superSamples02Keyword = "(_supersamples02_)";
-      const static std::string superSamples03Keyword = "(_supersamples03_)";
-      const static std::string superSamples04Keyword = "(_supersamples04_)";
-      const static std::string accumulatedTime01Keyword = "(_accumulatedTime01_)";
-      const static std::string accumulatedTime02Keyword = "(_accumulatedTime02_)";
-      const static std::string accumulatedTime03Keyword = "(_accumulatedTime03_)";
-      const static std::string accumulatedTime04Keyword = "(_accumulatedTime04_)";
-      const static std::string widthKeyword = "(_width_)";
-      const static std::string heightKeyword = "(_height_)";
-      const static std::string saveCount01Keyword = "(_savecount01_)";
-      const static std::string saveCount02Keyword = "(_savecount02_)";
-      const static std::string saveCount03Keyword = "(_savecount03_)";
-      const static std::string saveCount04Keyword = "(_savecount04_)";
+      const static std::string samples01Keyword = "(%samples01%)";
+      const static std::string samples02Keyword = "(%samples02%)";
+      const static std::string samples03Keyword = "(%samples03%)";
+      const static std::string samples04Keyword = "(%samples04%)";
+      const static std::string superSamples01Keyword = "(%supersamples01%)";
+      const static std::string superSamples02Keyword = "(%supersamples02%)";
+      const static std::string superSamples03Keyword = "(%supersamples03%)";
+      const static std::string superSamples04Keyword = "(%supersamples04%)";
+      const static std::string accumulatedTime01Keyword = "(%accumulatedTime01%)";
+      const static std::string accumulatedTime02Keyword = "(%accumulatedTime02%)";
+      const static std::string accumulatedTime03Keyword = "(%accumulatedTime03%)";
+      const static std::string accumulatedTime04Keyword = "(%accumulatedTime04%)";
+      const static std::string widthKeyword = "(%width%)";
+      const static std::string heightKeyword = "(%height%)";
+      const static std::string saveCount01Keyword = "(%savecount01%)";
+      const static std::string saveCount02Keyword = "(%savecount02%)";
+      const static std::string saveCount03Keyword = "(%savecount03%)";
+      const static std::string saveCount04Keyword = "(%savecount04%)";
 
       
       std::string base;
