@@ -22,6 +22,10 @@ namespace OmochiRenderer {
       m_maxSaveCount = maxCount;
     }
 
+    void SetAimTimeToSaveFile(double timeToSave) {
+      m_aimTimeToSaveFile = timeToSave;
+    }
+
     // 別スレッドでのタイマー監視を開始する。必要な設定が行われていなかった場合は失敗して false が返ってくる
     bool StartTimer();
 
@@ -37,6 +41,7 @@ namespace OmochiRenderer {
     bool m_stopSignal;
     double m_saveSpan;
     double m_lastSaveTime;
+    double m_aimTimeToSaveFile;
     int m_saveCount;
     int m_maxSaveCount;
   };

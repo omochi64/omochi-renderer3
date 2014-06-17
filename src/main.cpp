@@ -76,6 +76,7 @@ int main(int argc, char *argv[]) {
   timeSaver.AddSaver(saver2);
   timeSaver.SetSaveTimerInformation(settings->GetSaveSpan());
   timeSaver.SetMaxSaveCount(settings->GetMaxSaveCountForPeriodicSave());
+  timeSaver.SetAimTimeToSaveFile(1.5);
   timeSaver.StartTimer();
 
   // 時間監視してレンダラをストップするインスタンス

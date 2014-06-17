@@ -18,6 +18,7 @@ namespace OmochiRenderer {
     , m_stopSignal(false)
     , m_saveSpan(0)
     , m_lastSaveTime(0)
+    , m_aimTimeToSaveFile(0)
     , m_saveCount(0)
     , m_maxSaveCount(0)
   {
@@ -49,9 +50,10 @@ namespace OmochiRenderer {
         while (!m_stopSignal) {
 
           // Sleep ‚µ‚Â‚ÂÀŠÔŒv‘ª
-          cerr << "Begin sleeping...: Sleep(static_cast<DWORD>(" << saveSpan + accDiff << ")" << endl;
+          DWORD sleepTime = saveSpan + accDiff - m_aimTimeToSaveFile * 1000;
+          cerr << "Begin sleeping...: Sleep(static_cast<DWORD>(" << sleepTime << ")" << endl;
           start = clock();
-          Sleep(static_cast<DWORD>(saveSpan + accDiff));
+          Sleep(sleepTime);
 
           // •Û‘¶Às
           double tmpAccTime = accTime + 1000.0*(clock() - start) / CLOCKS_PER_SEC;
