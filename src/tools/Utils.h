@@ -98,6 +98,16 @@ public:
     }
     return replaced;
   }
+
+  static void GetCrossAxes(const Vector3 &upAxis, Vector3 &axis1, Vector3 &axis2)
+  {
+    if (fabs(upAxis.x) > EPS) {
+      axis1 = Vector3(0, 1, 0).cross(upAxis);
+    } else {
+      axis1 = Vector3(1, 0, 0).cross(upAxis);
+    }
+    axis2 = upAxis.cross(axis1);
+  }
 };
 
 }

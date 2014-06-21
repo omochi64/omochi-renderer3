@@ -1,3 +1,4 @@
+#Scene type = CornellBoxScene
 Scene type = TestScene
 #Scene type = IBLTestScene
 Scene information = input_data/cornell_box.scene

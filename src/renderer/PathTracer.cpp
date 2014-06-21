@@ -216,7 +216,10 @@ Color PathTracer::DirectRadiance_Lambert(const Scene &scene, const Ray &ray, Ran
 
     // pick a one point
     Vector3 point, light_normal; double pdf = 0.0;
-    selectedLight->SampleOnePoint(point, light_normal, pdf, rnd);
+    //selectedLight->SampleOnePoint(point, light_normal, pdf, rnd);
+    if (!selectedLight->SampleOnePointWithTargetPoint(point, light_normal, pdf, intersect.hit.position, rnd)) {
+      continue;
+    }
 
     Vector3 dir((point - intersect.hit.position)); dir.normalize();
     double cos_shita = dir.dot(normal);
