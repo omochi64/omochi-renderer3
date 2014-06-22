@@ -312,6 +312,8 @@ Model::PolygonPtr Model::Load3verticesFace(const vector<string> &face, const vec
   const vector<Vector3> &uvCoordinatesInGroup, const Material &mat) {
   Vector3 vec[3], normals[3], uvs[3];
 
+  bool normal_exist = false;
+
   for (size_t i=0; i<face.size(); i++) {
     vector<string> data(Utils::split(face[i], '/'));
 
@@ -334,31 +336,20 @@ Model::PolygonPtr Model::Load3verticesFace(const vector<string> &face, const vec
     //vec[index].z *= -1;
     if (normal_number != -1) {
       normals[index] = normalsInGroup[normal_number];
-      //normals[index].z *= -1;
+      normal_exist = true;
     }
     if (uv_numver != -1) {
       uvs[index] = uvCoordinatesInGroup[uv_numver];
-      uvs[index].y = uvs[index].y;
     }
   }
 
-  Vector3 averaged_vec;
-  for (int i = 0; i < 3; i++) {
-    averaged_vec += vec[i];
-  }
-  averaged_vec /= 3.0;
-
-  Vector3 averaged_normal;
-  // 三角形の重心座標でnormalを平均化
-  averaged_normal = normals[0] * averaged_vec.x + normals[1] * averaged_vec.y + normals[2] * averaged_vec.z;
-  averaged_normal.normalize();
-
   PolygonPtr ret_p;
-  if (averaged_normal.x == 0 && averaged_normal.y == 0 && averaged_normal.z == 0) {
+  if (!normal_exist) {
     // normal の指定なかった
-    ret_p = (new Polygon(vec[0], vec[1], vec[2], uvs[0], uvs[1], uvs[2], Polygon::CalculateNormal(vec[0], vec[1], vec[2]), mat, Vector3(0, 0, 0)));
+    auto auto_normal = Polygon::CalculateNormal(vec[0], vec[1], vec[2]);
+    ret_p = (new Polygon(vec[0], vec[1], vec[2], uvs[0], uvs[1], uvs[2], auto_normal, auto_normal, auto_normal, mat, Vector3(0, 0, 0)));
   } else {
-    ret_p = (new Polygon(vec[0], vec[1], vec[2], uvs[0], uvs[1], uvs[2], averaged_normal, mat, Vector3(0, 0, 0)));
+    ret_p = (new Polygon(vec[0], vec[1], vec[2], uvs[0], uvs[1], uvs[2], normals[0], normals[1], normals[2], mat, Vector3(0, 0, 0)));
   }
 
   return ret_p;

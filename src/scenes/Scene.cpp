@@ -84,12 +84,12 @@ void Scene::AddFloorXZ_yUp(const double size_x, const double size_z, const Vecto
   AddObject(new Polygon(
     Vector3(-size_x / 2, 0, -size_z / 2), Vector3(-size_x / 2, 0, size_z / 2), Vector3(size_x / 2, 0, -size_z/2),
     Vector3(0, 0, 0), Vector3(0, 1, 0), Vector3(1, 0, 0),
-    Vector3(0, 1, 0),
+    Vector3(0, 1, 0), Vector3(0, 1, 0), Vector3(0, 1, 0),
     material, position));
   AddObject(new Polygon(
     Vector3(size_x / 2, 0, -size_z / 2), Vector3(-size_x / 2, 0, size_z / 2), Vector3(size_x / 2, 0, size_z/2),
     Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(1, 1, 0),
-    Vector3(0, 1, 0),
+    Vector3(0, 1, 0), Vector3(0, 1, 0), Vector3(0, 1, 0),
     material, position));
 }
 
@@ -98,12 +98,12 @@ void Scene::AddFloorXY_zUp(const double size_x, const double size_y, const Vecto
   AddObject(new Polygon(
     Vector3(-size_x / 2, size_y / 2, 0), Vector3(-size_x / 2, -size_y / 2, 0), Vector3(size_x / 2, -size_y / 2, 0),
     Vector3(0, 0, 0), Vector3(0, 1, 0), Vector3(1, 1, 0),
-    Vector3(0, 0, 1),
+    Vector3(0, 0, 1), Vector3(0, 0, 1), Vector3(0, 0, 1),
     material, position));
   AddObject(new Polygon(
     Vector3(size_x / 2, size_y / 2, 0), Vector3(-size_x / 2, size_y / 2, 0), Vector3(size_x / 2, -size_y / 2, 0),
     Vector3(1, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 0),
-    Vector3(0, 0, 1),
+    Vector3(0, 0, 1), Vector3(0, 0, 1), Vector3(0, 0, 1),
     material, position));
 }
 
@@ -112,12 +112,12 @@ void Scene::AddFloorYZ_xUp(const double size_y, const double size_z, const Vecto
   AddObject(new Polygon(
     Vector3(0, size_y / 2, -size_z / 2), Vector3(0, size_y / 2, size_z / 2), Vector3(0, -size_y / 2, size_z / 2),
     Vector3(1, 0, 0), Vector3(0, 0, 0), Vector3(0, 1, 0),
-    Vector3(1, 0, 0),
+    Vector3(1, 0, 0), Vector3(1, 0, 0), Vector3(1, 0, 0),
     material, position));
   AddObject(new Polygon(
     Vector3(0, -size_y / 2, -size_z / 2), Vector3(0, size_y / 2, -size_z / 2), Vector3(0, -size_y / 2, size_z / 2),
     Vector3(1, 1, 0), Vector3(1, 0, 0), Vector3(0, 1, 0),
-    Vector3(1, 0, 0),
+    Vector3(1, 0, 0), Vector3(1, 0, 0), Vector3(1, 0, 0),
     material, position));
 }
 
@@ -126,12 +126,12 @@ void Scene::AddFloorXZ_yDown(const double size_x, const double size_z, const Vec
   AddObject(new Polygon(
     Vector3(size_x / 2, 0, -size_z / 2), Vector3(-size_x / 2, 0, size_z / 2), Vector3(-size_x / 2, 0, -size_z / 2),
     Vector3(1, 1, 0), Vector3(0, 0, 0), Vector3(0, 1, 0),
-    Vector3(0, -1, 0),
+    Vector3(0, -1, 0), Vector3(0, -1, 0), Vector3(0, -1, 0),
     material, position));
   AddObject(new Polygon(
     Vector3(size_x / 2, 0, size_z / 2), Vector3(-size_x / 2, 0, size_z / 2), Vector3(size_x / 2, 0, -size_z / 2),
     Vector3(1, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 0),
-    Vector3(0, -1, 0),
+    Vector3(0, -1, 0), Vector3(0, -1, 0), Vector3(0, -1, 0),
     material, position));
 }
 
@@ -140,12 +140,12 @@ void Scene::AddFloorXY_zDown(const double size_x, const double size_y, const Vec
   AddObject(new Polygon(
     Vector3(size_x / 2, -size_y / 2, 0), Vector3(-size_x / 2, -size_y / 2, 0), Vector3(-size_x / 2, size_y / 2, 0),
     Vector3(0, 1, 0), Vector3(1, 1, 0), Vector3(1, 0, 0),
-    Vector3(0, 0, -1),
+    Vector3(0, 0, -1), Vector3(0, 0, -1), Vector3(0, 0, -1),
     material, position));
   AddObject(new Polygon(
     Vector3(size_x / 2, -size_y / 2, 0), Vector3(-size_x / 2, size_y / 2, 0), Vector3(size_x / 2, size_y / 2, 0),
     Vector3(0, 1, 0), Vector3(1, 0, 0), Vector3(0, 0, 0),
-    Vector3(0, 0, -1),
+    Vector3(0, 0, -1), Vector3(0, 0, -1), Vector3(0, 0, -1),
     material, position));
 }
 
@@ -154,12 +154,12 @@ void Scene::AddFloorYZ_xDown(const double size_y, const double size_z, const Vec
   AddObject(new Polygon(
     Vector3(0, -size_y / 2, size_z / 2), Vector3(0, size_y / 2, size_z / 2), Vector3(0, size_y / 2, -size_z / 2),
     Vector3(1, 1, 0), Vector3(1, 0, 0), Vector3(0, 0, 0),
-    Vector3(-1, 0, 0),
+    Vector3(-1, 0, 0), Vector3(-1, 0, 0), Vector3(-1, 0, 0),
     material, position));
   AddObject(new Polygon(
     Vector3(0, -size_y / 2, size_z / 2), Vector3(0, size_y / 2, -size_z / 2), Vector3(0, -size_y / 2, -size_z / 2),
     Vector3(1, 1, 0), Vector3(0, 0, 0), Vector3(0, 1, 0),
-    Vector3(-1, 0, 0),
+    Vector3(-1, 0, 0), Vector3(-1, 0, 0), Vector3(-1, 0, 0),
     material, position));
 }
 

@@ -28,16 +28,16 @@ TestScene::TestScene()
   AddFloorXZ_yDown(200, 200, Vector3(50, 81.6, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75)));
 
  
-  //Model *cube = new Model;
-  //if (!cube->ReadFromObj("input_data/shrine.obj", true)) {
-  //  std::cerr << "failed to load cube.obj!!!" << std::endl;
-  //  getchar();
-  //  exit(-1);
-  //}
-  //cube->SetTransform(Vector3(50, 10, 50), Vector3(0.08, 0.08, 0.08), Matrix::RotateAroundVector(Vector3(0, 1, 0), 0.0 / 180 * PI));
-  ////cube->SetTransform(Vector3(50, 10, 50), Vector3(6, 6, 6), Matrix::RotateAroundVector(Vector3(0, 1, 0), 30.0 / 180 * PI));
-  ////cube->SetTransform(Vector3(0, 0, -30), Vector3(5, 5, 5), Matrix::RotateAroundVector(Vector3(0, 1, 0), 90.0 / 180 * PI));
-  //AddModel(cube);
+  Model *cube = new Model;
+  if (!cube->ReadFromObj("input_data/shrine.obj", true)) {
+    std::cerr << "failed to load cube.obj!!!" << std::endl;
+    getchar();
+    exit(-1);
+  }
+  cube->SetTransform(Vector3(50, 10, 50), Vector3(0.05, 0.05, 0.05), Matrix::RotateAroundVector(Vector3(0, 1, 0), 45.0 / 180 * PI));
+  //cube->SetTransform(Vector3(50, 10, 50), Vector3(6, 6, 6), Matrix::RotateAroundVector(Vector3(0, 1, 0), 30.0 / 180 * PI));
+  //cube->SetTransform(Vector3(0, 0, -30), Vector3(5, 5, 5), Matrix::RotateAroundVector(Vector3(0, 1, 0), 90.0 / 180 * PI));
+  AddModel(cube);
   
   //AddObject(new Sphere(10,Vector3(),           Material(Material::REFLECTION_TYPE_LAMBERT,    Color(), Color(0.25, 0.75, 0.25))));    // —Î‹…
   //AddObject(new Sphere(16.5,Vector3(27, 16.5, 47),       Material(Material::REFLECTION_TYPE_SPECULAR,   Color(), Color(0.99, 0.99, 0.99))));   // ‹¾

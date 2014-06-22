@@ -12,16 +12,19 @@ class Polygon : public SceneObject {
 public:
   Polygon(const Vector3 &pos1, const Vector3 &pos2, const Vector3 &pos3,
     const Vector3 &uv1, const Vector3 &uv2, const Vector3 &uv3,
-    const Vector3 &normal, const Material &mat, const Vector3 &pos)
+    const Vector3 &normal1, const Vector3 &normal2, const Vector3 &normal3,
+    const Material &mat, const Vector3 &pos)
     : SceneObject(mat)
-    , m_normal(normal)
   {
-    m_pos[0] = m_rotatedPos[0] = pos1;
-    m_pos[1] = m_rotatedPos[1] = pos2;
-    m_pos[2] = m_rotatedPos[2] = pos3;
-    m_uvs[0] = uv1;
-    m_uvs[1] = uv2;
-    m_uvs[2] = uv3;
+    m_posAndEdges[0] = m_rotatedPosAndEdges[0] = pos1;
+    m_posAndEdges[1] = m_rotatedPosAndEdges[1] = pos2 - pos1;
+    m_posAndEdges[2] = m_rotatedPosAndEdges[2] = pos3 - pos1;
+    m_uvOrigAndEdges[0] = uv1;
+    m_uvOrigAndEdges[1] = uv2 - uv1;
+    m_uvOrigAndEdges[2] = uv3 - uv1;
+    m_normalAndDiffs[0] = m_rotatedNormalAndDiffs[0] = normal1;
+    m_normalAndDiffs[1] = m_rotatedNormalAndDiffs[1] = normal2 - normal1;
+    m_normalAndDiffs[2] = m_rotatedNormalAndDiffs[2] = normal3 - normal1;
     position = pos;
     reconstruct_boundingbox();
   }
@@ -29,11 +32,12 @@ public:
     : SceneObject(polygon.material)
   {
     for (int i=0; i<3; i++) {
-      m_pos[i] = polygon.m_pos[i];
-      m_rotatedPos[i] = polygon.m_rotatedPos[i];
-      m_uvs[i] = polygon.m_uvs[i];
+      m_posAndEdges[i] = polygon.m_posAndEdges[i];
+      m_rotatedPosAndEdges[i] = polygon.m_rotatedPosAndEdges[i];
+      m_uvOrigAndEdges[i] = polygon.m_uvOrigAndEdges[i];
+      m_normalAndDiffs[i] = polygon.m_normalAndDiffs[i];
+      m_rotatedNormalAndDiffs[i] = polygon.m_rotatedNormalAndDiffs[i];
     }
-    m_normal = polygon.m_normal;
     reconstruct_boundingbox();
   }
   virtual ~Polygon() {}
@@ -47,10 +51,11 @@ public:
   void SetTransform(const Vector3 &pos, const Vector3 &scale = Vector3::One(), const Matrix &rot = Matrix::Identity()) {
     position = pos;
     for (int i=0; i<3; i++) {
-      m_rotatedPos[i] = rot.Apply(m_pos[i]);
-      m_rotatedPos[i].x *= scale.x;
-      m_rotatedPos[i].y *= scale.y;
-      m_rotatedPos[i].z *= scale.z;
+      m_rotatedPosAndEdges[i] = rot.Apply(m_posAndEdges[i]);
+      m_rotatedPosAndEdges[i].x *= scale.x;
+      m_rotatedPosAndEdges[i].y *= scale.y;
+      m_rotatedPosAndEdges[i].z *= scale.z;
+      m_rotatedNormalAndDiffs[i] = rot.Apply(m_normalAndDiffs[i]);
     }
     reconstruct_boundingbox();
   }
@@ -58,15 +63,15 @@ public:
   bool CheckIntersection(const Ray &ray, HitInformation &hit) const {
     // 連立方程式を解く
     // 参考: http://shikousakugo.wordpress.com/2012/07/01/ray-intersection-3/
-    Vector3 edge1(m_rotatedPos[1] - m_rotatedPos[0]);
-    Vector3 edge2(m_rotatedPos[2] - m_rotatedPos[0]);
+    const Vector3 &edge1 = m_rotatedPosAndEdges[1];
+    const Vector3 &edge2 = m_rotatedPosAndEdges[2];
 
     Vector3 P(ray.dir.cross(edge2));
     double det = P.dot(edge1);
 
     if (det > EPS) {
       // solve u
-      Vector3 T(ray.orig - (m_rotatedPos[0]+position));
+      Vector3 T(ray.orig - (m_rotatedPosAndEdges[0] + position));
       double u = P.dot(T);
 
       if (u>=0 && u<= det) {
@@ -78,13 +83,17 @@ public:
           double t = Q.dot(edge2) / det;
 
           if (t>=EPS) {
-            Vector3 uvEdge1(m_uvs[1] - m_uvs[0]);
-            Vector3 uvEdge2(m_uvs[2] - m_uvs[0]);
+            const Vector3 &uvEdge1 = m_uvOrigAndEdges[1];
+            const Vector3 &uvEdge2 = m_uvOrigAndEdges[2];
+
+            double u_rate = (u / det);
+            double v_rate = v / det;
 
             hit.distance = t;
             hit.position = ray.orig + ray.dir*t;
-            hit.normal = m_normal;
-            hit.uv = uvEdge1 * (u/det) + uvEdge2 * (v/det) + m_uvs[0];
+            hit.normal = m_rotatedNormalAndDiffs[1] * u_rate + m_rotatedNormalAndDiffs[2] * v_rate + m_rotatedNormalAndDiffs[0];
+            hit.normal.normalize();
+            hit.uv = uvEdge1 * u_rate + uvEdge2 * v_rate + m_uvOrigAndEdges[0];
 
             return true;
           }
@@ -96,27 +105,32 @@ public:
     return false;
   }
 
-  Vector3 m_pos[3];
-  Vector3 m_uvs[3];
-  Vector3 m_normal;
+  Vector3 m_posAndEdges[3];  // m_posAndEdges[3]: pos0。m_pos_AndEdges[1,2]: pos1,2 - pos0
+  Vector3 m_uvOrigAndEdges[3]; // m_uvOrigAndEdges[0]: uv0。 m_uvOrigAndEdges[1,2]: uv1,2 - uv0 の値
+  Vector3 m_normalAndDiffs[3]; // m_rotatedNormalAndDiffs[0]: normal0。 m_rotatedNormalAndDiffs[1,2]: normal1,2 - normal0 の値
 
 private:
   void reconstruct_boundingbox() {
+    auto &pos0 = m_rotatedPosAndEdges[0];
+    auto pos1 = m_rotatedPosAndEdges[1] + m_rotatedPosAndEdges[0];
+    auto pos2 = m_rotatedPosAndEdges[2] + m_rotatedPosAndEdges[0];
     boundingBox.SetBox( Vector3(
-      std::min(std::min(m_rotatedPos[0].x, m_rotatedPos[1].x), m_rotatedPos[2].x),
-      std::min(std::min(m_rotatedPos[0].y, m_rotatedPos[1].y), m_rotatedPos[2].y),
-      std::min(std::min(m_rotatedPos[0].z, m_rotatedPos[1].z), m_rotatedPos[2].z)
+      std::min(std::min(pos0.x, pos1.x), pos2.x),
+      std::min(std::min(pos0.y, pos1.y), pos2.y),
+      std::min(std::min(pos0.z, pos1.z), pos2.z)
       ) + position, 
       Vector3(
-        std::max(std::max(m_rotatedPos[0].x, m_rotatedPos[1].x), m_rotatedPos[2].x),
-        std::max(std::max(m_rotatedPos[0].y, m_rotatedPos[1].y), m_rotatedPos[2].y),
-        std::max(std::max(m_rotatedPos[0].z, m_rotatedPos[1].z), m_rotatedPos[2].z)
+        std::max(std::max(pos0.x, pos1.x), pos2.x),
+        std::max(std::max(pos0.y, pos1.y), pos2.y),
+        std::max(std::max(pos0.z, pos1.z), pos2.z)
       ) + position
     );
   }
 
 private:
-  Vector3 m_rotatedPos[3];
+  Vector3 m_rotatedPosAndEdges[3];
+  Vector3 m_rotatedNormalAndDiffs[3]; // m_rotatedNormalAndDiffs[0]: normal0。 m_rotatedNormalAndDiffs[1,2]: normal1,2 - normal0 の値
+
 };
 
 }

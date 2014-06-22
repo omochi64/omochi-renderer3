@@ -14,7 +14,7 @@ Width = 640
 Height = 480
 
 # for pathtracer
-Supersamples = 2
+Supersamples = 1
 Sample Start = 1
 Sample End = 4096
 Sample Step = 1
