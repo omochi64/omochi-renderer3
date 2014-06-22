@@ -76,9 +76,6 @@ void PathTracer::ScanPixelsAndCastRays(const Scene &scene, int previous_samples,
 
   const size_t height = m_camera.GetScreenHeight();
   const size_t width = m_camera.GetScreenWidth();
-  const Vector3 &screen_x(m_camera.GetScreenAxisXvector());
-  const Vector3 &screen_y(m_camera.GetScreenAxisYvector());
-  const Vector3 &screen_center(m_camera.GetScreenCenterPosition());
 
   // trace all pixels
   const double averaging_factor = next_samples * m_supersamples * m_supersamples;
@@ -96,15 +93,11 @@ void PathTracer::ScanPixelsAndCastRays(const Scene &scene, int previous_samples,
         const double rx = (2.0*sx + 1.0)/(2*m_supersamples);
         const double ry = (2.0*sy + 1.0)/(2*m_supersamples);
 
-        Vector3 target_position = screen_center +
-          screen_x * ((x+rx)/width - 0.5) +
-          screen_y * ((y+ry)/height - 0.5);
-        Vector3 target_dir = target_position - m_camera.GetCameraPosition();
-        target_dir.normalize();
+        Ray ray(m_camera.SampleRayForPixel(x + rx, y + ry, rnd));
 
         // (m_samples)‰ñƒTƒ“ƒvƒŠƒ“ƒO‚·‚é
         for (int s=previous_samples+1; s<=next_samples; s++) {
-          accumulated_radiance += Radiance(scene, Ray(m_camera.GetCameraPosition(), target_dir), rnd, 0);
+          accumulated_radiance += Radiance(scene, ray, rnd, 0);
           m_omittedRayCount++;
         }
       }

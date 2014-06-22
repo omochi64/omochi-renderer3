@@ -1,6 +1,9 @@
 #pragma once
 
 #include "tools/Vector.h"
+#include "Ray.h"
+
+#include "Aperture.h"
 
 namespace OmochiRenderer {
 
@@ -9,7 +12,8 @@ namespace OmochiRenderer {
     Camera(size_t screenWidth, size_t screenHeight, const Vector3 &cameraPos = Vector3(50.0, 52.0, 220.0),
       const Vector3 &cameraDir = Vector3(0.0, -0.04, -1.0),
       const Vector3 &cameraUp = Vector3(0.0, 1.0, 0.0),
-      const double screenHeightIn3Dcoordinate = 30.0, const double distanceToScreen = 40)
+      const double screenHeightIn3Dcoordinate = 30.0, const double distanceToScreen = 40,
+      const double focalDistance = 200)
       : m_width(screenWidth)
       , m_height(screenHeight)
       , m_camPos(cameraPos)
@@ -17,6 +21,8 @@ namespace OmochiRenderer {
       , m_camUp(cameraUp)
       , m_nearScreenHeight(screenHeightIn3Dcoordinate)
       , m_distToScreen(distanceToScreen)
+      , m_focalDistance(focalDistance)
+      , m_aperture()
     {
       m_camDir.normalize();
       m_camUp.normalize();
@@ -36,6 +42,11 @@ namespace OmochiRenderer {
 
     }
 
+    void SetAperture(std::shared_ptr<Aperture> aperture)
+    {
+      m_aperture = aperture;
+    }
+
     inline const size_t GetScreenWidth() const {return m_width;}
     inline const size_t GetScreenHeight() const {return m_height;}
     inline const Vector3 &GetCameraPosition() const {return m_camPos;}
@@ -51,6 +62,36 @@ namespace OmochiRenderer {
       return m_screenYaxis;
     }
 
+    Ray SampleRayForPixel(double x, double y, const Random &rnd) const {
+
+      // 普通の ray (center_ray) の方向
+      Vector3 target_position = m_screenCenter +
+        m_screenXaxis * (x / m_width - 0.5) +
+        m_screenYaxis * (y / m_height - 0.5);
+      Vector3 target_dir = target_position - GetCameraPosition();
+      target_dir.normalize();
+
+      Ray ray(GetCameraPosition(), target_dir);
+
+      if (m_aperture)
+      {
+        double diffx, diffy;
+        m_aperture->SampleOnePoint(diffx, diffy, rnd);
+
+        // center_ray が focal plane に衝突する t ( ray = b_ + t*v ) と衝突する場所を求める
+        double focusTimeForNormalRay = m_focalDistance / fabs(target_dir.z);
+        Vector3 focusPos(ray(focusTimeForNormalRay));
+
+        // サンプリングされたレンズ上の位置
+        ray.orig = GetCameraPosition() + Vector3(diffx, diffy, 0);
+
+        // 実際の方向を求める
+        ray.dir = (focusPos - ray.orig).normalize();
+      }
+
+      return ray;
+    }
+
   private:
 	  size_t m_width, m_height;
 	  //int m_min_samples,m_max_samples,m_step_samples;
@@ -64,6 +105,12 @@ namespace OmochiRenderer {
 
     Vector3 m_screenXaxis, m_screenYaxis;
     Vector3 m_screenCenter;
+
+    // lens
+    double m_focalDistance;
+
+    // aperture
+    std::shared_ptr<Aperture> m_aperture;
 
   };
 

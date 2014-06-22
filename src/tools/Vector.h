@@ -80,8 +80,9 @@ public:
 	double lengthSq() const {
 		return x*x + y*y + z*z;
 	}
-	void normalize() {
+	Vector3 &normalize() {
 		(*this) /= length();
+    return *this;
 	}
 
   std::string toString() const {

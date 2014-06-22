@@ -16,5 +16,5 @@
 #include "tools/Constant.h"
 #include "tools/Utils.h"
 #include "renderer/Color.h"
-
-
+#include "renderer/Ray.h"
+#include "tools/Random.h"

@@ -21,7 +21,7 @@ TestScene::TestScene()
   //AddObject(new Sphere(1e5, Vector3(50, 40.8, 1e5), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75))), true, false);  // âú
   AddFloorXY_zUp(150, 150/1.77777777777, Vector3(50, 40.8, 0), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(1, 1, 1), 0.0, tex));  // âú
   //AddObject(new Sphere(1e5, Vector3(50, 40.8, -1e5 + 250), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color())), true, false);                  // éËëO
-  AddFloorXY_zDown(100, 100, Vector3(50, 40.8, 250), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75), 0.0, tex));  // éËëO
+  AddFloorXY_zDown(150, 150 / 1.77777777777, Vector3(50, 40.8, 250), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75), 0.0, tex));  // éËëO
   //AddObject(new Sphere(1e5, Vector3(50, 1e5, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75))), true, false);  // â∫
   AddFloorXZ_yUp(200, 200, Vector3(50, 0, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75)));
   //AddObject(new Sphere(1e5, Vector3(50, -1e5 + 81.6, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75))), true, false);  // è„

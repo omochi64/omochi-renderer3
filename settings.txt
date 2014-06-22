@@ -1,5 +1,5 @@
-#Scene type = CornellBoxScene
-Scene type = TestScene
+Scene type = CornellBoxScene
+#Scene type = TestScene
 #Scene type = IBLTestScene
 Scene information = input_data/cornell_box.scene
 number of threads = 4
@@ -14,7 +14,7 @@ Width = 640
 Height = 480
 
 # for pathtracer
-Supersamples = 1
+Supersamples = 2
 Sample Start = 1
 Sample End = 4096
 Sample Step = 1
