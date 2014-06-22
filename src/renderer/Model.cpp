@@ -342,19 +342,23 @@ Model::PolygonPtr Model::Load3verticesFace(const vector<string> &face, const vec
     }
   }
 
-  Vector3 averaged_normal;
-  for (int i=0; i<3; i++) {
-    averaged_normal += normals[i];
+  Vector3 averaged_vec;
+  for (int i = 0; i < 3; i++) {
+    averaged_vec += vec[i];
   }
+  averaged_vec /= 3.0;
+
+  Vector3 averaged_normal;
+  // 三角形の重心座標でnormalを平均化
+  averaged_normal = normals[0] * averaged_vec.x + normals[1] * averaged_vec.y + normals[2] * averaged_vec.z;
+  averaged_normal.normalize();
 
   PolygonPtr ret_p;
   if (averaged_normal.x == 0 && averaged_normal.y == 0 && averaged_normal.z == 0) {
     // normal の指定なかった
     ret_p = (new Polygon(vec[0], vec[1], vec[2], uvs[0], uvs[1], uvs[2], Polygon::CalculateNormal(vec[0], vec[1], vec[2]), mat, Vector3(0, 0, 0)));
   } else {
-    averaged_normal /= 3.0;
-    averaged_normal.normalize();
-    ret_p = (new Polygon(vec[0], vec[1], vec[2], uvs[0], uvs[1], uvs[2], averaged_normal*-1, mat, Vector3(0, 0, 0)));
+    ret_p = (new Polygon(vec[0], vec[1], vec[2], uvs[0], uvs[1], uvs[2], averaged_normal, mat, Vector3(0, 0, 0)));
   }
 
   return ret_p;
