@@ -41,6 +41,47 @@ namespace OmochiRenderer {
     // 引数に与えた変数間でColorデータコピー
     static void CopyColorArrayToImage(const Color *img, std::vector<Color> &copyTo, int width, int height, bool gamma = true)
     {
+      std::vector<Color> tmp(width*height);
+
+      std::copy(img, img + width * height, tmp.begin());
+
+      // box filter
+      //int filter_min = -2, filter_max = 2;
+      ///*double table[5][5] = {
+      //  {1.0, 4.0, 6, 4, 1},
+      //  {4, 16, 24, 16, 4},
+      //  {6, 24, 36, 24, 6},
+      //  { 4, 16, 24, 16, 4 },
+      //  { 1.0, 4.0, 6, 4, 1 }
+      //};*/
+      //double table[5][5] = {
+      //  { 1.0, 1.0, 1, 1, 1 },
+      //  { 1, 1, 1, 1, 1 },
+      //  { 1, 1, 1, 1, 1 },
+      //  { 1, 1, 1, 1, 1 },
+      //  { 1.0, 1.0, 1, 1, 1 }
+      //};
+      //for (int y = 0; y < height; y++)
+      //{
+      //  for (int x = 0; x < width; x++)
+      //  {
+      //    Vector3 total; double count = 0;
+      //    for (int dy = filter_min; dy <= filter_max; dy++) for (int dx = filter_min; dx <= filter_max; dx++)
+      //    {
+      //      int x_ = x + dx;
+      //      int y_ = y + dy;
+      //      if (x_ < 0 || y_ < 0 || x_ >= width || y_ >= height)
+      //      {
+      //        continue;
+      //      }
+      //      double weight = table[dy - filter_min][dx - filter_min];
+      //      total += img[x_ + y_*width] * weight;
+      //      count += weight;
+      //    }
+      //    tmp[x + y*width] = total / count;
+      //  }
+      //}
+
       copyTo.resize(width*height);
       if (gamma)
       {
@@ -49,9 +90,9 @@ namespace OmochiRenderer {
           for (int x = 0; x < width; x++)
           {
             int index = x + y*width;
-            copyTo[index].x = Utils::GammaRev(Utils::Clamp(img[index].x));
-            copyTo[index].y = Utils::GammaRev(Utils::Clamp(img[index].y));
-            copyTo[index].z = Utils::GammaRev(Utils::Clamp(img[index].z));
+            copyTo[index].x = Utils::GammaRev(Utils::Clamp(tmp[index].x));
+            copyTo[index].y = Utils::GammaRev(Utils::Clamp(tmp[index].y));
+            copyTo[index].z = Utils::GammaRev(Utils::Clamp(tmp[index].z));
           }
         }
       }
@@ -62,9 +103,9 @@ namespace OmochiRenderer {
           for (int x = 0; x < width; x++)
           {
             int index = x + y*width;
-            copyTo[index].x = Utils::Clamp(img[index].x);
-            copyTo[index].y = Utils::Clamp(img[index].y);
-            copyTo[index].z = Utils::Clamp(img[index].z);
+            copyTo[index].x = Utils::Clamp(tmp[index].x);
+            copyTo[index].y = Utils::Clamp(tmp[index].y);
+            copyTo[index].z = Utils::Clamp(tmp[index].z);
           }
         }
 

@@ -21,6 +21,8 @@ namespace OmochiRenderer {
     if (!ReadRLEPixelsFromRadianceFile(ifs, header.width, header.height)) return false;
 
     m_imageInfo = header;
+    m_width = header.width;
+    m_height = header.height;
     return true;
   }
 

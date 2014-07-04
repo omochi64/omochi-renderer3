@@ -1,6 +1,6 @@
-Scene type = CornellBoxScene
+#Scene type = CornellBoxScene
 #Scene type = TestScene
-#Scene type = IBLTestScene
+Scene type = IBLTestScene
 Scene information = input_data/cornell_box.scene
 number of threads = 4
 Show Preview = True
@@ -12,13 +12,15 @@ Time to stop renderer = 1800
 # for camera
 Width = 640
 Height = 480
+Camera Position = 80, 82.0, 420.0
+Camera Direction = 0, -0.25, -1.0
 
 # for pathtracer
-Supersamples = 2
+Supersamples = 1
 Sample Start = 1
 Sample End = 4096
 Sample Step = 1
-Next Event Estimation = True
+Next Event Estimation = False
 Save filename format for PathTracer = results/result(%savecount02%)_w(%width%)_h(%height%)_(%samples04%)_(%supersamples02%)x(%supersamples02%)_(%accumulatedTime03%)min
 #Save filename format for PathTracer = (%savecount02%)
 

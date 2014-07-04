@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
   // ƒJƒƒ‰İ’è
   Camera camera(settings->GetWidth(), settings->GetHeight(), settings->GetCameraPosition(), settings->GetCameraDirection(),
     settings->GetCameraUp(), settings->GetScreenHeightInWorldCoordinate(), settings->GetDistanceFromCameraToScreen(), 165);
-  camera.SetAperture(std::shared_ptr<Aperture>(new CircleAperture(10)));
+  camera.SetAperture(std::shared_ptr<Aperture>(new CircleAperture(1.5)));
 
   // ƒŒƒ“ƒ_ƒ‰¶¬
   std::shared_ptr<PathTracer> renderer = std::make_shared<PathTracer>(
