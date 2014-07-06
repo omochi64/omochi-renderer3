@@ -16,15 +16,15 @@ public:
     const Material &mat, const Vector3 &pos)
     : SceneObject(mat)
   {
-    m_posAndEdges[0] = m_rotatedPosAndEdges[0] = pos1;
-    m_posAndEdges[1] = m_rotatedPosAndEdges[1] = pos2 - pos1;
-    m_posAndEdges[2] = m_rotatedPosAndEdges[2] = pos3 - pos1;
+    m_posAndEdges[0] = pos1;
+    m_posAndEdges[1] = pos2 - pos1;
+    m_posAndEdges[2] = pos3 - pos1;
     m_uvOrigAndEdges[0] = uv1;
     m_uvOrigAndEdges[1] = uv2 - uv1;
     m_uvOrigAndEdges[2] = uv3 - uv1;
-    m_normalAndDiffs[0] = m_rotatedNormalAndDiffs[0] = normal1;
-    m_normalAndDiffs[1] = m_rotatedNormalAndDiffs[1] = normal2 - normal1;
-    m_normalAndDiffs[2] = m_rotatedNormalAndDiffs[2] = normal3 - normal1;
+    m_normalAndDiffs[0] = normal1;
+    m_normalAndDiffs[1] = normal2 - normal1;
+    m_normalAndDiffs[2] = normal3 - normal1;
     position = pos;
     reconstruct_boundingbox();
   }
@@ -33,10 +33,10 @@ public:
   {
     for (int i=0; i<3; i++) {
       m_posAndEdges[i] = polygon.m_posAndEdges[i];
-      m_rotatedPosAndEdges[i] = polygon.m_rotatedPosAndEdges[i];
+      //m_rotatedPosAndEdges[i] = polygon.m_rotatedPosAndEdges[i];
       m_uvOrigAndEdges[i] = polygon.m_uvOrigAndEdges[i];
       m_normalAndDiffs[i] = polygon.m_normalAndDiffs[i];
-      m_rotatedNormalAndDiffs[i] = polygon.m_rotatedNormalAndDiffs[i];
+      //m_rotatedNormalAndDiffs[i] = polygon.m_rotatedNormalAndDiffs[i];
     }
     reconstruct_boundingbox();
   }
@@ -51,11 +51,11 @@ public:
   void SetTransform(const Vector3 &pos, const Vector3 &scale = Vector3::One(), const Matrix &rot = Matrix::Identity()) {
     position = pos;
     for (int i=0; i<3; i++) {
-      m_rotatedPosAndEdges[i] = rot.Apply(m_posAndEdges[i]);
-      m_rotatedPosAndEdges[i].x *= scale.x;
-      m_rotatedPosAndEdges[i].y *= scale.y;
-      m_rotatedPosAndEdges[i].z *= scale.z;
-      m_rotatedNormalAndDiffs[i] = rot.Apply(m_normalAndDiffs[i]);
+      m_posAndEdges[i] = rot.Apply(m_posAndEdges[i]);
+      m_posAndEdges[i].x *= scale.x;
+      m_posAndEdges[i].y *= scale.y;
+      m_posAndEdges[i].z *= scale.z;
+      m_normalAndDiffs[i] = rot.Apply(m_normalAndDiffs[i]);
     }
     reconstruct_boundingbox();
   }
@@ -63,15 +63,15 @@ public:
   bool CheckIntersection(const Ray &ray, HitInformation &hit) const {
     // 連立方程式を解く
     // 参考: http://shikousakugo.wordpress.com/2012/07/01/ray-intersection-3/
-    const Vector3 &edge1 = m_rotatedPosAndEdges[1];
-    const Vector3 &edge2 = m_rotatedPosAndEdges[2];
+    const Vector3 &edge1 = m_posAndEdges[1];
+    const Vector3 &edge2 = m_posAndEdges[2];
 
     Vector3 P(ray.dir.cross(edge2));
     double det = P.dot(edge1);
 
     if (det > EPS) {
       // solve u
-      Vector3 T(ray.orig - (m_rotatedPosAndEdges[0] + position));
+      Vector3 T(ray.orig - (m_posAndEdges[0] + position));
       double u = P.dot(T);
 
       if (u>=0 && u<= det) {
@@ -91,7 +91,7 @@ public:
 
             hit.distance = t;
             hit.position = ray.orig + ray.dir*t;
-            hit.normal = m_rotatedNormalAndDiffs[1] * u_rate + m_rotatedNormalAndDiffs[2] * v_rate + m_rotatedNormalAndDiffs[0];
+            hit.normal = m_normalAndDiffs[1] * u_rate + m_normalAndDiffs[2] * v_rate + m_normalAndDiffs[0];
             hit.normal.normalize();
             hit.uv = uvEdge1 * u_rate + uvEdge2 * v_rate + m_uvOrigAndEdges[0];
 
@@ -111,9 +111,9 @@ public:
 
 private:
   void reconstruct_boundingbox() {
-    auto &pos0 = m_rotatedPosAndEdges[0];
-    auto pos1 = m_rotatedPosAndEdges[1] + m_rotatedPosAndEdges[0];
-    auto pos2 = m_rotatedPosAndEdges[2] + m_rotatedPosAndEdges[0];
+    auto &pos0 = m_posAndEdges[0];
+    auto pos1 = m_posAndEdges[1] + m_posAndEdges[0];
+    auto pos2 = m_posAndEdges[2] + m_posAndEdges[0];
     boundingBox.SetBox( Vector3(
       std::min(std::min(pos0.x, pos1.x), pos2.x),
       std::min(std::min(pos0.y, pos1.y), pos2.y),
@@ -128,8 +128,8 @@ private:
   }
 
 private:
-  Vector3 m_rotatedPosAndEdges[3];
-  Vector3 m_rotatedNormalAndDiffs[3]; // m_rotatedNormalAndDiffs[0]: normal0。 m_rotatedNormalAndDiffs[1,2]: normal1,2 - normal0 の値
+  //Vector3 m_rotatedPosAndEdges[3];
+  //Vector3 m_rotatedNormalAndDiffs[3]; // m_rotatedNormalAndDiffs[0]: normal0。 m_rotatedNormalAndDiffs[1,2]: normal1,2 - normal0 の値
 
 };
 

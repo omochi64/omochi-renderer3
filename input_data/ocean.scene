@@ -5,11 +5,19 @@ Space Partitioning: QBVH
 Objects:
 
 Obj Mesh {
+	FileName: Almejera/Almejera.obj
+	Position: 0, 35, 330
+	Scaling: 0.03, 0.03, 0.03
+	Rotation: 0, 80 deg, 0
+}
+
+Obj Mesh {
 	FileName: ocean.obj
-	Position: 90, 30, 30
+	Position: 300, 30, 30
 	Scaling: 15, 15, 15
 	Rotation: 0, 45 deg, 0
 }
+
 
 Sphere {
 	Radius: 20
@@ -20,7 +28,7 @@ Sphere {
 
 Sphere {
 	Radius: 16.5
-	Position: 27, 32.5, 197
+	Position: 77, 72.5, 197
 	Material: 0, 0, 0, SPECULAR, 0.99, 0.99, 0.99
 	Space Partitioning: False
 }

@@ -102,7 +102,7 @@ bool BVH::Construct(const BVH::CONSTRUCTION_TYPE type, const std::vector<SceneOb
   // Should I use dynamic array (vector)???
 
   //m_root = new BVH_structure[8*targets.size()+1]; // max size is 2*N+1
-  m_root.reserve(8*targets.size());
+  //m_root.reserve(24*targets.size());
   //m_bvh_node_size = targets.size()*targets.size()+1;
   //m_bvh_node_size = 8*targets.size()+1;
   m_root.push_back(BVH_structure());
@@ -164,28 +164,30 @@ void BVH::MakeLeaf_internal(const std::vector<SceneObject *> &targets, int index
 void BVH::Construct_internal(const CONSTRUCTION_TYPE type, const std::vector<SceneObject *> &targets, int index)
 {
   //assert (index < m_bvh_node_size);
+  std::vector<SceneObject *> lefts, rights;
 
-  const double T_aabb = 1.0; // cost of check intersection of AABB
-  const double T_tri = 1.0; // cost of check intersection of Triangle
+  {
+    const double T_aabb = 1.0; // cost of check intersection of AABB
+    const double T_tri = 1.0; // cost of check intersection of Triangle
 
-  // calculate this node's bounding box
-  CalcBoundingBoxOfObjects(targets, m_root[index].box[0], m_root[index].box[1]);
-  double currentBoxSurface = BoundingBox::CalcSurfaceArea(m_root[index].box[0], m_root[index].box[1]);
-  double currentBoxSurfaceInverse = 1.0/currentBoxSurface;
+    // calculate this node's bounding box
+    CalcBoundingBoxOfObjects(targets, m_root[index].box[0], m_root[index].box[1]);
+    double currentBoxSurface = BoundingBox::CalcSurfaceArea(m_root[index].box[0], m_root[index].box[1]);
+    double currentBoxSurfaceInverse = 1.0 / currentBoxSurface;
 
-  std::vector<SceneObject *> axisSortedLeft[3], axisSortedRight[3];
+    std::vector<SceneObject *> axisSortedLeft[3], axisSortedRight[3];
 
-  int bestAxis = -1;
-  int bestIndex = -1;
-  double bestCost = -1;
+    int bestAxis = -1;
+    int bestIndex = -1;
+    double bestCost = -1;
 
-  for (int axis=0; axis<3; axis++) {
+    for (int axis = 0; axis < 3; axis++) {
 
-    axisSortedLeft[axis] = targets;
+      axisSortedLeft[axis] = targets;
 
-    // sort objects by the axis
-    std::sort(axisSortedLeft[axis].begin(), axisSortedLeft[axis].end(),
-      [&axis](SceneObject * const &a, SceneObject * const &b) -> bool {
+      // sort objects by the axis
+      std::sort(axisSortedLeft[axis].begin(), axisSortedLeft[axis].end(),
+        [&axis](SceneObject * const &a, SceneObject * const &b) -> bool {
         switch (axis)
         {
         case 0: return a->boundingBox.position().x < b->boundingBox.position().x;
@@ -194,93 +196,93 @@ void BVH::Construct_internal(const CONSTRUCTION_TYPE type, const std::vector<Sce
         }
         assert(false);
         return a->boundingBox.position().x < b->boundingBox.position().x;
-    });
+      });
 
-    switch (type) {
-    case CONSTRUCTION_OBJECT_MEDIAN:
-      if (targets.size() > 2)
-      //if (index <= 0)
-      {
-        // select the media of the objects
-        int select = axisSortedLeft[axis].size()/2-1;
-        SceneObject *selectedObj = axisSortedLeft[axis][select];
-        SceneObject *leftest = axisSortedLeft[axis][0];
-        SceneObject *rightest = axisSortedLeft[axis][axisSortedLeft[axis].size()-1];
-        double dist = (selectedObj->boundingBox.position()-leftest->boundingBox.position()).lengthSq() + 
-          (selectedObj->boundingBox.position()-rightest->boundingBox.position()).lengthSq();
+      switch (type) {
+      case CONSTRUCTION_OBJECT_MEDIAN:
+        if (targets.size() > 2)
+          //if (index <= 0)
+        {
+          // select the media of the objects
+          int select = axisSortedLeft[axis].size() / 2 - 1;
+          SceneObject *selectedObj = axisSortedLeft[axis][select];
+          SceneObject *leftest = axisSortedLeft[axis][0];
+          SceneObject *rightest = axisSortedLeft[axis][axisSortedLeft[axis].size() - 1];
+          double dist = (selectedObj->boundingBox.position() - leftest->boundingBox.position()).lengthSq() +
+            (selectedObj->boundingBox.position() - rightest->boundingBox.position()).lengthSq();
 
-        if (dist > bestCost) {
-          bestCost = dist;
-          bestIndex = select;
-          bestAxis = axis;
+          if (dist > bestCost) {
+            bestCost = dist;
+            bestIndex = select;
+            bestAxis = axis;
+          }
         }
-      }
-      break;
-    case CONSTRUCTION_OBJECT_SAH: 
-    {
-      double *leftAreas = new double[axisSortedLeft[axis].size()];
-      double *rightAreas = new double[axisSortedLeft[axis].size()];
-      rightAreas[axisSortedLeft[axis].size()-1] = INF;
+        break;
+      case CONSTRUCTION_OBJECT_SAH:
+      {
+        double *leftAreas = new double[axisSortedLeft[axis].size()];
+        double *rightAreas = new double[axisSortedLeft[axis].size()];
+        rightAreas[axisSortedLeft[axis].size() - 1] = INF;
 
-      BoundingBox boxTmp;
-      axisSortedRight[axis].push_back(axisSortedLeft[axis].back());
-      axisSortedLeft[axis].pop_back();
-
-      // calculate right area
-      CalcBoundingBoxOfObjects(axisSortedRight[axis], boxTmp);
-      for (int i = static_cast<int>(axisSortedLeft[axis].size()) - 1; i >= 0; i--) {
-        rightAreas[i] = boxTmp.CalcSurfaceArea();
-        SceneObject *obj = axisSortedLeft[axis][i];
-        boxTmp.MergeAnotherBox(obj->boundingBox);
-
+        BoundingBox boxTmp;
         axisSortedRight[axis].push_back(axisSortedLeft[axis].back());
         axisSortedLeft[axis].pop_back();
-      }
 
-      axisSortedLeft[axis].push_back(axisSortedRight[axis].back());
-      axisSortedRight[axis].pop_back();
-      CalcBoundingBoxOfObjects(axisSortedLeft[axis], boxTmp);
-      
-      const double leafCost = T_tri * targets.size();
-      for (int i=static_cast<int>(axisSortedRight[axis].size())-1, cutIndex=0; i>=0; i--, cutIndex++) {
-        // calculate both surface area
-        leftAreas[cutIndex] = boxTmp.CalcSurfaceArea();
-        SceneObject *nextObj = axisSortedRight[axis].back();
-        boxTmp.MergeAnotherBox(nextObj->boundingBox);
+        // calculate right area
+        CalcBoundingBoxOfObjects(axisSortedRight[axis], boxTmp);
+        for (int i = static_cast<int>(axisSortedLeft[axis].size()) - 1; i >= 0; i--) {
+          rightAreas[i] = boxTmp.CalcSurfaceArea();
+          SceneObject *obj = axisSortedLeft[axis][i];
+          boxTmp.MergeAnotherBox(obj->boundingBox);
 
-        // move right to left
-        axisSortedLeft[axis].push_back(axisSortedRight[axis].back());
-        axisSortedRight[axis].pop_back();
-
-        // calc SAH
-        double cost = 2*T_aabb + (leftAreas[cutIndex]*axisSortedLeft[axis].size() + rightAreas[cutIndex]*axisSortedRight[axis].size())*currentBoxSurfaceInverse * T_tri;
-
-        if ((cost < bestCost || bestCost == -1) && cost < leafCost) {
-          bestCost = cost;
-          bestIndex = cutIndex;
-          bestAxis = axis;
-        } else {
-          int a = 10;
+          axisSortedRight[axis].push_back(axisSortedLeft[axis].back());
+          axisSortedLeft[axis].pop_back();
         }
 
+        axisSortedLeft[axis].push_back(axisSortedRight[axis].back());
+        axisSortedRight[axis].pop_back();
+        CalcBoundingBoxOfObjects(axisSortedLeft[axis], boxTmp);
+
+        const double leafCost = T_tri * targets.size();
+        for (int i = static_cast<int>(axisSortedRight[axis].size()) - 1, cutIndex = 0; i >= 0; i--, cutIndex++) {
+          // calculate both surface area
+          leftAreas[cutIndex] = boxTmp.CalcSurfaceArea();
+          SceneObject *nextObj = axisSortedRight[axis].back();
+          boxTmp.MergeAnotherBox(nextObj->boundingBox);
+
+          // move right to left
+          axisSortedLeft[axis].push_back(axisSortedRight[axis].back());
+          axisSortedRight[axis].pop_back();
+
+          // calc SAH
+          double cost = 2 * T_aabb + (leftAreas[cutIndex] * axisSortedLeft[axis].size() + rightAreas[cutIndex] * axisSortedRight[axis].size())*currentBoxSurfaceInverse * T_tri;
+
+          if ((cost < bestCost || bestCost == -1) && cost < leafCost) {
+            bestCost = cost;
+            bestIndex = cutIndex;
+            bestAxis = axis;
+          } else {
+            int a = 10;
+          }
+
+        }
+        delete[] leftAreas;
+        delete[] rightAreas;
       }
-      delete [] leftAreas;
-      delete [] rightAreas;
+        break;
+      }
     }
-      break;
+
+    if (bestAxis == -1) {
+      // make leaf
+      MakeLeaf_internal(targets, index);
+      return;
     }
-  }
-
-  if (bestAxis == -1) {
-    // make leaf
-    MakeLeaf_internal(targets, index);
-    return;
-  }
 
 
-  std::vector<SceneObject *> lefts = targets;
-  std::sort(lefts.begin(), lefts.end(),
-    [&bestAxis](SceneObject * const &a, SceneObject * const &b) -> bool {
+    lefts = targets;
+    std::sort(lefts.begin(), lefts.end(),
+      [&bestAxis](SceneObject * const &a, SceneObject * const &b) -> bool {
       switch (bestAxis)
       {
       case 0: return a->boundingBox.position().x < b->boundingBox.position().x;
@@ -289,18 +291,24 @@ void BVH::Construct_internal(const CONSTRUCTION_TYPE type, const std::vector<Sce
       }
       assert(false);
       return a->boundingBox.position().x < b->boundingBox.position().x;
-  });
+    });
 
-  std::vector<SceneObject *> rights(lefts.begin()+bestIndex+1, lefts.end());
-  lefts.resize(bestIndex+1);
+    rights = vector<SceneObject *>(lefts.begin() + bestIndex + 1, lefts.end());
+    lefts.resize(bestIndex + 1);
 
-  BVH_structure *current = &m_root[index];
-  current->axis = bestAxis;
-  current->children[0] = m_root.size();
-  current->children[1] = m_root.size()+1;
-  m_root.push_back(BVH_structure()); m_root.push_back(BVH_structure());
+    BVH_structure *current = &m_root[index];
+    current->axis = bestAxis;
+    current->children[0] = m_root.size();
+    current->children[1] = m_root.size() + 1;
+    if (m_root.capacity() < m_root.size() + 2)
+    {
+      m_root.reserve(m_root.capacity() + targets.size());
+    }
+    m_root.push_back(BVH_structure()); m_root.push_back(BVH_structure());
+  }
 
   // constructs children
+  BVH_structure *current = &m_root[index];
   Construct_internal(type, lefts, current->children[0]);
   Construct_internal(type, rights, current->children[1]);
 }
