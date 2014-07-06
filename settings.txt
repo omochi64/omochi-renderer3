@@ -1,7 +1,8 @@
 #Scene type = CornellBoxScene
 #Scene type = TestScene
-Scene type = IBLTestScene
-Scene information = input_data/cornell_box.scene
+#Scene type = IBLTestScene
+Scene type = SceneFromExternalFile
+Scene information = input_data/ocean.scene
 number of threads = 4
 Show Preview = True
 Save Span = 60
@@ -10,10 +11,12 @@ Save On Each Sample Ended = false
 Time to stop renderer = 1800
 
 # for camera
-Width = 640
-Height = 480
-Camera Position = 80, 82.0, 420.0
-Camera Direction = 0, -0.25, -1.0
+Width = 1280
+Height = 720
+#Width = 640
+#Height = 480
+Camera Position = 80, 102.0, 320.0
+Camera Direction = 0, -0.45, -1.0
 
 # for pathtracer
 Supersamples = 1

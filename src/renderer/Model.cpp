@@ -98,7 +98,7 @@ bool Model::ReadFromObj(const std::string &filename, bool flipV_of_UV) {
       // group name
       // begining of a new group
       currentGroupName = line.substr(string("g ").length());
-      verticesInGroup.clear(); normalsInGroup.clear(); uvCoordinatesInGroup.clear();
+      //verticesInGroup.clear(); normalsInGroup.clear(); uvCoordinatesInGroup.clear();
       currentMaterialName = defaultMaterialName;
       currentMaterial = &materialNames[currentMaterialName];
       currentPolygonList = &m_meshes[*currentMaterial];
@@ -118,6 +118,7 @@ bool Model::ReadFromObj(const std::string &filename, bool flipV_of_UV) {
     } else if (line.find("v ") == 0) {
       // vertex
       std::vector<string> vertex = Utils::split(line.substr(string("v ").length()), ' ');
+
       if (vertex.size() != 3) {
         cerr << "not correct .obj file!!: " << line << endl;
         return false;
@@ -127,7 +128,7 @@ bool Model::ReadFromObj(const std::string &filename, bool flipV_of_UV) {
     } else if (line.find("vt ") == 0) {
       // texture uv
       std::vector<string> vertex = Utils::split(line.substr(string("vt ").length()), ' ');
-      if (vertex.size() != 2) {
+      if (vertex.size() < 2) {
         cerr << "not correct .obj file!!: " << line << endl;
         return false;
       } else {
@@ -148,8 +149,17 @@ bool Model::ReadFromObj(const std::string &filename, bool flipV_of_UV) {
       // face
       vector<string> faces = Utils::split(line.substr(string("f ").length()), ' ');
       if (faces.size() >= 5) {
-        cerr << "5 or more vertices faces are not supported!!!: " << line << endl;
-        return false;
+        // triangle fan
+        for (int i = 0; i < faces.size() - 2; i++)
+        {
+          vector<string> face;
+          face.push_back(faces[0]);
+          face.push_back(faces[i+1]);
+          face.push_back(faces[i+2]);
+          PolygonPtr polygon(Load3verticesFace(face, verticesInGroup, normalsInGroup, uvCoordinatesInGroup, materialNames[currentMaterialName]));
+          currentPolygonList->push_back(polygon);
+        }
+        //return false;
       } else if (faces.size() == 4) {
         vector<PolygonPtr> polygons = load4verticesFace(faces, verticesInGroup, normalsInGroup, uvCoordinatesInGroup, materialNames[currentMaterialName]);
         currentPolygonList->push_back(polygons[0]);

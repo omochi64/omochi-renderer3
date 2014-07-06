@@ -10,6 +10,38 @@
 using namespace std;
 
 namespace OmochiRenderer {
+
+  Vector3 parseVector3(const std::string &str)
+  {
+    vector<string> pos_str(Utils::split(str, ','));
+    Vector3 vec;
+    if (pos_str.size() >= 1) {
+      vector<string> splited(Utils::split(Utils::trim(pos_str[0]), ' '));
+      vec.x = atof(Utils::trim(splited[0]).c_str());
+      if (splited.size() >= 2 && splited[1] == "deg")
+      {
+        vec.x = vec.x * PI / 180;
+      }
+    }
+    if (pos_str.size() >= 2) {
+      vector<string> splited(Utils::split(Utils::trim(pos_str[1]), ' '));
+      vec.y = atof(Utils::trim(splited[0]).c_str());
+      if (splited.size() >= 2 && splited[1] == "deg")
+      {
+        vec.y = vec.y * PI / 180;
+      }
+    }
+    if (pos_str.size() >= 3) {
+      vector<string> splited(Utils::split(Utils::trim(pos_str[2]), ' '));
+      vec.z = atof(Utils::trim(splited[0]).c_str());
+      if (splited.size() >= 2 && splited[1] == "deg")
+      {
+        vec.z = vec.z * PI / 180;
+      }
+    }
+    return vec;
+  }
+
   SceneFromExternalFile::SceneFromExternalFile(const string &file)
     : m_isValid(false)
     , m_baseDir()
@@ -80,7 +112,7 @@ namespace OmochiRenderer {
       string line;
       std::getline(ifs, line);
       line = Utils::ltrim(line);
-      if (line.empty()) {
+      if (line.empty() || line[0] == '#') {
         line_number++;
         if (ifs.eof()) break;
         continue;
@@ -267,6 +299,7 @@ namespace OmochiRenderer {
     Vector3 position;
     bool inSpacePartitioning = true;
     Material newMat;
+    FLOOR_TYPE type = FLOOR_XZ_YUP;
 
     std::for_each(lines.begin(), lines.end(), [&](const LinePair &it) {
       if (it.first == "Size") {
@@ -294,17 +327,90 @@ namespace OmochiRenderer {
         } else if (it.second == "False") {
           inSpacePartitioning = false;
         }
+      } else if (it.first == "Type") {
+        if (it.second == "XZ_yUp") {
+          type = FLOOR_XZ_YUP;
+        } else if (it.second == "XZ_yDown") {
+          type = FLOOR_XZ_YDOWN;
+        }
+        if (it.second == "XY_zUp") {
+          type = FLOOR_XY_ZUP;
+        } else if (it.second == "XY_zDown") {
+          type = FLOOR_XY_ZDOWN;
+        }
+        if (it.second == "YZ_xUp") {
+          type = FLOOR_YZ_XUP;
+        } else if (it.second == "YZ_xDown") {
+          type = FLOOR_YZ_XDOWN;
+        }
       }
     });
 
     if (!valid) return false;
 
-    AddFloorXZ_yUp(size_x, size_z, position, newMat);
+    switch (type)
+    {
+    case FLOOR_TYPE::FLOOR_XZ_YUP:
+      AddFloorXZ_yUp(size_x, size_z, position, newMat);
+      break;
+    case FLOOR_TYPE::FLOOR_XZ_YDOWN:
+      AddFloorXZ_yDown(size_x, size_z, position, newMat);
+      break;
+    case FLOOR_TYPE::FLOOR_XY_ZUP:
+      AddFloorXY_zUp(size_x, size_z, position, newMat);
+      break;
+    case FLOOR_TYPE::FLOOR_XY_ZDOWN:
+      AddFloorXY_zDown(size_x, size_z, position, newMat);
+      break;
+    case FLOOR_TYPE::FLOOR_YZ_XUP:
+      AddFloorYZ_xUp(size_x, size_z, position, newMat);
+      break;
+    case FLOOR_TYPE::FLOOR_YZ_XDOWN:
+      AddFloorYZ_xDown(size_x, size_z, position, newMat);
+      break;
+    }
 
     return true;
   }
 
   bool SceneFromExternalFile::ReadMesh(const std::vector<LinePair> &lines) {
-    return false;
+
+    string fileName;
+    Vector3 position, scaling(1,1,1), rotation;
+    bool valid = true;
+    bool inSpacePartitioning = true;
+
+    std::for_each(lines.begin(), lines.end(), [&](const LinePair &it) {
+      if (it.first == "FileName") {
+        fileName = m_baseDir + it.second.c_str();
+      } else if (it.first == "Position") {
+        position = parseVector3(it.second);
+      } else if (it.first == "Scaling") {
+        scaling = parseVector3(it.second);
+      } else if (it.first == "Rotation") {
+        rotation = parseVector3(it.second);
+      } else if (it.first == "Space Partitioning") {
+        if (it.second == "True") {
+          inSpacePartitioning = true;
+        } else if (it.second == "False") {
+          inSpacePartitioning = false;
+        }
+      }
+    });
+
+    if (!valid) return false;
+
+    Model *newModel = new Model;
+    if (!newModel->ReadFromObj(fileName))
+    {
+      return false;
+    }
+    newModel->SetTransform(position, scaling,
+      Matrix::RotateAroundVector(Vector3(0, 0, 1), rotation.z) * 
+      Matrix::RotateAroundVector(Vector3(0, 1, 0), rotation.y) *
+      Matrix::RotateAroundVector(Vector3(1, 0, 0), rotation.x) );
+    AddModel(newModel, true, inSpacePartitioning);
+
+    return true;
   }
 }

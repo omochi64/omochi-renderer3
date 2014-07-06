@@ -1,0 +1,42 @@
+Base Dir:input_data
+IBL: Barce_Rooftop_C_Env.hdr
+Space Partitioning: QBVH
+
+Objects:
+
+Obj Mesh {
+	FileName: ocean.obj
+	Position: 90, 30, 30
+	Scaling: 15, 15, 15
+	Rotation: 0, 45 deg, 0
+}
+
+Sphere {
+	Radius: 20
+	Position: 65, 35, 230
+	Material: 0, 0, 0, LAMBERT, 0.25, 0.75, 0.25
+	Space Partitioning: False
+}
+
+Sphere {
+	Radius: 16.5
+	Position: 27, 32.5, 197
+	Material: 0, 0, 0, SPECULAR, 0.99, 0.99, 0.99
+	Space Partitioning: False
+}
+
+Sphere {
+	Radius: 16.5
+	Position: 127, 35.5, 172
+	Material: 0, 0, 0, REFRACTION, 0.99, 0.99, 0.99, 2.0
+	Space Partitioning: False
+}
+
+# ŒõŒ¹
+#SphereLight {
+#	Radius: 15.0
+#	Position: 50.0, 90.0, 81.6
+#	Material: 36, 36, 36, LAMBERT, 0, 0, 0
+#	Space Partitioning: False
+#}
+

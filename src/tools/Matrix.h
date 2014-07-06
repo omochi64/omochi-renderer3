@@ -49,6 +49,25 @@ public:
     return i;
   };
 
+  Matrix operator *(const Matrix &rhs) const
+  {
+    Matrix res;
+
+    for (int row = 0; row < 4; row++)
+    {
+      for (int column = 0; column < 4; column++)
+      {
+        res.m[row][column] = 0;
+        for (int k = 0; k < 4; k++)
+        {
+          res.m[row][column] += m[row][k] * rhs.m[k][column];
+        }
+      }
+    }
+
+    return res;
+  }
+
 private:
   double m[4][4];
 };

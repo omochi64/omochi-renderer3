@@ -17,6 +17,15 @@ namespace OmochiRenderer {
 
     typedef std::pair<std::string, std::string> LinePair;
 
+    enum FLOOR_TYPE {
+      FLOOR_XZ_YUP,
+      FLOOR_XZ_YDOWN,
+      FLOOR_XY_ZUP,
+      FLOOR_XY_ZDOWN,
+      FLOOR_YZ_XUP,
+      FLOOR_YZ_XDOWN,
+    };
+
     bool ReadFromFile(const std::string &file);
     bool ReadHeader(const std::vector<LinePair> &lines);
     bool ReadMesh(const std::vector<LinePair> &lines);
@@ -26,6 +35,7 @@ namespace OmochiRenderer {
     bool ParseMaterial(const std::string &data, Material &mat);
 
   private:
+
     bool m_isValid;
 
     std::string m_baseDir;
