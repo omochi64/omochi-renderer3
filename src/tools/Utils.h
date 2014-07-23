@@ -11,8 +11,25 @@ namespace OmochiRenderer {
 class Utils {
 public:
   static std::vector<std::string> split(const std::string &str, char delim) {
-    std::istringstream iss(str); std::string tmp; std::vector<std::string> res;
-    while (std::getline(iss, tmp, delim)) res.push_back(tmp);
+    //std::istringstream iss(str); std::string tmp; std::vector<std::string> res;
+    //while (std::getline(iss, tmp, delim)) res.push_back(tmp);
+    std::vector<std::string> res;
+    int nextIndex = 0;
+    while (nextIndex < str.length())
+    {
+      auto pos = str.find(delim, nextIndex);
+      if (pos != std::string::npos)
+      {
+        res.push_back(str.substr(nextIndex, pos - nextIndex));
+        nextIndex = pos + 1;
+      }
+      else
+      {
+        res.push_back(str.substr(nextIndex));
+        break;
+      }
+    }
+
     return res;
   }
 

@@ -1,18 +1,19 @@
 Base Dir:input_data
-IBL: Barce_Rooftop_C_Env.hdr
+IBL:Barce_Rooftop_C_Env.hdr
+#é¿ç€Ç…ì«Ç›çûÇÒÇ≈ÇÈÇ©Ç«Ç§Ç©Ç…ä÷åWÇ»Ç≠ÅAIBL:ÇÃçsÇ™Ç†ÇÈÇ∆óéÇøÇÈ
 Space Partitioning: QBVH
 
 Objects:
 
 Obj Mesh {
-	FileName: Almejera/Almejera.obj
+	FileName: Almejera/Almejera__.obj
 	Position: 0, 35, 330
-	Scaling: 0.03, 0.03, 0.03
+	Scaling: 2, 2, 2
 	Rotation: 0, 80 deg, 0
 }
 
 Obj Mesh {
-	FileName: ocean.obj
+	FileName: ocean_tmp.obj
 	Position: 300, 30, 30
 	Scaling: 15, 15, 15
 	Rotation: 0, 45 deg, 0

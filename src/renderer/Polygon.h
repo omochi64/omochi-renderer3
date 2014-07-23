@@ -48,7 +48,7 @@ public:
     return v;
   }
 
-  void SetTransform(const Vector3 &pos, const Vector3 &scale = Vector3::One(), const Matrix &rot = Matrix::Identity()) {
+  void Transform(const Vector3 &pos, const Vector3 &scale = Vector3::One(), const Matrix &rot = Matrix::Identity()) {
     position = pos;
     for (int i=0; i<3; i++) {
       m_posAndEdges[i] = rot.Apply(m_posAndEdges[i]);

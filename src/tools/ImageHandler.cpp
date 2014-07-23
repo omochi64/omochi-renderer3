@@ -8,6 +8,8 @@
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 
+#include "HDRImage.h"
+
 namespace OmochiRenderer
 {
   ImageHandler::~ImageHandler()
@@ -17,52 +19,66 @@ namespace OmochiRenderer
   // 色々読み込み。stb が対応しているものなら何でも読み込み可能
   ImageHandler::IMAGE_ID ImageHandler::LoadFromFile(const std::string &fname, bool doReverseGamma)
   {
-    int bpp;
-    int width, height;
+    Image *image = nullptr;
 
-    // 既に読み込んでないか確認
-    auto findIt = m_filenameToImageIndex.find(fname);
-    if (findIt != m_filenameToImageIndex.end())
+    if (fname.find_last_of(".hdr") != std::string::npos)
     {
-      auto p = m_images[findIt->second];
-      if (p != nullptr)
-      {
-        return findIt->second;
+      HDRImage *hdrImage = new HDRImage;
+      if (!hdrImage->ReadFromRadianceFile(fname)) {
+        delete hdrImage;  return ImageHandler::INVALID_IMAGE_ID;
       }
+
+      image = hdrImage;
     }
-
-    // 読み込み実体
-    
-    auto pixels = stbi_load(fname.c_str(), &width, &height, &bpp, 0);
-    if (pixels == nullptr) {
-      return INVALID_IMAGE_ID;
-    }
-
-    int bytePerPixel = bpp;
-
-    assert(bytePerPixel >= 3);
-
-    Image *image = new Image;
-
-    image->m_width = width;
-    image->m_height = height;
-    image->m_image.resize(width*height);
-
-    for (int i = 0; i < width*height; i++)
+    else
     {
-      image->m_image[i].x = pixels[i*bytePerPixel + 0] / 255.0f;
-      image->m_image[i].y = pixels[i*bytePerPixel + 1] / 255.0f;
-      image->m_image[i].z = pixels[i*bytePerPixel + 2] / 255.0f;
+      int bpp;
+      int width, height;
 
-      if (doReverseGamma)
+      // 既に読み込んでないか確認
+      auto findIt = m_filenameToImageIndex.find(fname);
+      if (findIt != m_filenameToImageIndex.end())
       {
-        image->m_image[i].x = Utils::InvGammaRev(image->m_image[i].x);
-        image->m_image[i].y = Utils::InvGammaRev(image->m_image[i].y);
-        image->m_image[i].z = Utils::InvGammaRev(image->m_image[i].z);
+        auto p = m_images[findIt->second];
+        if (p != nullptr)
+        {
+          return findIt->second;
+        }
       }
-    }
 
-    stbi_image_free(pixels);
+      // 読み込み実体
+
+      auto pixels = stbi_load(fname.c_str(), &width, &height, &bpp, 0);
+      if (pixels == nullptr) {
+        return INVALID_IMAGE_ID;
+      }
+
+      int bytePerPixel = bpp;
+
+      assert(bytePerPixel >= 3);
+
+      image = new Image;
+
+      image->m_width = width;
+      image->m_height = height;
+      image->m_image.resize(width*height);
+
+      for (int i = 0; i < width*height; i++)
+      {
+        image->m_image[i].x = pixels[i*bytePerPixel + 0] / 255.0f;
+        image->m_image[i].y = pixels[i*bytePerPixel + 1] / 255.0f;
+        image->m_image[i].z = pixels[i*bytePerPixel + 2] / 255.0f;
+
+        if (doReverseGamma)
+        {
+          image->m_image[i].x = Utils::InvGammaRev(image->m_image[i].x);
+          image->m_image[i].y = Utils::InvGammaRev(image->m_image[i].y);
+          image->m_image[i].z = Utils::InvGammaRev(image->m_image[i].z);
+        }
+      }
+
+      stbi_image_free(pixels);
+    }
 
     m_images.push_back(image);
     auto id = m_images.size() - 1;

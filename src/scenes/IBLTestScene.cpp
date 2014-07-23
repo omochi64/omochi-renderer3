@@ -40,7 +40,7 @@ namespace OmochiRenderer {
       exit(-1);
     }
     //cube->SetTransform(Vector3(90, 30, 30), Vector3(15, 15, 15), Matrix::RotateAroundVector(Vector3(0, 1, 0), 45.0 / 180 * PI));
-    cube->SetTransform(Vector3(85, -10, 172), Vector3(160, 160, 160), Matrix::RotateAroundVector(Vector3(0, 1, 0), 15.0 / 180 * PI));
+    cube->Transform(Vector3(85, -10, 172), Vector3(160, 160, 160), Matrix::RotateAroundVector(Vector3(0, 1, 0), 15.0 / 180 * PI));
     AddModel(cube);
 
     cube = new Model;
@@ -50,7 +50,7 @@ namespace OmochiRenderer {
       exit(-1);
     }
     //cube->SetTransform(Vector3(90, 30, 30), Vector3(15, 15, 15), Matrix::RotateAroundVector(Vector3(0, 1, 0), 45.0 / 180 * PI));
-    cube->SetTransform(Vector3(85, 30, 142), Vector3(140, 140, 140), Matrix::RotateAroundVector(Vector3(0, 1, 0), 15.0 / 180 * PI) * Matrix::RotateAroundVector(Vector3(0, 0, 1), -90.0 / 180 * PI));
+    cube->Transform(Vector3(85, 30, 142), Vector3(140, 140, 140), Matrix::RotateAroundVector(Vector3(0, 1, 0), 15.0 / 180 * PI) * Matrix::RotateAroundVector(Vector3(0, 0, 1), -90.0 / 180 * PI));
     AddModel(cube);
 
     cube = new Model;
@@ -60,7 +60,7 @@ namespace OmochiRenderer {
       exit(-1);
     }
     //cube->SetTransform(Vector3(90, 30, 30), Vector3(15, 15, 15), Matrix::RotateAroundVector(Vector3(0, 1, 0), 45.0 / 180 * PI));
-    cube->SetTransform(Vector3(65, 30, 172), Vector3(1, 1, 1), Matrix::RotateAroundVector(Vector3(0, 1, 0), 15.0 / 180 * PI));
+    cube->Transform(Vector3(65, 30, 172), Vector3(1, 1, 1), Matrix::RotateAroundVector(Vector3(0, 1, 0), 15.0 / 180 * PI));
     AddModel(cube);
 
     // floor

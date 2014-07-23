@@ -35,14 +35,14 @@ void Model::Clear()
   m_meshes.clear();
 }
 
-void Model::SetTransform(const Vector3 &pos, const Vector3 &scale, const Matrix &rot) {
+void Model::Transform(const Vector3 &pos, const Vector3 &scale, const Matrix &rot) {
   m_position = pos;
 
   std::vector<Material>::iterator it, end = m_materials.end();
   for (it = m_materials.begin(); it!=end; it++) {
     PolygonList l = GetPolygonList(*it);
     for (size_t i=0; i<l.size(); i++) {
-      l[i]->SetTransform(pos, scale, rot);
+      l[i]->Transform(pos, scale, rot);
     }
   }
 }
@@ -147,6 +147,7 @@ bool Model::ReadFromObj(const std::string &filename, bool flipV_of_UV) {
       }
     } else if (line.find("f ") == 0) {
       // face
+      
       vector<string> faces = Utils::split(line.substr(string("f ").length()), ' ');
       if (faces.size() >= 5) {
         // triangle fan

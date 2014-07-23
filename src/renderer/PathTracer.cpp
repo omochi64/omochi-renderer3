@@ -270,8 +270,8 @@ namespace {
 Color PathTracer::Radiance_internal(const Scene &scene, const Ray &ray, Random &rnd, const int depth, const bool intersected, Scene::IntersectionInformation &intersect, const Vector3 &normal) {
   if (!intersected) {
     if (scene.GetIBL()) {
-      return scene.GetIBL()->Sample(ray);    // 正確に背景との衝突位置を計算する
-      // return scene.GetIBL()->Sample(ray.dir); // レイが原点から始まっているとみなして計算する
+      //return scene.GetIBL()->Sample(ray);    // 正確に背景との衝突位置を計算する
+      return scene.GetIBL()->Sample(ray.dir); // レイが原点から始まっているとみなして計算する
     } else {
       return scene.Background();
     }

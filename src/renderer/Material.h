@@ -42,7 +42,7 @@ struct MaterialHash {
   size_t operator()(const Material &mat) const {
     size_t type = static_cast<size_t>(mat.reflection_type);
     std::stringstream ss;
-    ss << type << "_" << mat.color.toString() + "_" + mat.emission.toString() + "_" << mat.refraction_rate;
+    ss << type << "_" << mat.color.toString() + "_" + mat.emission.toString() + "_" << mat.refraction_rate << "_" << mat.texture_id;
     return sh(ss.str());
   }
 };

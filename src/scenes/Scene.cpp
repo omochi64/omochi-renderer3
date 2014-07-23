@@ -28,8 +28,8 @@ void Scene::ConstructBVH()
   if (m_bvh) delete m_bvh;
 
   m_bvh = new BVH();
-  //m_bvh->Construct(BVH::CONSTRUCTION_OBJECT_SAH, m_inBVHObjects);
-  m_bvh->Construct(BVH::CONSTRUCTION_OBJECT_MEDIAN, m_inBVHObjects);
+  m_bvh->Construct(BVH::CONSTRUCTION_OBJECT_SAH, m_inBVHObjects);
+  //m_bvh->Construct(BVH::CONSTRUCTION_OBJECT_MEDIAN, m_inBVHObjects);
 }
 
 void Scene::ConstructQBVH()

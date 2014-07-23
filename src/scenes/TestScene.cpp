@@ -12,9 +12,9 @@ namespace OmochiRenderer {
 
 TestScene::TestScene()
 {
-  auto tex = ImageHandler::GetInstance().LoadFromFile("input_data/chino.jpg", true);
+  auto tex = -1;// ImageHandler::GetInstance().LoadFromFile("input_data/chino.jpg", true);
 
-  //AddObject(new Sphere(1e5, Vector3(1e5 + 1, 40.8, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.25, 0.25), 0.0, tex)), true, false);  // 左
+  ////AddObject(new Sphere(1e5, Vector3(1e5 + 1, 40.8, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.25, 0.25), 0.0, tex)), true, false);  // 左
   //AddFloorYZ_xUp(200, 200, Vector3(1, 40.8, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.25, 0.25), 0.0)); // 左
   ////AddObject(new Sphere(1e5, Vector3(-1e5 + 99, 40.8, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.25, 0.25, 0.75), tex)), true, false);  // 右
   //AddFloorYZ_xDown(200, 200, Vector3(99, 40.8, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.25, 0.25, 0.75), 0.0)); // 右
@@ -27,26 +27,28 @@ TestScene::TestScene()
   ////AddObject(new Sphere(1e5, Vector3(50, -1e5 + 81.6, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75))), true, false);  // 上
   //AddFloorXZ_yDown(200, 200, Vector3(50, 81.6, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(), Color(0.75, 0.75, 0.75)));
 
+  m_ibl.reset(new IBL("input_data/Barce_Rooftop_C_Env.hdr"));
  
   Model *cube = new Model;
-  if (!cube->ReadFromObj("input_data/ocean.obj", true)) {
+  if (!cube->ReadFromObj("input_data/Almejera/Almejera__.obj", true)) {
     std::cerr << "failed to load cube.obj!!!" << std::endl;
     getchar();
     exit(-1);
   }
-  cube->SetTransform(Vector3(50, 30, 50), Vector3(10, 10, 10), Matrix::RotateAroundVector(Vector3(0, 1, 0), 45.0 / 180 * PI));
-  //cube->SetTransform(Vector3(50, 10, 50), Vector3(6, 6, 6), Matrix::RotateAroundVector(Vector3(0, 1, 0), 30.0 / 180 * PI));
-  //cube->SetTransform(Vector3(0, 0, -30), Vector3(5, 5, 5), Matrix::RotateAroundVector(Vector3(0, 1, 0), 90.0 / 180 * PI));
-  AddModel(cube);
+  //cube->Transform(Vector3(50, 30, 50), Vector3(10, 10, 10), Matrix::RotateAroundVector(Vector3(0, 1, 0), 45.0 / 180 * PI));
+  //cube->Transform(Vector3(50, 10, 50), Vector3(6, 6, 6), Matrix::RotateAroundVector(Vector3(0, 1, 0), 30.0 / 180 * PI));
+  //cube->Transform(Vector3(50, 5, 70), Vector3(0.05, 0.05, 0.05), Matrix::RotateAroundVector(Vector3(0, 1, 0), 15.0 / 180 * PI));
+  cube->Transform(Vector3(27, 16.5, 47), Vector3(1, 1, 1), Matrix::RotateAroundVector(Vector3(0, 1, 0), 0 / 180 * PI));
+  AddModel(cube, true, true);
   
-  //AddObject(new Sphere(10,Vector3(),           Material(Material::REFLECTION_TYPE_LAMBERT,    Color(), Color(0.25, 0.75, 0.25))));    // 緑球
-  //AddObject(new Sphere(16.5,Vector3(27, 16.5, 47),       Material(Material::REFLECTION_TYPE_SPECULAR,   Color(), Color(0.99, 0.99, 0.99))));   // 鏡
-  //AddObject(new Sphere(16.5,Vector3(77, 16.5, 78),       Material(Material::REFLECTION_TYPE_REFRACTION, Color(), Color(0.99, 0.99, 0.99), REFRACTIVE_INDEX_OBJECT))); // ガラス
+  AddObject(new Sphere(10,Vector3(),           Material(Material::REFLECTION_TYPE_LAMBERT,    Color(), Color(0.25, 0.75, 0.25))));    // 緑球
+  AddObject(new Sphere(16.5,Vector3(27, 16.5, 47),       Material(Material::REFLECTION_TYPE_SPECULAR,   Color(), Color(0.99, 0.99, 0.99))));   // 鏡
+  AddObject(new Sphere(16.5,Vector3(77, 16.5, 78),       Material(Material::REFLECTION_TYPE_REFRACTION, Color(), Color(0.99, 0.99, 0.99), REFRACTIVE_INDEX_OBJECT))); // ガラス
 
 
-  SphereLight *sphereLight = new SphereLight(7.5, Vector3(50.0, 72.5, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(26, 26, 26), Color()));
+  //SphereLight *sphereLight = new SphereLight(7.5, Vector3(50.0, 72.5, 61.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(26, 26, 26), Color()));
   //SphereLight *sphereLight = new SphereLight(15, Vector3(50.0, 90, 81.6), Material(Material::REFLECTION_TYPE_LAMBERT, Color(36, 36, 36), Color()));
-  AddObject(sphereLight, true, false);    // 照明
+  //AddObject(sphereLight, true, false);    // 照明
 
   //ConstructBVH();
   ConstructQBVH();

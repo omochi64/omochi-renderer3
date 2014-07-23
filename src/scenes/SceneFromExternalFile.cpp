@@ -183,7 +183,7 @@ namespace OmochiRenderer {
     m_iblFileName = m_spacePartitioningMethod = "";
 
     std::vector<LinePair>::const_iterator it, end = lines.end();
-    for (it = lines.begin(); it != end; it++) {
+    for (it = lines.begin(); it != end; ++it) {
       if (it->first == "Base Dir" || it->first == "BaseDir") {
         m_baseDir = it->second;
         if (m_baseDir.length() > 0 && m_baseDir.back() != '/') {
@@ -191,6 +191,7 @@ namespace OmochiRenderer {
         }
       } else if (it->first == "IBL") {
         m_iblFileName = m_baseDir + it->second;
+        cerr << it->second << endl;
         m_ibl.reset(new IBL(m_iblFileName));
       } else if (it->first == "Space Partitioning") {
         m_spacePartitioningMethod = it->second;
@@ -200,6 +201,7 @@ namespace OmochiRenderer {
         return false;
       }
     }
+    //m_ibl.reset(new IBL(m_baseDir + "Barce_Rooftop_C_Env.hdr"));
     return true;
   }
 
@@ -405,11 +407,12 @@ namespace OmochiRenderer {
     {
       return false;
     }
-    newModel->SetTransform(position, scaling,
+    newModel->Transform(position, scaling,
       Matrix::RotateAroundVector(Vector3(0, 0, 1), rotation.z) * 
       Matrix::RotateAroundVector(Vector3(0, 1, 0), rotation.y) *
       Matrix::RotateAroundVector(Vector3(1, 0, 0), rotation.x) );
     AddModel(newModel, true, inSpacePartitioning);
+
 
     return true;
   }

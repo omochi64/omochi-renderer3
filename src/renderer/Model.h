@@ -25,7 +25,7 @@ public:
   const Vector3 &GetPosition() const {
     return m_position;
   }
-  void SetTransform(const Vector3 &pos, const Vector3 &scale = Vector3::One(), const Matrix &rot = Matrix::Identity());
+  void Transform(const Vector3 &pos, const Vector3 &scale = Vector3::One(), const Matrix &rot = Matrix::Identity());
   //void setRotation(const Matrix &matrix);
 
   // obj ÉtÉ@ÉCÉãÇ©ÇÁÇÃì«Ç›çûÇ›

@@ -11,7 +11,7 @@ namespace OmochiRenderer {
   class IBL {
   public:
 
-    IBL(const std::string &hdr_filename, const double radius = 1000.0, const Vector3 &centerPosition = Vector3::Zero())
+    IBL(const std::string &hdr_filename, const double radius = 1000000.0, const Vector3 &centerPosition = Vector3::Zero())
       : m_image()
       , m_radius(radius)
       , m_center(centerPosition)
@@ -21,7 +21,7 @@ namespace OmochiRenderer {
         return;
       }
 
-      CreateImportanceSamplingMap();
+      //CreateImportanceSamplingMap();
     }
 
     inline const Color &Sample(const Ray &ray) const {
@@ -102,6 +102,8 @@ namespace OmochiRenderer {
     }
 
     void CreateImportanceSamplingMap() {
+      return;
+
       std::vector<Color> xyToEnv(m_image.GetWidth()*m_image.GetHeight());
 
       size_t width = m_image.GetWidth();
