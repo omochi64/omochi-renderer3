@@ -3,7 +3,7 @@
 #Scene type = IBLTestScene
 Scene type = SceneFromExternalFile
 Scene information = input_data/ocean.scene
-number of threads = 4
+number of threads = 0
 Show Preview = True
 Save Span = 60
 Max Save Count For periodic save= 30

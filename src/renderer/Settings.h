@@ -29,6 +29,7 @@ namespace OmochiRenderer {
       , m_timeToStopRenderer(0)
       , m_showPreview(true)
       , m_rawSettings()
+      , m_saveHDR(true)
     {
     }
     ~Settings() {}
@@ -85,7 +86,7 @@ namespace OmochiRenderer {
           m_distanceFromCameraToScreen = atof(value.c_str());
         } else if (keyword == "number of threads") {
           m_numThreads = atoi(value.c_str());
-          if (m_numThreads < 1) m_numThreads = 1;
+          //if (m_numThreads < 1) m_numThreads = 1;
         } else if (keyword == "show preview") {
           m_showPreview = Utils::parseBoolean(value);
         } else if (keyword == "save span") {
@@ -96,6 +97,8 @@ namespace OmochiRenderer {
           m_maxSaveCountForPeriodicSave = atoi(value.c_str());
         } else if (keyword == "time to stop renderer") {
           m_timeToStopRenderer = atof(value.c_str());
+        } else if (keyword == "save hdr") {
+          m_saveHDR = Utils::parseBoolean(value);
         } else {
           //std::cerr << "Unknown keyword: " << keyword << std::endl;
         }
@@ -121,6 +124,7 @@ namespace OmochiRenderer {
     const Vector3 &GetCameraUp() const { return m_camUp; }
     int GetNumberOfThreads() const { return m_numThreads; }
     bool DoShowPreview() const { return m_showPreview; }
+    bool DoSaveHDR() const { return m_saveHDR; }
 
     double GetSaveSpan() const { return m_saveSpan; }
     bool DoSaveOnEachSampleEnded() const { return m_doSaveOnEachSampleEnded; }
@@ -157,6 +161,8 @@ namespace OmochiRenderer {
     double m_timeToStopRenderer;
 
     bool m_showPreview;
+
+    bool m_saveHDR;
 
     std::map<std::string, std::string> m_rawSettings;
   };

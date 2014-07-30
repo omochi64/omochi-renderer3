@@ -48,20 +48,35 @@ int main(int argc, char *argv[]) {
   }
 
   // ファイル保存用インスタンス
-  auto saver = std::make_shared<RadianceSaver>(settings);
-  auto saver2 = std::make_shared<PNGSaver>(settings);
+  auto hdrSaver = settings->DoSaveHDR() ? std::make_shared<RadianceSaver>(settings) : nullptr;
+  auto pngSaver = std::make_shared<PNGSaver>(settings);
 
-  PathTracer::RenderingFinishCallbackFunction callback([&saver, &saver2](int samples, const Color *img, double accumulatedRenderingTime) {
+  PathTracer::RenderingFinishCallbackFunction callback([&hdrSaver, &pngSaver](int samples, const Color *img, double accumulatedRenderingTime) {
       // レンダリング完了時に呼ばれるコールバックメソッド
       cerr << "save ppm file for sample " << samples << " ..." << endl;
-      saver->Save(samples, 9999999, img, accumulatedRenderingTime);
-      saver2->Save(samples, 9999999, img, accumulatedRenderingTime);
+      if (hdrSaver) {
+        hdrSaver->Save(samples, 9999999, img, accumulatedRenderingTime);
+      }
+      pngSaver->Save(samples, 9999999, img, accumulatedRenderingTime);
       cerr << "Total rendering time = " << accumulatedRenderingTime << " min." << endl;
   });
 
   if (!settings->DoSaveOnEachSampleEnded()) {
     callback = nullptr;
   }
+
+
+  // OpenMP による並列数の設定
+  auto max_thread_num = omp_get_max_threads();
+  auto setting_thread_num = settings->GetNumberOfThreads();
+  int thread_num = setting_thread_num;
+  if (setting_thread_num <= 0) {
+    thread_num = max_thread_num;
+  }
+  if (thread_num > max_thread_num) thread_num = max_thread_num;
+
+  cerr << "thread num = " << thread_num << endl;
+  omp_set_num_threads(thread_num);
 
   // カメラ設定
   Camera camera(settings->GetWidth(), settings->GetHeight(), settings->GetCameraPosition(), settings->GetCameraDirection(),
@@ -74,8 +89,10 @@ int main(int argc, char *argv[]) {
   renderer->EnableNextEventEstimation(Utils::parseBoolean(settings->GetRawSetting("next event estimation")));
 
   // 時間監視してファイルを保存するインスタンス
-  FileSaverCallerWithTimer timeSaver(renderer, saver);
-  timeSaver.AddSaver(saver2);
+  FileSaverCallerWithTimer timeSaver(renderer, pngSaver);
+  if (hdrSaver) {
+    timeSaver.AddSaver(hdrSaver);
+  }
   timeSaver.SetSaveTimerInformation(settings->GetSaveSpan());
   timeSaver.SetMaxSaveCount(settings->GetMaxSaveCountForPeriodicSave());
   timeSaver.SetAimTimeToSaveFile(1.5);
@@ -95,8 +112,6 @@ int main(int argc, char *argv[]) {
     return -1;
   }
   std::shared_ptr<Scene> scene = sceneFactory->Create(settings->GetSceneInformation());
-
-  omp_set_num_threads(settings->GetNumberOfThreads());
 
   clock_t startTime;
 
