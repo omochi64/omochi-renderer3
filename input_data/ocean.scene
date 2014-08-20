@@ -7,9 +7,9 @@ Objects:
 
 Obj Mesh {
 	FileName: Almejera/Almejera__.obj
-	Position: 3, 44, 330
+	Position: 3, 45, 330
 	Scaling: 2.5, 2.5, 2.5
-	Rotation: 0 deg, 85 deg, 5 deg
+	Rotation: 0 deg, 82 deg, 10 deg
 }
 
 Obj Mesh {

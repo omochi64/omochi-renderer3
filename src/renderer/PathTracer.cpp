@@ -380,7 +380,10 @@ Color PathTracer::Radiance_Lambert(const Scene &scene, const Ray &ray, Random &r
 
   //Color weight = intersect.object->color / PI * r2 / pdf / russian_roulette_prob;
   Color weight = intersect.texturedHitpointColor;
-  Color income = Radiance(scene, Ray(intersect.hit.position, dir), rnd, depth+1);
+  Color income(0,0,0);
+  if (intersect.object->material.emission.lengthSq() == 0) {
+    income = Radiance(scene, Ray(intersect.hit.position, dir), rnd, depth + 1);
+  } 
   // direct ‚Í‚·‚Å‚É”½Ë—¦‚ªæZÏ‚İ‚È‚Ì‚ÅAweight‚ğŠ|‚¯‚é•K—v‚Í‚È‚¢
   return ( Vector3(weight.x*income.x, weight.y*income.y, weight.z*income.z) + direct ) / russian_roulette_prob;
 }
