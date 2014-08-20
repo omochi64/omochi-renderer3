@@ -7,9 +7,9 @@ Objects:
 
 Obj Mesh {
 	FileName: Almejera/Almejera__.obj
-	Position: 0, 35, 330
-	Scaling: 2, 2, 2
-	Rotation: 0, 80 deg, 0
+	Position: 3, 44, 330
+	Scaling: 2.5, 2.5, 2.5
+	Rotation: 0 deg, 85 deg, 5 deg
 }
 
 Obj Mesh {
@@ -21,22 +21,22 @@ Obj Mesh {
 
 
 Sphere {
-	Radius: 20
-	Position: 65, 35, 230
+	Radius: 18
+	Position: 0, 62.5, 97
 	Material: 0, 0, 0, LAMBERT, 0.25, 0.75, 0.25
 	Space Partitioning: False
 }
 
 Sphere {
-	Radius: 16.5
-	Position: 77, 72.5, 197
+	Radius: 18.5
+	Position: 90, 63.5, 227
 	Material: 0, 0, 0, SPECULAR, 0.99, 0.99, 0.99
 	Space Partitioning: False
 }
 
 Sphere {
 	Radius: 16.5
-	Position: 127, 35.5, 172
+	Position: 160, 65.5, 187
 	Material: 0, 0, 0, REFRACTION, 0.99, 0.99, 0.99, 2.0
 	Space Partitioning: False
 }

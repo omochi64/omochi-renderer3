@@ -173,6 +173,12 @@ Color PathTracer::DirectRadiance(const Scene &scene, const Ray &ray, Random &rnd
 Color PathTracer::DirectRadiance_Lambert(const Scene &scene, const Ray &ray, Random &rnd, const int depth, const bool intersected, Scene::IntersectionInformation &intersect, const Vector3 &normal) {
   assert(intersected);
 
+  // ƒ‰ƒCƒg‚É“–‚½‚Á‚Ä‚¢‚½‚ç–³Ž‹
+  if (dynamic_cast<LightBase *>(intersect.object) != nullptr)
+  {
+    return Color(0, 0, 0);
+  }
+
   const vector<LightBase *> &lights = scene.GetLights();
   if (lights.size() == 0) return scene.Background();
 
