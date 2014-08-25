@@ -30,7 +30,7 @@ TestScene::TestScene()
   m_ibl.reset(new IBL("input_data/Barce_Rooftop_C_Env.hdr"));
  
   Model *cube = new Model;
-  if (!cube->ReadFromObj("input_data/Almejera/Almejera__.obj", true)) {
+  if (!cube->ReadFromObj("input_data/Cargo_ship/OBJ/msmunchen_visualstudio.obj", true)) {
     std::cerr << "failed to load cube.obj!!!" << std::endl;
     getchar();
     exit(-1);
@@ -38,7 +38,7 @@ TestScene::TestScene()
   //cube->Transform(Vector3(50, 30, 50), Vector3(10, 10, 10), Matrix::RotateAroundVector(Vector3(0, 1, 0), 45.0 / 180 * PI));
   //cube->Transform(Vector3(50, 10, 50), Vector3(6, 6, 6), Matrix::RotateAroundVector(Vector3(0, 1, 0), 30.0 / 180 * PI));
   //cube->Transform(Vector3(50, 5, 70), Vector3(0.05, 0.05, 0.05), Matrix::RotateAroundVector(Vector3(0, 1, 0), 15.0 / 180 * PI));
-  cube->Transform(Vector3(27, 16.5, 47), Vector3(1, 1, 1), Matrix::RotateAroundVector(Vector3(0, 1, 0), 0 / 180 * PI));
+  cube->Transform(Vector3(27, 26.5, 97), Vector3(1, 1, 1), Matrix::RotateAroundVector(Vector3(0, 1, 0), 0 / 180 * PI));
   AddModel(cube, true, true);
   
   AddObject(new Sphere(10,Vector3(),           Material(Material::REFLECTION_TYPE_LAMBERT,    Color(), Color(0.25, 0.75, 0.25))));    // —Î‹…

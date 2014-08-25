@@ -13,6 +13,13 @@ Obj Mesh {
 }
 
 Obj Mesh {
+	FileName: Cargo_ship/OBJ/msmunchen.obj
+	Position: 177, 50.5, 20
+	Scaling: 1,1,1
+	Rotation: 0 deg, 0 deg, -0 deg
+}
+
+Obj Mesh {
 	FileName: ocean_tmp.obj
 	Position: 300, 30, 30
 	Scaling: 15, 15, 15
