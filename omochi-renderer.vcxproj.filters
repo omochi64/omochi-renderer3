@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\viewer\WindowViewer.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scenes\CornellBoxScene.cpp">
+      <Filter>scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scenes\IBLTestScene.cpp">
+      <Filter>scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scenes\Scene.cpp">
+      <Filter>scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scenes\TestScene.cpp">
+      <Filter>scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\BVH.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\Model.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\QBVH.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\viewer\GLUtils.cpp">
+      <Filter>viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scenes\SceneFromExternalFile.cpp">
+      <Filter>scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\PathTracer.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\PhotonMapping.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stdafx.cpp" />
+    <ClCompile Include="src\tools\FileSaverCallerWithTimer.cpp">
+      <Filter>tools</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stb\stb_image.cpp">
+      <Filter>stb</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tools\HDRImage.cpp">
+      <Filter>tools\images</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tools\ImageHandler.cpp">
+      <Filter>tools\images</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tools\PNGSaver.cpp">
+      <Filter>tools\images</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stb\stb_image_write.cpp">
+      <Filter>stb</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tools\StopRendererWithTimer.cpp">
+      <Filter>tools</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="tools">
+      <UniqueIdentifier>{485f1d15-7833-4ea9-aa54-d685cd7ca270}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="renderer">
+      <UniqueIdentifier>{a8490a7a-9f44-4090-b1b8-7e85c7a1d06b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scenes">
+      <UniqueIdentifier>{c474196c-254f-4bdf-927f-dbae9e7678f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="viewer">
+      <UniqueIdentifier>{0b86a55f-6618-4ae2-bf0b-e0fae79f2f23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{97c3204a-60a7-45b4-ac71-6280616874bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="stb">
+      <UniqueIdentifier>{b211082d-3120-4314-9229-d259a30aaaa9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tools\images">
+      <UniqueIdentifier>{edc1a27f-761a-4790-a981-7194b6c1b8a7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\viewer\WindowViewer.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scenes\CornellBoxScene.h">
+      <Filter>scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scenes\IBLTestScene.h">
+      <Filter>scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scenes\Scene.h">
+      <Filter>scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scenes\TestScene.h">
+      <Filter>scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\AxisAlignedPlane.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\BoundingBox.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\BVH.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\Camera.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\Color.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\HitInformation.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\IBL.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\LinearGammaToonMapper.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\Material.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\Model.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\Polygon.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\QBVH.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\Ray.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\SceneObject.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\Sphere.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\ToonMapper.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\Constant.h">
+      <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\Matrix.h">
+      <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\Random.h">
+      <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\Utils.h">
+      <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\Vector.h">
+      <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\viewer\GLUtils.h">
+      <Filter>viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scenes\SceneFromExternalFile.h">
+      <Filter>scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\LightBase.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\SphereLight.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\PathTracer.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\Renderer.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\PhotonMapping.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\Settings.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\FileSaver.h">
+      <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\tools\FileSaverCallerWithTimer.h">
+      <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scenes\SceneFactory.h">
+      <Filter>scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scenes\SceneFromExternalFileFactory.h">
+      <Filter>scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stb\stb_image.h">
+      <Filter>stb</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stb\stb_image_write.h">
+      <Filter>stb</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\HDRImage.h">
+      <Filter>tools\images</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\Image.h">
+      <Filter>tools\images</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\ImageHandler.h">
+      <Filter>tools\images</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\PPMSaver.h">
+      <Filter>tools\images</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\PNGSaver.h">
+      <Filter>tools\images</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\RadianceSaver.h">
+      <Filter>tools\images</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\StopRendererWithTimer.h">
+      <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\Aperture.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\simple.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\simple.vert">
+      <Filter>shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>

@@ -28,7 +28,7 @@ void Model::Clear()
   for (it = m_materials.begin(); it!=end; it++) {
     PolygonList l = GetPolygonList(*it);
     for (size_t i=0; i<l.size(); i++) {
-      delete l[i];
+      //delete l[i];
     }
   }
   m_materials.clear();

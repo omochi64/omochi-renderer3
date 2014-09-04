@@ -1,7 +1,6 @@
 *.user
 *.sdf
 *.suo
-*.filters
 *.opensdf
 /Debug
 /ipch
