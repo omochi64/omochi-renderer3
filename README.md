@@ -95,12 +95,8 @@ My articles I wrote in Raytracing Camp 2!!'s advent calendar (only Japanse):
 * Bounding Volume Hierarchy (BVH) の実装 - 構築編: http://qiita.com/omochi64/items/9336f57118ba918f82ec
 * Bounding Volume Hierarchy (BVH) の実装 - 交差判定編: http://qiita.com/omochi64/items/c2bbe92d707b280896fd
 
-
 This renderer is very inspired by "edupt" by hole.
-
 Many parts of this renderer refer it. 
-
 See edupt's source code and slides!!
-
 * http://kagamin.net/hole/edupt/
 * http://kagamin.net/hole/edubpt/ (Bi-directional PT version edupt: "edubpt")
