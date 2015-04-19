@@ -8,7 +8,8 @@ https://sites.google.com/site/raytracingcamp2/
 Uni-directional なパストレーサです。
 
 ## Result
-実際に合宿でレンダリングした結果は以下のような画像です（フルサイズは例トレ合宿のサイトで見てください）。
+実際に合宿でレンダリングした結果は以下のような画像です（フルサイズはレイトレ合宿のサイトで見てください）。
+![result](result/omochi-renderer_result_s.png)
 
 ## Build
 * OS: Windows Vista 以降
