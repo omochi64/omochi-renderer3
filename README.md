@@ -1,6 +1,8 @@
 omochi-renderer
 ==========
 
+※English follows below.
+
 ## Overview
 レイトレ合宿2!!に提出したレンダラです。
 https://sites.google.com/site/raytracingcamp2/
@@ -51,3 +53,54 @@ glewを利用しているので、実行ファイルと同じディレクトリ�
 * http://kagamin.net/hole/edupt/
 * http://kagamin.net/hole/edubpt/ (こちらはBi-directional PTを実装した edubpt)
 
+==========
+
+In English
+
+## Overview
+This is a renderer which is submited to "Raytracing Camp 2!!".
+https://sites.google.com/site/raytracingcamp2/
+
+This renderer is an uni-directional pathtracer.
+
+## Result
+The result that the renderer output in the camp (see the full size image on the camp's site).
+![result](result/omochi-renderer_result_s.png)
+
+## Build
+* OS: Windows Vista or later version
+* Visual Studio 2013
+* Build Target: Win32 (x64 is not supported)
+
+Open omochi-renderer.sln by Visual Studio and run Build for Win32 build target.
+
+With x64 build target, build will success but it won't work well.
+
+## Run
+### Before Running
+Put glew32.dll into the directory that the renderer .exe exists, and run the exe.
+
+
+### Settings＆Input Data
+You can change a scene, camera settings, output settings and other settings by editing settings.txt.
+
+The data to be set to a scene is in input_data directory (some of data are not placed in repository because of disk capacity).
+
+## Related Documents
+Simple explanations about this renderer (only Japanse):
+* http://www.slideshare.net/omochi64/2-38791926                                                |Simple explanations about this renderer:
+* http://qiita.com/omochi64/items/9ecc666f6cb4765443fb 
+
+My articles I wrote in Raytracing Camp 2!!'s advent calendar (only Japanse):
+* Bounding Volume Hierarchy (BVH) の実装 - 構築編: http://qiita.com/omochi64/items/9336f57118ba918f82ec
+* Bounding Volume Hierarchy (BVH) の実装 - 交差判定編: http://qiita.com/omochi64/items/c2bbe92d707b280896fd
+
+
+This renderer is very inspired by "edupt" by hole.
+
+Many parts of this renderer refer it. 
+
+See edupt's source code and slides!!
+
+* http://kagamin.net/hole/edupt/
+* http://kagamin.net/hole/edubpt/ (Bi-directional PT version edupt: "edubpt")
