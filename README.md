@@ -53,6 +53,10 @@ glewを利用しているので、実行ファイルと同じディレクトリ�
 * http://kagamin.net/hole/edupt/
 * http://kagamin.net/hole/edubpt/ (こちらはBi-directional PTを実装した edubpt)
 
+## License
+本ソースコードのライセンスは、修正BSDライセンスとなります。 
+ただし、使用している外部のライブラリ、リソースに関しては、それらのオリジナルのライセンスを継承します。
+
 ==========
 
 In English
@@ -100,3 +104,7 @@ Many parts of this renderer refer it.
 See edupt's source code and slides!!
 * http://kagamin.net/hole/edupt/
 * http://kagamin.net/hole/edubpt/ (Bi-directional PT version edupt: "edubpt")
+
+## License
+Except for external libraries and resources, this project's source code is distirubted as New BSD License.
+External libraries and resources which are used in this project inherit their original license.
