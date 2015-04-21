@@ -1,7 +1,7 @@
 omochi-renderer
 ==========
 
-※English follows below.
+※English follows after Japanese.
 
 ## Overview
 レイトレ合宿2!!に提出したレンダラです。
