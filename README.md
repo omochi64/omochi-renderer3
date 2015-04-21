@@ -106,5 +106,5 @@ See edupt's source code and slides!!
 * http://kagamin.net/hole/edubpt/ (Bi-directional PT version edupt: "edubpt")
 
 ## License
-Except for external libraries and resources, this project's source code is distirubted as New BSD License.
+Except for external libraries and resources, this software is released under the New BSD License, see LICENSE.txt.
 External libraries and resources which are used in this project inherit their original license.
