@@ -254,12 +254,38 @@ namespace OmochiRenderer {
     return true;
   }
 
+  /**
+   * @brief ì«Ç›çûÇÒÇæï°êîÉ}ÉeÉäÉAÉãÇÃèàóù
+   */
+  bool SceneFromExternalFile::ProcessMaterials(SceneObject *obj, std::vector<Material> &materials, std::vector<double> &materialRates)
+  {
+    if (materials.size() == 1) {
+      materialRates.resize(1);
+      materialRates[0] = 1.0f;
+    }
+
+    if (materials.size() != materialRates.size()) return false;
+
+    obj->materials_[0].rate_ = materialRates[0];
+    for (size_t i = 1; i < materials.size(); i++) {
+      if (i + 1 < materials.size()) {
+        obj->AddMaterial(materials[i], materialRates[i], false);
+      } else {
+        obj->AddMaterial(materials[i], materialRates[i], true);
+      }
+    }
+
+    return true;
+  }
+
   bool SceneFromExternalFile::ReadSphere(const std::vector<LinePair> &lines, bool isLight) {
     double radius = 0.0;
     Vector3 position;
     bool valid = true;
     bool inSpacePartitioning = true;
-    Material newMat;
+    std::vector<Material> newMats;
+    std::vector<double> materialRates;
+    //Material newMat;
 
     std::for_each(lines.begin(), lines.end(), [&] (const LinePair &it) {
       if (it.first == "Radius") {
@@ -273,8 +299,16 @@ namespace OmochiRenderer {
         position.y = atof(Utils::trim(pos_str[1]).c_str());
         position.z = atof(Utils::trim(pos_str[2]).c_str());
       } else if (it.first == "Material") {
+        Material newMat;
         if (!ParseMaterial(it.second, newMat)) {
           valid = false;
+        } else {
+          newMats.push_back(newMat);
+        }
+      } else if (it.first == "MaterialRates") {
+        vector<string> rate_str(Utils::split(it.second, ','));
+        for (const auto &str : rate_str) {
+          materialRates.push_back(atof(str.c_str()));
         }
       } else if (it.first == "Space Partitioning") {
         if (it.second == "True") {
@@ -287,11 +321,17 @@ namespace OmochiRenderer {
 
     if (!valid) return false;
 
+    SceneObject *obj = nullptr;
     if (isLight) {
-      AddObject(new SphereLight(radius, position, newMat), true, inSpacePartitioning);
+      obj = new SphereLight(radius, position, newMats[0]);
+      AddObject(obj, true, inSpacePartitioning);
     } else {
-      AddObject(new Sphere(radius, position, newMat), true, inSpacePartitioning);
+      obj = new Sphere(radius, position, newMats[0]);
+      AddObject(obj, true, inSpacePartitioning);
     }
+
+    if (!ProcessMaterials(obj, newMats, materialRates)) return false;
+
     return true;
   }
 
@@ -300,7 +340,8 @@ namespace OmochiRenderer {
     bool valid = true;
     Vector3 position;
     bool inSpacePartitioning = true;
-    Material newMat;
+    std::vector<Material> newMats;
+    std::vector<double> materialRates;
     FLOOR_TYPE type = FLOOR_XZ_YUP;
 
     std::for_each(lines.begin(), lines.end(), [&](const LinePair &it) {
@@ -320,8 +361,16 @@ namespace OmochiRenderer {
         position.y = atof(Utils::trim(pos_str[1]).c_str());
         position.z = atof(Utils::trim(pos_str[2]).c_str());
       } else if (it.first == "Material") {
+        Material newMat;
         if (!ParseMaterial(it.second, newMat)) {
           valid = false;
+        } else {
+          newMats.push_back(newMat);
+        }
+      } else if (it.first == "MaterialRates") {
+        vector<string> rate_str(Utils::split(it.second, ','));
+        for (const auto &str : rate_str) {
+          materialRates.push_back(atof(str.c_str()));
         }
       } else if (it.first == "Space Partitioning") {
         if (it.second == "True") {
@@ -348,28 +397,38 @@ namespace OmochiRenderer {
       }
     });
 
+    if (newMats.size() == 1) {
+      materialRates.resize(1);
+      materialRates[0] = 1.0f;
+    }
     if (!valid) return false;
+
+    std::vector<SceneObject *> objs;
 
     switch (type)
     {
     case FLOOR_TYPE::FLOOR_XZ_YUP:
-      AddFloorXZ_yUp(size_x, size_z, position, newMat);
+      objs = AddFloorXZ_yUp(size_x, size_z, position, newMats[0]);
       break;
     case FLOOR_TYPE::FLOOR_XZ_YDOWN:
-      AddFloorXZ_yDown(size_x, size_z, position, newMat);
+      objs = AddFloorXZ_yDown(size_x, size_z, position, newMats[0]);
       break;
     case FLOOR_TYPE::FLOOR_XY_ZUP:
-      AddFloorXY_zUp(size_x, size_z, position, newMat);
+      objs = AddFloorXY_zUp(size_x, size_z, position, newMats[0]);
       break;
     case FLOOR_TYPE::FLOOR_XY_ZDOWN:
-      AddFloorXY_zDown(size_x, size_z, position, newMat);
+      objs = AddFloorXY_zDown(size_x, size_z, position, newMats[0]);
       break;
     case FLOOR_TYPE::FLOOR_YZ_XUP:
-      AddFloorYZ_xUp(size_x, size_z, position, newMat);
+      objs = AddFloorYZ_xUp(size_x, size_z, position, newMats[0]);
       break;
     case FLOOR_TYPE::FLOOR_YZ_XDOWN:
-      AddFloorYZ_xDown(size_x, size_z, position, newMat);
+      objs = AddFloorYZ_xDown(size_x, size_z, position, newMats[0]);
       break;
+    }
+
+    for (auto obj : objs) {
+      if (!ProcessMaterials(obj, newMats, materialRates)) return false;
     }
 
     return true;

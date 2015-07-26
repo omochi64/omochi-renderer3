@@ -43,6 +43,42 @@ public:
     m_centerPos = (m_min+m_max)/2.0;
   }
 
+  /**
+  * @brief Construct a minimum bbox contains given two points
+  */
+  void Construct(const Vector3 &pos0, const Vector3 &pos1)
+  {
+    SetBox(Vector3(
+        std::min(pos0.x, pos1.x),
+        std::min(pos0.y, pos1.y),
+        std::min(pos0.z, pos1.z)
+      ),
+      Vector3(
+        std::max(pos0.x, pos1.x),
+        std::max(pos0.y, pos1.y),
+        std::max(pos0.z, pos1.z)
+      )
+    );
+  }
+
+  /**
+   * @brief Construct a minimum bbox contains given three points
+   */
+  void Construct(const Vector3 &pos0, const Vector3 &pos1, const Vector3 &pos2)
+  {
+    SetBox(Vector3(
+        std::min(std::min(pos0.x, pos1.x), pos2.x),
+        std::min(std::min(pos0.y, pos1.y), pos2.y),
+        std::min(std::min(pos0.z, pos1.z), pos2.z)
+      ),
+      Vector3(
+        std::max(std::max(pos0.x, pos1.x), pos2.x),
+        std::max(std::max(pos0.y, pos1.y), pos2.y),
+        std::max(std::max(pos0.z, pos1.z), pos2.z)
+      )
+    );
+  }
+
   inline bool CheckIntersection(const Ray &ray, double &distance) const {
     Vector3 t_min(INF, INF, INF), t_max(-INF, -INF, -INF);
     double fastest_out_t = INF;

@@ -25,11 +25,11 @@ public:
     m_normalAndDiffs[0] = normal1;
     m_normalAndDiffs[1] = normal2 - normal1;
     m_normalAndDiffs[2] = normal3 - normal1;
-    position = pos;
+    position_ = pos;
     reconstruct_boundingbox();
   }
   Polygon(const Polygon &polygon)
-    : SceneObject(polygon.material)
+    : SceneObject()
   {
     for (int i=0; i<3; i++) {
       m_posAndEdges[i] = polygon.m_posAndEdges[i];
@@ -49,7 +49,7 @@ public:
   }
 
   void Transform(const Vector3 &pos, const Vector3 &scale = Vector3::One(), const Matrix &rot = Matrix::Identity()) {
-    position = pos;
+    position_ = pos;
     for (int i=0; i<3; i++) {
       m_posAndEdges[i] = rot.Apply(m_posAndEdges[i]);
       m_posAndEdges[i].x *= scale.x;
@@ -71,7 +71,7 @@ public:
 
     if (det > EPS) {
       // solve u
-      Vector3 T(ray.orig - (m_posAndEdges[0] + position));
+      Vector3 T(ray.orig - (m_posAndEdges[0] + position_));
       double u = P.dot(T);
 
       if (u>=0 && u<= det) {
@@ -114,17 +114,18 @@ private:
     auto &pos0 = m_posAndEdges[0];
     auto pos1 = m_posAndEdges[1] + m_posAndEdges[0];
     auto pos2 = m_posAndEdges[2] + m_posAndEdges[0];
-    boundingBox.SetBox( Vector3(
-      std::min(std::min(pos0.x, pos1.x), pos2.x),
-      std::min(std::min(pos0.y, pos1.y), pos2.y),
-      std::min(std::min(pos0.z, pos1.z), pos2.z)
-      ) + position, 
-      Vector3(
-        std::max(std::max(pos0.x, pos1.x), pos2.x),
-        std::max(std::max(pos0.y, pos1.y), pos2.y),
-        std::max(std::max(pos0.z, pos1.z), pos2.z)
-      ) + position
-    );
+    boundingBox_.Construct(pos0 + position_, pos1 + position_, pos2 + position_);
+    //boundingBox_.SetBox( Vector3(
+    //  std::min(std::min(pos0.x, pos1.x), pos2.x),
+    //  std::min(std::min(pos0.y, pos1.y), pos2.y),
+    //  std::min(std::min(pos0.z, pos1.z), pos2.z)
+    //  ) + position_, 
+    //  Vector3(
+    //    std::max(std::max(pos0.x, pos1.x), pos2.x),
+    //    std::max(std::max(pos0.y, pos1.y), pos2.y),
+    //    std::max(std::max(pos0.z, pos1.z), pos2.z)
+    //  ) + position_
+    //);
   }
 
 private:

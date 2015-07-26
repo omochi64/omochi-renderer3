@@ -1,12 +1,14 @@
 Base Dir:input_data
-IBL: Alexs_Apt_2k.hdr
+IBL: Barce_Rooftop_C_Env.hdr
 
 Objects:
 
 Floor {
 	Size: 100, 100
 	Position: 50, 0, 0
-	Material: 0, 0, 0, LAMBERT, 0.7, 0.7, 0.7
+	Material: 0, 0, 0, LAMBERT, 0.7, 0.1, 0.1
+	Material: 0, 0, 0, SPECULAR, 0.99, 0.99, 0.99
+	MaterialRates: 0.7, 0.3
 	Space Partitioning: False
 }
 

@@ -1,20 +1,26 @@
 #Scene type = CornellBoxScene
-Scene type = TestScene
+#Scene type = TestScene
 #Scene type = IBLTestScene
-#Scene type = SceneFromExternalFile
-Scene information = input_data/ocean.scene
+Scene type = SceneFromExternalFile
+Scene information = input_data/default.scene
 number of threads = 6
 Show Preview = True
 Save Span = 60
-Max Save Count For periodic save= 30
+Max Save Count For periodic save= 15
 Save On Each Sample Ended = false
-Time to stop renderer = 1800
+Time to stop renderer = 900
 
 # for camera
+#本番シーン用
+#Width = 1280
+#Height = 720
+#Camera Position = 80, 82.0, 420.0
+#Camera Direction = -0.05, -0.15, -1.0
+
 Width = 1280
 Height = 720
-Camera Position = 80, 82.0, 420.0
-Camera Direction = -0.05, -0.15, -1.0
+Camera Position = 50, 55.0, 230.0
+Camera Direction = 0.00001, -0.15, -1.0
 
 
 # for pathtracer

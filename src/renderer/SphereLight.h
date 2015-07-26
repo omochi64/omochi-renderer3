@@ -31,14 +31,14 @@ namespace OmochiRenderer {
 
       Vector3 dir(sin_shita*cos(phi), cos_shita, sin_shita*sin(phi));
 
-      point = this->position + dir * (m_radius + EPS);
+      point = this->position_ + dir * (m_radius + EPS);
       normal = dir;
     }
 
     // targetPoint から可視である可能性が高い位置でサンプリングする
     virtual bool SampleOnePointWithTargetPoint(Vector3 &sampledPoint, Vector3 &sampledPointNormal, double &pdf, const Vector3 &targetPoint, const Random &rnd) const {
 
-      Vector3 diff = targetPoint - this->position;
+      Vector3 diff = targetPoint - this->position_;
 
       // 可視でありうるθの範囲 (target, 球の中心, targetを通る球の接線 を引いて、cosθの値を計算するとこうなる)
       double diff_size = diff.length();
@@ -62,14 +62,19 @@ namespace OmochiRenderer {
 
       Vector3 dir = normal * cos_shita + axis1 * sin_shita * sin(phi) + axis2 * sin_shita * cos(phi);
 
-      sampledPoint = this->position + dir * (m_radius + EPS);
+      sampledPoint = this->position_ + dir * (m_radius + EPS);
       sampledPointNormal = dir;
 
       return true;
     }
 
     virtual double TotalPower() const {
-      return 4 * PI * m_radius * m_radius * material.emission.length();
+      double emission_total = 0.f;
+      for (auto mat : materials_)
+      {
+        emission_total += mat.material_.emission.length() * mat.rate_;
+      }
+      return 4 * PI * m_radius * m_radius * emission_total;
     }
   };
 }

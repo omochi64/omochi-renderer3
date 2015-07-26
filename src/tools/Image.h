@@ -25,7 +25,7 @@ namespace OmochiRenderer {
 
       int x = static_cast<int>(u * m_width);
       int y = static_cast<int>(v * m_height);
-      assert(x < m_width && y < m_height);
+      assert(x < static_cast<int>(m_width) && y < static_cast<int>(m_height));
 
       return m_image[x + y*m_width];
     }

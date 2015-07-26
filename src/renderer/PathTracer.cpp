@@ -126,7 +126,9 @@ Color PathTracer::Radiance(const Scene &scene, const Ray &ray, Random &rnd, cons
   }
 
   Color income;// = DirectRadiance(scene, ray, rnd, depth, intersected, intersect, normal);
-  income += Radiance_internal(scene, ray, rnd, depth, intersected, intersect, normal);
+  
+  income += Radiance_internal(scene, ray, rnd, depth,
+    intersected, intersect, normal);
 
 
   return income;
@@ -170,7 +172,14 @@ Color PathTracer::DirectRadiance(const Scene &scene, const Ray &ray, Random &rnd
 */
 
 // 直接光による Radiance の評価
-Color PathTracer::DirectRadiance_Lambert(const Scene &scene, const Ray &ray, Random &rnd, const int depth, const bool intersected, Scene::IntersectionInformation &intersect, const Vector3 &normal) {
+Color PathTracer::DirectRadiance_Lambert(const Scene &scene,
+                                         const Ray &ray,
+                                         Random &rnd,
+                                         const int depth,
+                                         const bool intersected,
+                                         Scene::IntersectionInformation &intersect,
+                                         const Vector3 &normal,
+                                         const Material &material) {
   assert(intersected);
 
   // ライトに当たっていたら無視
@@ -236,9 +245,9 @@ Color PathTracer::DirectRadiance_Lambert(const Scene &scene, const Ray &ray, Ran
         // BRDF = color/PI
         double G = cos_shita * light_cos_shita / (hit.hit.distance * hit.hit.distance);
         Vector3 reflect_rate(intersect.texturedHitpointColor / PI * G / (pdf * eachLightProbability[index]));
-        income.x += reflect_rate.x * hit.object->material.emission.x;
-        income.y += reflect_rate.y * hit.object->material.emission.y;
-        income.z += reflect_rate.z * hit.object->material.emission.z;
+        income.x += reflect_rate.x * material.emission.x;
+        income.y += reflect_rate.y * material.emission.y;
+        income.z += reflect_rate.z * material.emission.z;
         // direct_illum = 1/N*ΣL_e*BRDF*G*V/pdf(light)
         m_hitToLightCount++;
       }
@@ -273,7 +282,14 @@ namespace {
   }
 }
 
-Color PathTracer::Radiance_internal(const Scene &scene, const Ray &ray, Random &rnd, const int depth, const bool intersected, Scene::IntersectionInformation &intersect, const Vector3 &normal) {
+Color PathTracer::Radiance_internal(const Scene &scene,
+                                    const Ray &ray,
+                                    Random &rnd,
+                                    const int depth,
+                                    const bool intersected,
+                                    Scene::IntersectionInformation &intersect,
+                                    const Vector3 &normal) {
+
   if (!intersected) {
     if (scene.GetIBL()) {
       //return scene.GetIBL()->Sample(ray);    // 正確に背景との衝突位置を計算する
@@ -283,7 +299,30 @@ Color PathTracer::Radiance_internal(const Scene &scene, const Ray &ray, Random &
     }
   }
 
-  Color &textured = intersect.texturedHitpointColor = GetTexturedColor(intersect.object->material, intersect.hit.uv);
+  assert(intersect.object->materials_.size() > 0);
+
+  // 確率に基づいて抽選を行う (確率は正規化されている前提で動作する)
+  // ルーレット選択
+  double value = rnd.nextDouble();
+  int selectedIndex = -1;
+  for (int i = 0; i < intersect.object->materials_.size(); i++)
+  {
+    const auto &mat = intersect.object->materials_[i];
+    if (value <= mat.rate_)
+    {
+      selectedIndex = i;
+      break;
+    }
+    value -= mat.rate_;
+  }
+  if (selectedIndex == -1) selectedIndex = intersect.object->materials_.size() - 1;
+
+  double multi_layer_prob = intersect.object->materials_[selectedIndex].rate_;
+
+  const Material &mat = intersect.object->materials_[selectedIndex].material_;
+
+  Color &textured = intersect.texturedHitpointColor =
+    GetTexturedColor(mat, intersect.hit.uv);
 
   Color income;
 
@@ -301,26 +340,27 @@ Color PathTracer::Radiance_internal(const Scene &scene, const Ray &ray, Random &
       // 各 radiance を計算するときに直接光を計算しているので、
       // 「eye から直接 light に hit した場合」のみ、emission を income に加える
       if (depth == 0 || !m_performNextEventEstimation) {
-        if (intersect.object->material.emission.lengthSq() != 0) {
+        if (mat.emission.lengthSq() != 0) {
           m_hitToLightCount++;
         }
-        return intersect.object->material.emission;
+        return mat.emission;
       }
       return scene.Background();
     }
   } else {
     russian_roulette_probability = 1.0; // no roulette
   }
+  //russian_roulette_probability *= multi_layer_prob;
 
-  switch (intersect.object->material.reflection_type) {
+  switch (mat.reflection_type) {
     case Material::REFLECTION_TYPE_LAMBERT:
-      income = Radiance_Lambert(scene, ray, rnd, depth, intersect, normal, russian_roulette_probability);
+      income = Radiance_Lambert(scene, ray, rnd, depth, intersect, normal, russian_roulette_probability, mat);
       break;
     case Material::REFLECTION_TYPE_SPECULAR:
-      income = Radiance_Specular(scene, ray, rnd, depth, intersect, normal, russian_roulette_probability);
+      income = Radiance_Specular(scene, ray, rnd, depth, intersect, normal, russian_roulette_probability, mat);
       break;
     case Material::REFLECTION_TYPE_REFRACTION:
-      income = Radiance_Refraction(scene, ray, rnd, depth, intersect, normal, russian_roulette_probability);
+      income = Radiance_Refraction(scene, ray, rnd, depth, intersect, normal, russian_roulette_probability, mat);
       break;
   }
 
@@ -328,8 +368,8 @@ Color PathTracer::Radiance_internal(const Scene &scene, const Ray &ray, Random &
   // 「eye から直接 light に hit した場合」のみ、emission を income に加える
   if (depth == 0 || !m_performNextEventEstimation) {
     // --> eye から直接 light に hit し、 light 自身が反射率を持つ場合にここが有効になる
-    income += intersect.object->material.emission;
-    if (intersect.object->material.emission.lengthSq() != 0) {
+    income += mat.emission;
+    if (mat.emission.lengthSq() != 0) {
       m_hitToLightCount++;
     }
   }
@@ -338,13 +378,20 @@ Color PathTracer::Radiance_internal(const Scene &scene, const Ray &ray, Random &
 }
 
 // Lambert 面の Radiance の評価
-Color PathTracer::Radiance_Lambert(const Scene &scene, const Ray &ray, Random &rnd, const int depth, Scene::IntersectionInformation &intersect, const Vector3 &normal, double russian_roulette_prob) {
+Color PathTracer::Radiance_Lambert(const Scene &scene,
+                                   const Ray &ray,
+                                   Random &rnd,
+                                   const int depth,
+                                   Scene::IntersectionInformation &intersect,
+                                   const Vector3 &normal,
+                                   double russian_roulette_prob,
+                                   const Material &material) {
 
   Color direct;
 
   // 直接光を評価する
-  if (m_performNextEventEstimation && intersect.object->material.emission.lengthSq() == 0) {
-    direct = DirectRadiance_Lambert(scene, ray, rnd, depth, true, intersect, normal);
+  if (m_performNextEventEstimation && material.emission.lengthSq() == 0) {
+    direct = DirectRadiance_Lambert(scene, ray, rnd, depth, true, intersect, normal, material);
   }
 
   Vector3 w,u,v;
@@ -381,7 +428,7 @@ Color PathTracer::Radiance_Lambert(const Scene &scene, const Ray &ray, Random &r
   //Color weight = intersect.object->color / PI * r2 / pdf / russian_roulette_prob;
   Color weight = intersect.texturedHitpointColor;
   Color income(0,0,0);
-  if (intersect.object->material.emission.lengthSq() == 0) {
+  if (material.emission.lengthSq() == 0) {
     income = Radiance(scene, Ray(intersect.hit.position, dir), rnd, depth + 1);
   } 
   // direct はすでに反射率が乗算済みなので、weightを掛ける必要はない
@@ -389,7 +436,7 @@ Color PathTracer::Radiance_Lambert(const Scene &scene, const Ray &ray, Random &r
 }
 
 // 鏡面反射
-Color PathTracer::Radiance_Specular(const Scene &scene, const Ray &ray, Random &rnd, const int depth, Scene::IntersectionInformation &intersect, const Vector3 &normal, double russian_roulette_prob) {
+Color PathTracer::Radiance_Specular(const Scene &scene, const Ray &ray, Random &rnd, const int depth, Scene::IntersectionInformation &intersect, const Vector3 &normal, double russian_roulette_prob, const Material &material) {
   Vector3 reflected_dir(ray.dir - normal*2*ray.dir.dot(normal));
   reflected_dir.normalize();
 
@@ -400,7 +447,7 @@ Color PathTracer::Radiance_Specular(const Scene &scene, const Ray &ray, Random &
   // 直接光の評価
   Scene::IntersectionInformation newhit;
   if (m_performNextEventEstimation && scene.CheckIntersection(newray, newhit)) {
-    income += newhit.object->material.emission;
+    income += material.emission;
   }
 
   Color weight = intersect.texturedHitpointColor / russian_roulette_prob;
@@ -409,13 +456,13 @@ Color PathTracer::Radiance_Specular(const Scene &scene, const Ray &ray, Random &
 }
 
 // 屈折面
-Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random &rnd, const int depth, Scene::IntersectionInformation &intersect, const Vector3 &normal, double russian_roulette_prob) {
+Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random &rnd, const int depth, Scene::IntersectionInformation &intersect, const Vector3 &normal, double russian_roulette_prob, const Material &material) {
   bool into = intersect.hit.normal.dot(normal) > 0.0;
 
   Vector3 reflect_dir = ray.dir - normal*2*ray.dir.dot(normal);
   reflect_dir.normalize();
   double n_vacuum = REFRACTIVE_INDEX_VACUUM;
-  double n_obj = intersect.object->material.refraction_rate;
+  double n_obj = material.refraction_rate;
   double n_ratio = into ? n_vacuum/n_obj : n_obj/n_vacuum;
 
   double dot = ray.dir.dot(normal);
@@ -426,13 +473,13 @@ Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random
   Ray reflect_ray(intersect.hit.position, reflect_dir);
   Scene::IntersectionInformation reflected_hit;
   if (m_performNextEventEstimation && scene.CheckIntersection(reflect_ray, reflected_hit)) {
-    reflect_direct = reflected_hit.object->material.emission;
+    reflect_direct = material.emission;
   }
 
   if (cos2t < 0) {
     // 全反射
     Color income = reflect_direct + Radiance(scene, Ray(intersect.hit.position, reflect_dir), rnd, depth+1);
-    Color weight = intersect.object->material.color / russian_roulette_prob;
+    Color weight = material.color / russian_roulette_prob;
     return Vector3(weight.x*income.x, weight.y*income.y, weight.z*income.z);
   }
 
@@ -443,7 +490,7 @@ Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random
   // 屈折方向の直接光の評価
   Color refract_direct;
   if (m_performNextEventEstimation && scene.CheckIntersection(refract_ray, reflected_hit)) {
-    refract_direct = reflected_hit.object->material.emission;
+    refract_direct = material.emission;
   }
 
   // Fresnel の式

@@ -80,87 +80,111 @@ bool Scene::CheckIntersection(const Ray &ray, IntersectionInformation &info) con
 }
 
 
-void Scene::AddFloorXZ_yUp(const double size_x, const double size_z, const Vector3 &position, const Material &material) {
-  AddObject(new Polygon(
-    Vector3(-size_x / 2, 0, -size_z / 2), Vector3(-size_x / 2, 0, size_z / 2), Vector3(size_x / 2, 0, -size_z/2),
+std::vector<SceneObject *> Scene::AddFloorXZ_yUp(const double size_x, const double size_z, const Vector3 &position, const Material &material) {
+  std::vector<SceneObject *> objs;
+  objs.push_back(new Polygon(
+    Vector3(-size_x / 2, 0, -size_z / 2), Vector3(-size_x / 2, 0, size_z / 2), Vector3(size_x / 2, 0, -size_z / 2),
     Vector3(0, 0, 0), Vector3(0, 1, 0), Vector3(1, 0, 0),
     Vector3(0, 1, 0), Vector3(0, 1, 0), Vector3(0, 1, 0),
     material, position));
-  AddObject(new Polygon(
-    Vector3(size_x / 2, 0, -size_z / 2), Vector3(-size_x / 2, 0, size_z / 2), Vector3(size_x / 2, 0, size_z/2),
+  objs.push_back(new Polygon(
+    Vector3(size_x / 2, 0, -size_z / 2), Vector3(-size_x / 2, 0, size_z / 2), Vector3(size_x / 2, 0, size_z / 2),
     Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(1, 1, 0),
     Vector3(0, 1, 0), Vector3(0, 1, 0), Vector3(0, 1, 0),
     material, position));
+  AddObject(objs[0]);
+  AddObject(objs[1]);
+  return objs;
 }
 
 // XY平面上に、zUPで床を追加
-void Scene::AddFloorXY_zUp(const double size_x, const double size_y, const Vector3 &position, const Material &material) {
-  AddObject(new Polygon(
+std::vector<SceneObject *> Scene::AddFloorXY_zUp(const double size_x, const double size_y, const Vector3 &position, const Material &material) {
+  std::vector<SceneObject *> objs;
+  objs.push_back(new Polygon(
     Vector3(-size_x / 2, size_y / 2, 0), Vector3(-size_x / 2, -size_y / 2, 0), Vector3(size_x / 2, -size_y / 2, 0),
     Vector3(0, 0, 0), Vector3(0, 1, 0), Vector3(1, 1, 0),
     Vector3(0, 0, 1), Vector3(0, 0, 1), Vector3(0, 0, 1),
     material, position));
-  AddObject(new Polygon(
+  objs.push_back(new Polygon(
     Vector3(size_x / 2, size_y / 2, 0), Vector3(-size_x / 2, size_y / 2, 0), Vector3(size_x / 2, -size_y / 2, 0),
     Vector3(1, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 0),
     Vector3(0, 0, 1), Vector3(0, 0, 1), Vector3(0, 0, 1),
     material, position));
+  AddObject(objs[0]);
+  AddObject(objs[1]);
+  return objs;
 }
 
 // YZ平面上に、xUPで床を追加
-void Scene::AddFloorYZ_xUp(const double size_y, const double size_z, const Vector3 &position, const Material &material) {
-  AddObject(new Polygon(
+std::vector<SceneObject *> Scene::AddFloorYZ_xUp(const double size_y, const double size_z, const Vector3 &position, const Material &material) {
+  std::vector<SceneObject *> objs;
+  objs.push_back(new Polygon(
     Vector3(0, size_y / 2, -size_z / 2), Vector3(0, size_y / 2, size_z / 2), Vector3(0, -size_y / 2, size_z / 2),
     Vector3(1, 0, 0), Vector3(0, 0, 0), Vector3(0, 1, 0),
     Vector3(1, 0, 0), Vector3(1, 0, 0), Vector3(1, 0, 0),
     material, position));
-  AddObject(new Polygon(
+  objs.push_back(new Polygon(
     Vector3(0, -size_y / 2, -size_z / 2), Vector3(0, size_y / 2, -size_z / 2), Vector3(0, -size_y / 2, size_z / 2),
     Vector3(1, 1, 0), Vector3(1, 0, 0), Vector3(0, 1, 0),
     Vector3(1, 0, 0), Vector3(1, 0, 0), Vector3(1, 0, 0),
     material, position));
+  AddObject(objs[0]);
+  AddObject(objs[1]);
+  return objs;
 }
 
 // XZ平面上に、yDownで床を追加
-void Scene::AddFloorXZ_yDown(const double size_x, const double size_z, const Vector3 &position, const Material &material) {
-  AddObject(new Polygon(
+std::vector<SceneObject *> Scene::AddFloorXZ_yDown(const double size_x, const double size_z, const Vector3 &position, const Material &material) {
+  std::vector<SceneObject *> objs;
+  objs.push_back(new Polygon(
     Vector3(size_x / 2, 0, -size_z / 2), Vector3(-size_x / 2, 0, size_z / 2), Vector3(-size_x / 2, 0, -size_z / 2),
     Vector3(1, 1, 0), Vector3(0, 0, 0), Vector3(0, 1, 0),
     Vector3(0, -1, 0), Vector3(0, -1, 0), Vector3(0, -1, 0),
     material, position));
-  AddObject(new Polygon(
+  objs.push_back(new Polygon(
     Vector3(size_x / 2, 0, size_z / 2), Vector3(-size_x / 2, 0, size_z / 2), Vector3(size_x / 2, 0, -size_z / 2),
     Vector3(1, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 0),
     Vector3(0, -1, 0), Vector3(0, -1, 0), Vector3(0, -1, 0),
     material, position));
+  AddObject(objs[0]);
+  AddObject(objs[1]);
+  return objs;
 }
 
 // XY平面上に、zDownで床を追加
-void Scene::AddFloorXY_zDown(const double size_x, const double size_y, const Vector3 &position, const Material &material) {
-  AddObject(new Polygon(
+std::vector<SceneObject *> Scene::AddFloorXY_zDown(const double size_x, const double size_y, const Vector3 &position, const Material &material) {
+  std::vector<SceneObject *> objs;
+  objs.push_back(new Polygon(
     Vector3(size_x / 2, -size_y / 2, 0), Vector3(-size_x / 2, -size_y / 2, 0), Vector3(-size_x / 2, size_y / 2, 0),
     Vector3(0, 1, 0), Vector3(1, 1, 0), Vector3(1, 0, 0),
     Vector3(0, 0, -1), Vector3(0, 0, -1), Vector3(0, 0, -1),
     material, position));
-  AddObject(new Polygon(
+  objs.push_back(new Polygon(
     Vector3(size_x / 2, -size_y / 2, 0), Vector3(-size_x / 2, size_y / 2, 0), Vector3(size_x / 2, size_y / 2, 0),
     Vector3(0, 1, 0), Vector3(1, 0, 0), Vector3(0, 0, 0),
     Vector3(0, 0, -1), Vector3(0, 0, -1), Vector3(0, 0, -1),
     material, position));
+  AddObject(objs[0]);
+  AddObject(objs[1]);
+  return objs;
 }
 
 // YZ平面上に、xDownで床を追加
-void Scene::AddFloorYZ_xDown(const double size_y, const double size_z, const Vector3 &position, const Material &material) {
-  AddObject(new Polygon(
+std::vector<SceneObject *> Scene::AddFloorYZ_xDown(const double size_y, const double size_z, const Vector3 &position, const Material &material) {
+  std::vector<SceneObject *> objs;
+  objs.push_back(new Polygon(
     Vector3(0, -size_y / 2, size_z / 2), Vector3(0, size_y / 2, size_z / 2), Vector3(0, size_y / 2, -size_z / 2),
     Vector3(1, 1, 0), Vector3(1, 0, 0), Vector3(0, 0, 0),
     Vector3(-1, 0, 0), Vector3(-1, 0, 0), Vector3(-1, 0, 0),
     material, position));
-  AddObject(new Polygon(
+  objs.push_back(new Polygon(
     Vector3(0, -size_y / 2, size_z / 2), Vector3(0, size_y / 2, -size_z / 2), Vector3(0, -size_y / 2, -size_z / 2),
     Vector3(1, 1, 0), Vector3(0, 0, 0), Vector3(0, 1, 0),
     Vector3(-1, 0, 0), Vector3(-1, 0, 0), Vector3(-1, 0, 0),
     material, position));
+  AddObject(objs[0]);
+  AddObject(objs[1]);
+  return objs;
 }
 
 }

@@ -62,9 +62,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="tools">
-      <UniqueIdentifier>{485f1d15-7833-4ea9-aa54-d685cd7ca270}</UniqueIdentifier>
-    </Filter>
     <Filter Include="renderer">
       <UniqueIdentifier>{a8490a7a-9f44-4090-b1b8-7e85c7a1d06b}</UniqueIdentifier>
     </Filter>
@@ -79,6 +76,9 @@
     </Filter>
     <Filter Include="stb">
       <UniqueIdentifier>{b211082d-3120-4314-9229-d259a30aaaa9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tools">
+      <UniqueIdentifier>{485f1d15-7833-4ea9-aa54-d685cd7ca270}</UniqueIdentifier>
     </Filter>
     <Filter Include="tools\images">
       <UniqueIdentifier>{edc1a27f-761a-4790-a981-7194b6c1b8a7}</UniqueIdentifier>

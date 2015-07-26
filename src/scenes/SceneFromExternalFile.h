@@ -6,6 +6,11 @@
 #include <unordered_map>
 
 namespace OmochiRenderer {
+
+  /**
+   * @brief 独自のシーン定義ファイルから配置情報を読み込むシーン
+   *        A scene class which reads information from my custom file
+   */
   class SceneFromExternalFile : public Scene {
   public:
     explicit SceneFromExternalFile(const std::string &sceneFile = "input_data/default.scene");
@@ -33,6 +38,8 @@ namespace OmochiRenderer {
     bool ReadFloor(const std::vector<LinePair> &lines);
 
     bool ParseMaterial(const std::string &data, Material &mat);
+
+    bool ProcessMaterials(SceneObject *obj, std::vector<Material> &materials, std::vector<double> &materialRates);
 
   private:
 

@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
 
   // set window viewer
   LinearGammaToonMapper mapper;
-  WindowViewer viewer("OmochiRenderer", camera, *renderer, mapper);
+  WindowViewer viewer("OmochiRenderer2!!", camera, *renderer, mapper);
   if (settings->DoShowPreview()) {
     viewer.StartViewerOnNewThread();
     viewer.SetCallbackFunctionWhenWindowClosed(std::function<void(void)>(

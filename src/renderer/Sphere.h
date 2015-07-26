@@ -14,8 +14,8 @@ public:
     : SceneObject(material_)
     , m_radius(r)
   {
-    position = pos;
-    boundingBox.SetBox(pos - Vector3(r,r,r), pos + Vector3(r,r,r));
+    position_ = pos;
+    boundingBox_.SetBox(pos - Vector3(r,r,r), pos + Vector3(r,r,r));
   }
 
   bool CheckIntersection(const Ray &ray, HitInformation &hit) const
@@ -25,7 +25,7 @@ public:
     // c: the center of this sphere
     const Vector3 &x = ray.orig;
     const Vector3 &v = ray.dir;
-    const Vector3 &c = position;
+    const Vector3 &c = position_;
 
     // ”»•ÊŽ®
     Vector3 c_minus_x = c-x;
@@ -45,7 +45,7 @@ public:
     else hit.distance = t1;
 
     hit.position = x + v * hit.distance;
-    hit.normal = hit.position - position; hit.normal.normalize();
+    hit.normal = hit.position - position_; hit.normal.normalize();
 
     return true;
   }

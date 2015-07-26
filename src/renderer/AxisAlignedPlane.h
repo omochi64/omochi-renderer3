@@ -20,15 +20,15 @@ namespace OmochiRenderer {
     {
       switch (axis) {
       case PLANE_XY:
-        boundingBox.SetBox(Vector3(-INF, -INF, offset - EPS), Vector3(INF, INF, offset + EPS));
+        boundingBox_.SetBox(Vector3(-INF, -INF, offset - EPS), Vector3(INF, INF, offset + EPS));
         m_normal.z = flip ? -1 : 1;
         break;
       case PLANE_XZ:
-        boundingBox.SetBox(Vector3(-INF, offset - EPS, -INF), Vector3(INF, offset + EPS, INF));
+        boundingBox_.SetBox(Vector3(-INF, offset - EPS, -INF), Vector3(INF, offset + EPS, INF));
         m_normal.y = flip ? -1 : 1;
         break;
       case PLANE_YZ:
-        boundingBox.SetBox(Vector3(offset - EPS, -INF, -INF), Vector3(offset + EPS, INF, INF));
+        boundingBox_.SetBox(Vector3(offset - EPS, -INF, -INF), Vector3(offset + EPS, INF, INF));
         m_normal.x = flip ? -1 : 1;
         break;
       }

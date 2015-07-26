@@ -60,17 +60,17 @@ protected:
 
   // ヘルパー
   // XZ平面上に、yUPで床を追加
-  void AddFloorXZ_yUp(const double size_x, const double size_z, const Vector3 &position, const Material &material);
+  std::vector<SceneObject *> AddFloorXZ_yUp(const double size_x, const double size_z, const Vector3 &position, const Material &material);
   // XY平面上に、zUPで床を追加
-  void AddFloorXY_zUp(const double size_x, const double size_y, const Vector3 &position, const Material &material);
+  std::vector<SceneObject *> AddFloorXY_zUp(const double size_x, const double size_y, const Vector3 &position, const Material &material);
   // YZ平面上に、xUPで床を追加
-  void AddFloorYZ_xUp(const double size_y, const double size_z, const Vector3 &position, const Material &material);
+  std::vector<SceneObject *> AddFloorYZ_xUp(const double size_y, const double size_z, const Vector3 &position, const Material &material);
   // XZ平面上に、yDownで床を追加
-  void AddFloorXZ_yDown(const double size_x, const double size_z, const Vector3 &position, const Material &material);
+  std::vector<SceneObject *> AddFloorXZ_yDown(const double size_x, const double size_z, const Vector3 &position, const Material &material);
   // XY平面上に、zDownで床を追加
-  void AddFloorXY_zDown(const double size_x, const double size_y, const Vector3 &position, const Material &material);
+  std::vector<SceneObject *> AddFloorXY_zDown(const double size_x, const double size_y, const Vector3 &position, const Material &material);
   // YZ平面上に、xDownで床を追加
-  void AddFloorYZ_xDown(const double size_y, const double size_z, const Vector3 &position, const Material &material);
+  std::vector<SceneObject *> AddFloorYZ_xDown(const double size_y, const double size_z, const Vector3 &position, const Material &material);
 
   // 読み込んだモデルを追加
   void AddModel(Model *obj, bool doDelete = true, bool containedInBVH = true) {
