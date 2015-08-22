@@ -71,6 +71,8 @@ protected:
   std::vector<SceneObject *> AddFloorXY_zDown(const double size_x, const double size_y, const Vector3 &position, const Material &material);
   // YZïΩñ è„Ç…ÅAxDownÇ≈è∞Çí«â¡
   std::vector<SceneObject *> AddFloorYZ_xDown(const double size_y, const double size_z, const Vector3 &position, const Material &material);
+  // ñ≥å¿è∞í«â¡
+  SceneObject *AddInfiniteFLoor(const double y, const Material &material);
 
   // ì«Ç›çûÇÒÇæÉÇÉfÉãÇí«â¡
   void AddModel(Model *obj, bool doDelete = true, bool containedInBVH = true) {

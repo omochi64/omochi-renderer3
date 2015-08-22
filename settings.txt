@@ -1,8 +1,8 @@
 #Scene type = CornellBoxScene
 #Scene type = TestScene
-#Scene type = IBLTestScene
-Scene type = SceneFromExternalFile
-Scene information = input_data/default.scene
+Scene type = IBLTestScene
+#Scene type = SceneFromExternalFile
+Scene information = input_data/marbles.scene
 number of threads = 6
 Show Preview = True
 Save Span = 60
@@ -19,8 +19,10 @@ Time to stop renderer = 900
 
 Width = 1280
 Height = 720
-Camera Position = 50, 55.0, 230.0
-Camera Direction = 0.00001, -0.15, -1.0
+#Camera Position = 50, 55.0, 230.0
+#Camera Direction = 0.00001, -0.15, -1.0
+Camera Position = 50, 155.0, 300.0
+Camera Direction = 0.00001, -0.75, -1.5
 
 
 # for pathtracer

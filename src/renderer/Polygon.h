@@ -105,6 +105,7 @@ public:
     return false;
   }
 
+private:
   Vector3 m_posAndEdges[3];  // m_posAndEdges[3]: pos0。m_pos_AndEdges[1,2]: pos1,2 - pos0
   Vector3 m_uvOrigAndEdges[3]; // m_uvOrigAndEdges[0]: uv0。 m_uvOrigAndEdges[1,2]: uv1,2 - uv0 の値
   Vector3 m_normalAndDiffs[3]; // m_rotatedNormalAndDiffs[0]: normal0。 m_rotatedNormalAndDiffs[1,2]: normal1,2 - normal0 の値

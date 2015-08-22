@@ -115,36 +115,36 @@ bool BVH::Construct(const BVH::CONSTRUCTION_TYPE type, const std::vector<SceneOb
 namespace {
 void CalcBoundingBoxOfObjects(const std::vector<SceneObject *> &objects, BoundingBox &boxResult)
 {
-  Vector3 box_min(objects[0]->boundingBox_.min());
-  Vector3 box_max(objects[0]->boundingBox_.max());
+  Vector3 box_min(objects[0]->GetBoundingBox().min());
+  Vector3 box_max(objects[0]->GetBoundingBox().max());
   std::for_each(objects.begin(), objects.end(),
     [&box_min, &box_max](const SceneObject * const &a) {
-      if (a->boundingBox_.min().x < box_min.x) box_min.x = a->boundingBox_.min().x;
-      if (a->boundingBox_.min().y < box_min.y) box_min.y = a->boundingBox_.min().y;
-      if (a->boundingBox_.min().z < box_min.z) box_min.z = a->boundingBox_.min().z;
-      if (a->boundingBox_.max().x > box_max.x) box_max.x = a->boundingBox_.max().x;
-      if (a->boundingBox_.max().y > box_max.y) box_max.y = a->boundingBox_.max().y;
-      if (a->boundingBox_.max().z > box_max.z) box_max.z = a->boundingBox_.max().z;
+    if (a->GetBoundingBox().min().x < box_min.x) box_min.x = a->GetBoundingBox().min().x;
+    if (a->GetBoundingBox().min().y < box_min.y) box_min.y = a->GetBoundingBox().min().y;
+    if (a->GetBoundingBox().min().z < box_min.z) box_min.z = a->GetBoundingBox().min().z;
+    if (a->GetBoundingBox().max().x > box_max.x) box_max.x = a->GetBoundingBox().max().x;
+    if (a->GetBoundingBox().max().y > box_max.y) box_max.y = a->GetBoundingBox().max().y;
+    if (a->GetBoundingBox().max().z > box_max.z) box_max.z = a->GetBoundingBox().max().z;
   });
   boxResult.SetBox(box_min, box_max);
 }
 
 template <typename FLOATING> void CalcBoundingBoxOfObjects(const std::vector<SceneObject *> &objects, FLOATING min[3], FLOATING max[3])
 {
-  min[0] = static_cast<FLOATING>(objects[0]->boundingBox_.min().x);
-  min[1] = static_cast<FLOATING>(objects[0]->boundingBox_.min().y);
-  min[2] = static_cast<FLOATING>(objects[0]->boundingBox_.min().z);
-  max[0] = static_cast<FLOATING>(objects[0]->boundingBox_.max().x);
-  max[1] = static_cast<FLOATING>(objects[0]->boundingBox_.max().y);
-  max[2] = static_cast<FLOATING>(objects[0]->boundingBox_.max().z);
+  min[0] = static_cast<FLOATING>(objects[0]->GetBoundingBox().min().x);
+  min[1] = static_cast<FLOATING>(objects[0]->GetBoundingBox().min().y);
+  min[2] = static_cast<FLOATING>(objects[0]->GetBoundingBox().min().z);
+  max[0] = static_cast<FLOATING>(objects[0]->GetBoundingBox().max().x);
+  max[1] = static_cast<FLOATING>(objects[0]->GetBoundingBox().max().y);
+  max[2] = static_cast<FLOATING>(objects[0]->GetBoundingBox().max().z);
   std::for_each(objects.begin(), objects.end(),
     [&min, &max](const SceneObject * const &a) {
-      if (a->boundingBox_.min().x < min[0]) min[0] = static_cast<FLOATING>(a->boundingBox_.min().x);
-      if (a->boundingBox_.min().y < min[1]) min[1] = static_cast<FLOATING>(a->boundingBox_.min().y);
-      if (a->boundingBox_.min().z < min[2]) min[2] = static_cast<FLOATING>(a->boundingBox_.min().z);
-      if (a->boundingBox_.max().x > max[0]) max[0] = static_cast<FLOATING>(a->boundingBox_.max().x);
-      if (a->boundingBox_.max().y > max[1]) max[1] = static_cast<FLOATING>(a->boundingBox_.max().y);
-      if (a->boundingBox_.max().z > max[2]) max[2] = static_cast<FLOATING>(a->boundingBox_.max().z);
+    if (a->GetBoundingBox().min().x < min[0]) min[0] = static_cast<FLOATING>(a->GetBoundingBox().min().x);
+    if (a->GetBoundingBox().min().y < min[1]) min[1] = static_cast<FLOATING>(a->GetBoundingBox().min().y);
+    if (a->GetBoundingBox().min().z < min[2]) min[2] = static_cast<FLOATING>(a->GetBoundingBox().min().z);
+    if (a->GetBoundingBox().max().x > max[0]) max[0] = static_cast<FLOATING>(a->GetBoundingBox().max().x);
+    if (a->GetBoundingBox().max().y > max[1]) max[1] = static_cast<FLOATING>(a->GetBoundingBox().max().y);
+    if (a->GetBoundingBox().max().z > max[2]) max[2] = static_cast<FLOATING>(a->GetBoundingBox().max().z);
   });
 
 }
@@ -190,12 +190,12 @@ void BVH::Construct_internal(const CONSTRUCTION_TYPE type, const std::vector<Sce
         [&axis](SceneObject * const &a, SceneObject * const &b) -> bool {
         switch (axis)
         {
-        case 0: return a->boundingBox_.position().x < b->boundingBox_.position().x;
-        case 1: return a->boundingBox_.position().y < b->boundingBox_.position().y;
-        case 2: return a->boundingBox_.position().z < b->boundingBox_.position().z;
+        case 0: return a->GetBoundingBox().position().x < b->GetBoundingBox().position().x;
+        case 1: return a->GetBoundingBox().position().y < b->GetBoundingBox().position().y;
+        case 2: return a->GetBoundingBox().position().z < b->GetBoundingBox().position().z;
         }
         assert(false);
-        return a->boundingBox_.position().x < b->boundingBox_.position().x;
+        return a->GetBoundingBox().position().x < b->GetBoundingBox().position().x;
       });
 
       switch (type) {
@@ -208,8 +208,8 @@ void BVH::Construct_internal(const CONSTRUCTION_TYPE type, const std::vector<Sce
           SceneObject *selectedObj = axisSortedLeft[axis][select];
           SceneObject *leftest = axisSortedLeft[axis][0];
           SceneObject *rightest = axisSortedLeft[axis][axisSortedLeft[axis].size() - 1];
-          double dist = (selectedObj->boundingBox_.position() - leftest->boundingBox_.position()).lengthSq() +
-            (selectedObj->boundingBox_.position() - rightest->boundingBox_.position()).lengthSq();
+          double dist = (selectedObj->GetBoundingBox().position() - leftest->GetBoundingBox().position()).lengthSq() +
+            (selectedObj->GetBoundingBox().position() - rightest->GetBoundingBox().position()).lengthSq();
 
           if (dist > bestCost) {
             bestCost = dist;
@@ -233,7 +233,7 @@ void BVH::Construct_internal(const CONSTRUCTION_TYPE type, const std::vector<Sce
         for (int i = static_cast<int>(axisSortedLeft[axis].size()) - 1; i >= 0; i--) {
           rightAreas[i] = boxTmp.CalcSurfaceArea();
           SceneObject *obj = axisSortedLeft[axis][i];
-          boxTmp.MergeAnotherBox(obj->boundingBox_);
+          boxTmp.MergeAnotherBox(obj->GetBoundingBox());
 
           axisSortedRight[axis].push_back(axisSortedLeft[axis].back());
           axisSortedLeft[axis].pop_back();
@@ -248,7 +248,7 @@ void BVH::Construct_internal(const CONSTRUCTION_TYPE type, const std::vector<Sce
           // calculate both surface area
           leftAreas[cutIndex] = boxTmp.CalcSurfaceArea();
           SceneObject *nextObj = axisSortedRight[axis].back();
-          boxTmp.MergeAnotherBox(nextObj->boundingBox_);
+          boxTmp.MergeAnotherBox(nextObj->GetBoundingBox());
 
           // move right to left
           axisSortedLeft[axis].push_back(axisSortedRight[axis].back());
@@ -285,12 +285,12 @@ void BVH::Construct_internal(const CONSTRUCTION_TYPE type, const std::vector<Sce
       [&bestAxis](SceneObject * const &a, SceneObject * const &b) -> bool {
       switch (bestAxis)
       {
-      case 0: return a->boundingBox_.position().x < b->boundingBox_.position().x;
-      case 1: return a->boundingBox_.position().y < b->boundingBox_.position().y;
-      case 2: return a->boundingBox_.position().z < b->boundingBox_.position().z;
+      case 0: return a->GetBoundingBox().position().x < b->GetBoundingBox().position().x;
+      case 1: return a->GetBoundingBox().position().y < b->GetBoundingBox().position().y;
+      case 2: return a->GetBoundingBox().position().z < b->GetBoundingBox().position().z;
       }
       assert(false);
-      return a->boundingBox_.position().x < b->boundingBox_.position().x;
+      return a->GetBoundingBox().position().x < b->GetBoundingBox().position().x;
     });
 
     rights = vector<SceneObject *>(lefts.begin() + bestIndex + 1, lefts.end());

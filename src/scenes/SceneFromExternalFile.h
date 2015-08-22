@@ -36,6 +36,7 @@ namespace OmochiRenderer {
     bool ReadMesh(const std::vector<LinePair> &lines);
     bool ReadSphere(const std::vector<LinePair> &lines, bool isLight);
     bool ReadFloor(const std::vector<LinePair> &lines);
+    bool ReadInfiniteFloor(const std::vector<LinePair> &lines);
 
     bool ParseMaterial(const std::string &data, Material &mat);
 

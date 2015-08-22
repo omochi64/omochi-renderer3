@@ -230,6 +230,9 @@
     <ClInclude Include="src\renderer\Aperture.h">
       <Filter>renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\renderer\InfiniteFloor.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\simple.frag">

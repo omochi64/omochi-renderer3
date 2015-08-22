@@ -1,0 +1,61 @@
+Base Dir:input_data
+IBL: Barce_Rooftop_C_Env.hdr
+
+Objects:
+
+Sphere {
+	Radius: 20
+	Position: 65, 20, -30
+	Material: 0, 0, 0, LAMBERT, 0.25, 0.75, 0.25
+	Space Partitioning: False
+}
+
+Sphere {
+	Radius: 16.5
+	Position: 27, 16.5, -3
+	Material: 0, 0, 0, SPECULAR, 0.99, 0.99, 0.99
+	Space Partitioning: False
+}
+
+Sphere {
+	Radius: 16.5
+	Position: 37, 16.5, 28
+	Material: 0, 0, 0, LAMBERT, 0.99, 0.99, 0.99, marble1.jpg
+	Material: 0, 0, 0, REFRACTION, 0.99, 0.99, 0.99, 2
+	MaterialRates: 0.9, 0.5
+	Space Partitioning: False
+}
+
+Sphere {
+	Radius: 16.5
+	Position: 117, 16.5, 28
+	Material: 0, 0, 0, LAMBERT, 0.99, 0.99, 0.99, marble2.jpg
+	Material: 0, 0, 0, REFRACTION, 0.99, 0.99, 0.99, 2
+	MaterialRates: 0.9, 0.5
+	Space Partitioning: False
+}
+
+Sphere {
+	Radius: 16.5
+	Position: -3, 16.5, 28
+	Material: 0, 0, 0, LAMBERT, 0.99, 0.99, 0.99, marble3.jpg
+	Material: 0, 0, 0, REFRACTION, 0.99, 0.99, 0.99, 2
+	MaterialRates: 0.9, 0.5
+	Space Partitioning: False
+}
+
+Sphere {
+	Radius: 16.5
+	Position: 77, 16.5, 28
+	Material: 0, 0, 0, LAMBERT, 0.99, 0.99, 0.99, marble4.jpg
+	Material: 0, 0, 0, REFRACTION, 0.99, 0.99, 0.99, 2
+	MaterialRates: 0.9, 0.5
+	Space Partitioning: False
+}
+
+InfiniteFloor {
+	Y: 0
+	Material: 0, 0, 0, LAMBERT, 0.99, 0.99, 0.99
+	Space Partitioning: False
+}
+

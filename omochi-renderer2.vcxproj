@@ -204,6 +204,7 @@
     <ClInclude Include="src\renderer\Color.h" />
     <ClInclude Include="src\renderer\HitInformation.h" />
     <ClInclude Include="src\renderer\IBL.h" />
+    <ClInclude Include="src\renderer\InfiniteFloor.h" />
     <ClInclude Include="src\renderer\LightBase.h" />
     <ClInclude Include="src\renderer\LinearGammaToonMapper.h" />
     <ClInclude Include="src\renderer\Material.h" />

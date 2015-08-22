@@ -66,6 +66,25 @@ public:
 
   }
 
+  const Vector3 &GetPosition() const {
+    return position_;
+  }
+  const BoundingBox &GetBoundingBox() const {
+    return boundingBox_;
+  }
+  const size_t GetMaterialCount() const {
+    return materials_.size();
+  }
+  const MultiMaterialElem *GetMaterial(size_t index) const {
+    if (index >= materials_.size()) return nullptr;
+    return &materials_[index];
+  }
+  MultiMaterialElem *GetMaterial(size_t index) {
+    if (index >= materials_.size()) return nullptr;
+    return &materials_[index];
+  }
+
+protected:
   std::vector<MultiMaterialElem> materials_;
 
   //Material material;

@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "renderer/BVH.h"
 #include "renderer/QBVH.h"
+#include "renderer/InfiniteFloor.h"
 
 namespace OmochiRenderer {
 
@@ -185,6 +186,13 @@ std::vector<SceneObject *> Scene::AddFloorYZ_xDown(const double size_y, const do
   AddObject(objs[0]);
   AddObject(objs[1]);
   return objs;
+}
+
+// ñ≥å¿è∞í«â¡
+SceneObject *Scene::AddInfiniteFLoor(const double y, const Material &material) {
+  auto obj = new InfiniteFloor(y, material);
+  AddObject(obj, true, false);
+  return obj;
 }
 
 }

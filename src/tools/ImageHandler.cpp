@@ -21,7 +21,9 @@ namespace OmochiRenderer
   {
     Image *image = nullptr;
 
-    if (fname.find_last_of(".hdr") != std::string::npos)
+    if (fname.size() >= 4 &&
+      fname[fname.size() - 1] == 'r' && fname[fname.size() - 2] == 'd' &&
+      fname[fname.size() - 3] == 'h' && fname[fname.size() - 4] == '.')
     {
       HDRImage *hdrImage = new HDRImage;
       if (!hdrImage->ReadFromRadianceFile(fname)) {

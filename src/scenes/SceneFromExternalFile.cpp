@@ -4,6 +4,7 @@
 #include "tools/Utils.h"
 #include "renderer/Sphere.h"
 #include "renderer/SphereLight.h"
+#include "renderer/InfiniteFloor.h"
 
 #include <fstream>
 
@@ -101,7 +102,7 @@ namespace OmochiRenderer {
     // Read Objects in this scene
     //
     enum OBJ_TYPE {
-      MESH, SPHERE, FLOOR, SPHERE_LIGHT, NONE
+      MESH, SPHERE, FLOOR, SPHERE_LIGHT, INFINITE_FLOOR, NONE
     };
     OBJ_TYPE type = NONE;
     bool isInObjectDefineSection = false;
@@ -130,6 +131,7 @@ namespace OmochiRenderer {
         else if (type_str == "Sphere") type = SPHERE;
         else if (type_str == "Floor") type = FLOOR;
         else if (type_str == "SphereLight") type = SPHERE_LIGHT;
+        else if (type_str == "InfiniteFloor") type = INFINITE_FLOOR;
 
         if (type == NONE) {
           cerr << "Undefined object type: " << type_str << " line " << line_number << endl;
@@ -151,6 +153,8 @@ namespace OmochiRenderer {
         case SPHERE:
         case SPHERE_LIGHT:
           ret = ReadSphere(readLines, type == SPHERE_LIGHT); break;
+        case INFINITE_FLOOR:
+          ret = ReadInfiniteFloor(readLines); break;
         }
         if (!ret) {
           cerr << "failed to load object: line " << line_number << endl;
@@ -251,6 +255,19 @@ namespace OmochiRenderer {
     mat.reflection_type = reflection_type;
     mat.refraction_rate = refract_rate;
 
+    if ((reflection_type != Material::REFLECTION_TYPE_REFRACTION && data.size() >= 8) ||
+      (reflection_type == Material::REFLECTION_TYPE_REFRACTION && data.size() >= 9))
+    {
+      int idx = reflection_type != Material::REFLECTION_TYPE_REFRACTION ? 7 : 8;
+      const auto texture_file_name = Utils::trim(data[idx]);
+
+      std::string fullPath = (m_baseDir.empty() ? "" : m_baseDir) + texture_file_name;
+      auto &imageHandler = ImageHandler::GetInstance();
+      auto imageId = imageHandler.LoadFromFile(fullPath);
+
+      mat.texture_id = imageId;
+    }
+
     return true;
   }
 
@@ -266,7 +283,7 @@ namespace OmochiRenderer {
 
     if (materials.size() != materialRates.size()) return false;
 
-    obj->materials_[0].rate_ = materialRates[0];
+    obj->GetMaterial(0)->rate_ = materialRates[0];
     for (size_t i = 1; i < materials.size(); i++) {
       if (i + 1 < materials.size()) {
         obj->AddMaterial(materials[i], materialRates[i], false);
@@ -278,6 +295,7 @@ namespace OmochiRenderer {
     return true;
   }
 
+  // 球（球ライトも含む）
   bool SceneFromExternalFile::ReadSphere(const std::vector<LinePair> &lines, bool isLight) {
     double radius = 0.0;
     Vector3 position;
@@ -335,6 +353,7 @@ namespace OmochiRenderer {
     return true;
   }
 
+  // 有限サイズの床
   bool SceneFromExternalFile::ReadFloor(const std::vector<LinePair> &lines) {
     double size_x = 0, size_z = 0;
     bool valid = true;
@@ -434,6 +453,39 @@ namespace OmochiRenderer {
     return true;
   }
 
+  // 無限床
+  bool SceneFromExternalFile::ReadInfiniteFloor(const std::vector<LinePair> &lines) {
+    double y = 0;
+    bool valid = true;
+    std::vector<Material> newMats;
+    std::vector<double> materialRates;
+
+    std::for_each(lines.begin(), lines.end(), [&](const LinePair &it) {
+      if (it.first == "Y") {
+        y = atof(it.second.c_str());
+      } else if (it.first == "Material") {
+        Material newMat;
+        if (!ParseMaterial(it.second, newMat)) {
+          valid = false;
+        } else {
+          newMats.push_back(newMat);
+        }
+      } else if (it.first == "MaterialRates") {
+        vector<string> rate_str(Utils::split(it.second, ','));
+        for (const auto &str : rate_str) {
+          materialRates.push_back(atof(str.c_str()));
+        }
+      }
+    });
+
+    auto *obj = new InfiniteFloor(y, newMats[0]);
+    AddObject(obj, true, false);
+    ProcessMaterials(obj, newMats, materialRates);
+
+    return true;
+  }
+
+  // .obj ファイルからのモデルデータ読み込み
   bool SceneFromExternalFile::ReadMesh(const std::vector<LinePair> &lines) {
 
     string fileName;

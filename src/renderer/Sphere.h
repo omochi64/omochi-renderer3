@@ -47,6 +47,33 @@ public:
     hit.position = x + v * hit.distance;
     hit.normal = hit.position - position_; hit.normal.normalize();
 
+    // 緯度・経度形式のテクスチャを仮定して uv を計算する
+    // texture を持ってなかったら計算しない
+    bool has_uv = false;
+    for (auto &mat : materials_)
+    {
+      if (mat.material_.texture_id != ImageHandler::INVALID_IMAGE_ID)
+      {
+        has_uv = true;
+        break;
+      }
+    }
+    if (has_uv)
+    {
+      // ここのu,vは画像左下をoriginとする座標
+      double v = (std::asin(hit.normal.y) + PI*0.5)/PI;
+      while (v > 1) v -= 1;
+      while (v < 0) v += 1;
+
+      double u = (std::atan2(hit.normal.z, hit.normal.x) + PI) / (2*PI);
+      while (u > 1) u -= 1;
+      while (u < 0) u += 1;
+
+      // 左上originに変更
+      hit.uv.x = u;
+      hit.uv.y = 1-v;
+    }
+
     return true;
   }
 

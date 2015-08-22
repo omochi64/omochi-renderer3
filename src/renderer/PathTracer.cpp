@@ -305,9 +305,9 @@ Color PathTracer::Radiance_internal(const Scene &scene,
   // ルーレット選択
   double value = rnd.nextDouble();
   int selectedIndex = -1;
-  for (int i = 0; i < intersect.object->materials_.size(); i++)
+  for (int i = 0; i < intersect.object->GetMaterialCount(); i++)
   {
-    const auto &mat = intersect.object->materials_[i];
+    const auto &mat = *intersect.object->GetMaterial(i);
     if (value <= mat.rate_)
     {
       selectedIndex = i;
@@ -315,11 +315,11 @@ Color PathTracer::Radiance_internal(const Scene &scene,
     }
     value -= mat.rate_;
   }
-  if (selectedIndex == -1) selectedIndex = intersect.object->materials_.size() - 1;
+  if (selectedIndex == -1) selectedIndex = intersect.object->GetMaterialCount() - 1;
 
-  double multi_layer_prob = intersect.object->materials_[selectedIndex].rate_;
+  double multi_layer_prob = intersect.object->GetMaterial(selectedIndex)->rate_;
 
-  const Material &mat = intersect.object->materials_[selectedIndex].material_;
+  const Material &mat = intersect.object->GetMaterial(selectedIndex)->material_;
 
   Color &textured = intersect.texturedHitpointColor =
     GetTexturedColor(mat, intersect.hit.uv);
