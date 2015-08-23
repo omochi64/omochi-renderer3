@@ -60,6 +60,9 @@
     <ClCompile Include="src\tools\StopRendererWithTimer.cpp">
       <Filter>tools</Filter>
     </ClCompile>
+    <ClCompile Include="src\scenes\SceneForRaytracingCamp3.cpp">
+      <Filter>scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="renderer">
@@ -232,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="src\renderer\InfiniteFloor.h">
       <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scenes\SceneForRaytracingCamp3.h">
+      <Filter>scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -9,6 +9,7 @@ namespace OmochiRenderer {
     virtual std::shared_ptr<Scene> Create(const std::string &sceneInformation) const = 0;
   };
 
+  // シーンFactoryのマネージャ。シーンファクトリ名からfactoryのインスタンスが引ける
   class SceneFactoryManager {
   public:
     static SceneFactoryManager & GetInstance()

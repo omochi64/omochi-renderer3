@@ -9,6 +9,8 @@
 #include <omp.h>
 
 namespace OmochiRenderer {
+
+  // 設定ファイル。settings.txt からいろいろ読み込む
   class Settings {
   public:
     Settings()
@@ -111,6 +113,7 @@ namespace OmochiRenderer {
       return true;
     }
 
+    // 設定へのアクセサたち
     int GetSuperSamples() const { return m_supersamples; }
     int GetSampleStart() const { return m_sampleStart; }
     int GetSampleEnd() const { return m_sampleEnd; }

@@ -177,6 +177,7 @@
     <ClCompile Include="src\scenes\CornellBoxScene.cpp" />
     <ClCompile Include="src\scenes\IBLTestScene.cpp" />
     <ClCompile Include="src\scenes\Scene.cpp" />
+    <ClCompile Include="src\scenes\SceneForRaytracingCamp3.cpp" />
     <ClCompile Include="src\scenes\SceneFromExternalFile.cpp" />
     <ClCompile Include="src\scenes\TestScene.cpp" />
     <ClCompile Include="src\stb\stb_image.cpp" />
@@ -221,6 +222,7 @@
     <ClInclude Include="src\renderer\SphereLight.h" />
     <ClInclude Include="src\renderer\ToonMapper.h" />
     <ClInclude Include="src\scenes\CornellBoxScene.h" />
+    <ClInclude Include="src\scenes\SceneForRaytracingCamp3.h" />
     <ClInclude Include="src\scenes\SceneFromExternalFileFactory.h" />
     <ClInclude Include="src\scenes\IBLTestScene.h" />
     <ClInclude Include="src\scenes\Scene.h" />

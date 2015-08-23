@@ -8,6 +8,7 @@
 #include "scenes/IBLTestScene.h"
 #include "scenes/SceneFromExternalFile.h"
 #include "scenes/SceneFromExternalFileFactory.h"
+#include "scenes/SceneForRaytracingCamp3.h"
 #include "tools/Vector.h"
 #include "viewer/WindowViewer.h"
 #include "renderer/Settings.h"
@@ -31,6 +32,7 @@ void initSceneFactories()
   factoryManager.Register("IBLTestScene", std::make_shared<IBLTestSceneFactory>());
   factoryManager.Register("SceneFromExternalFile", std::make_shared<SceneFromExternalFileFactory>());
   factoryManager.Register("TestScene", std::make_shared<TestSceneFactory>());
+  factoryManager.Register("SceneForRaytracingCamp3", std::make_shared<SceneForRaytracingCamp3Factory>());
 }
 
 int main(int argc, char *argv[]) {

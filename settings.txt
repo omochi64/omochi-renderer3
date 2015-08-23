@@ -1,8 +1,9 @@
 #Scene type = CornellBoxScene
 #Scene type = TestScene
-Scene type = IBLTestScene
+#Scene type = IBLTestScene
 #Scene type = SceneFromExternalFile
-Scene information = input_data/marbles.scene
+#Scene information = input_data/marbles.scene
+Scene type = SceneForRaytracingCamp3
 number of threads = 6
 Show Preview = True
 Save Span = 60
