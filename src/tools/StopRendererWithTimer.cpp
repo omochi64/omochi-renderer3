@@ -31,7 +31,7 @@ namespace OmochiRenderer {
 
         unsigned int timeInMsec = static_cast<unsigned int>(m_timeToStop * 1000 + 0.9999);
 
-        std::this_thread::sleep_for(std::chrono::microseconds(timeInMsec));
+        std::this_thread::sleep_for(std::chrono::milliseconds(timeInMsec));
 
         std::cerr << "Stop renderer by timer (" << m_timeToStop << " sec.)" << std::endl;
 

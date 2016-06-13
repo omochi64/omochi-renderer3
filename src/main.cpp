@@ -78,7 +78,10 @@ int main(int argc, char *argv[]) {
   size_t max_thread_num = 1;
 #ifdef USE_OPENMP
   max_thread_num = omp_get_max_threads();
+#else
+  max_thread_num = std::thread::hardware_concurrency();
 #endif
+  
   auto setting_thread_num = settings->GetNumberOfThreads();
   int thread_num = setting_thread_num;
   if (setting_thread_num <= 0) {

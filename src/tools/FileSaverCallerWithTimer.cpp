@@ -51,7 +51,7 @@ namespace OmochiRenderer {
           unsigned long sleepTime = saveSpan + accDiff - m_aimTimeToSaveFile * 1000;
           cerr << "Begin sleeping...: Sleep(static_cast<DWORD>(" << sleepTime << ")" << endl;
           start = clock();
-          std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
+          std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
 
           // 保存実行
           double tmpAccTime = accTime + 1000.0*(clock() - start) / CLOCKS_PER_SEC;
