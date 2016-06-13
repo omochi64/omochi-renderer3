@@ -7,6 +7,8 @@
 #include "IBL.h"
 
 #include <sstream>
+#include <thread>
+#include <atomic>
 
 using namespace std;
 
@@ -29,13 +31,14 @@ PathTracer::PathTracer(const Camera &camera, int min_samples, int max_samples, i
 void PathTracer::init(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallbackFunction callback)
 {
   SetCamera(camera);
-  m_currentSamples = 0;
-	m_min_samples = (min_samples);
-  m_max_samples = max_samples;
-  m_step_samples = steps;
-	m_supersamples = (supersamples);
-  m_previous_samples = 0;
+  m_currentSamples       = 0;
+	m_min_samples          = min_samples;
+  m_max_samples          = max_samples;
+  m_step_samples         = steps;
+	m_supersamples         = (supersamples);
+  m_previous_samples     = 0;
   m_renderFinishCallback = callback;
+  m_threadCount          = 1;
 
   m_checkIntersectionCount = 0;
   m_result = new Color[m_camera.GetScreenHeight()*m_camera.GetScreenWidth()];
@@ -58,7 +61,7 @@ void PathTracer::RenderScene(const Scene &scene) {
     clock_t t1, t2;
     t1 = clock();
     m_checkIntersectionCount = 0;
-    ScanPixelsAndCastRays(scene, m_previous_samples, m_currentSamples);
+    scanPixelsAndCastRays(scene, m_previous_samples, m_currentSamples);
     t2 = clock();
     m_previous_samples = m_currentSamples;
     cerr << "samples = " << m_currentSamples << " rendering finished." << endl;
@@ -71,43 +74,76 @@ void PathTracer::RenderScene(const Scene &scene) {
   }
 }
 
-void PathTracer::ScanPixelsAndCastRays(const Scene &scene, int previous_samples, int next_samples) {
-  m_processed_y_counts = 0;
+void PathTracer::scanPixelsAndCastRays(const Scene &scene, int previous_samples, int next_samples) {
 
   const size_t height = m_camera.GetScreenHeight();
-  const size_t width = m_camera.GetScreenWidth();
 
-  // trace all pixels
-  const double averaging_factor = next_samples * m_supersamples * m_supersamples;
-#pragma omp parallel for schedule(dynamic, 1)
-  for (int y = 0; y<(signed)height; y++) {
-    Random rnd(static_cast<unsigned int>(y+1+previous_samples*height));
-    for (int x = 0; x<(signed)width && m_enableRendering; x++) {
-      const int index = static_cast<int>(x + (height - y - 1)*width);
+  std::vector<std::thread *> threads;
+  threads.reserve(m_threadCount);
+  
+  // multi-threading by "y" index
+  std::atomic_int atomic_y_index;
+  atomic_y_index.store(0);
+  m_processed_y_counts = 0;
+  for (size_t threadIndex = 0; threadIndex < m_threadCount; threadIndex++) {
 
-      Color accumulated_radiance;
-
-      // super-sampling
-      for (int sy = 0; sy<m_supersamples && m_enableRendering; sy++) for (int sx = 0; sx < m_supersamples && m_enableRendering; sx++) {
-        // (x,y)ピクセル内での位置: [0,1]
-        const double rx = (2.0*sx + 1.0)/(2*m_supersamples);
-        const double ry = (2.0*sy + 1.0)/(2*m_supersamples);
-
-        Ray ray(m_camera.SampleRayForPixel(x + rx, y + ry, rnd));
-
-        // (m_samples)回サンプリングする
-        for (int s=previous_samples+1; s<=next_samples; s++) {
-          accumulated_radiance += Radiance(scene, ray, rnd, 0);
-          m_omittedRayCount++;
-        }
+    auto new_thread = new std::thread( [&] (const size_t threadIndex) {
+      //for (int y = 0; y<(signed)height; y++) {
+      clock_t t1, t2;
+      t1 = clock();
+      int y = atomic_y_index.fetch_add(1);
+      for (; y<(signed)height ; y = atomic_y_index.fetch_add(1)) {
+        std::cout << "ThreadIndex " << threadIndex << ": y=" << y << std::endl;
+        scanPixelsOnYAndCastRays(scene, y, previous_samples, next_samples);
       }
-      // img_n+c(x) = n/(n+c)*img_n(x) + 1/(n+c)*sum_{n+1}^{n+c}rad_i(x)/supersamples^2
-      m_result[index] = m_result[index] * (static_cast<double>(previous_samples) / next_samples) + accumulated_radiance / averaging_factor;
-    }
-    m_processed_y_counts++;
-    //cerr << "y = " << y << ": " << static_cast<double>(m_processed_y_counts)/height*100 << "% finished" << endl;
-
+      t2 = clock();
+      double pastsec = 1.0*(t2-t1)/CLOCKS_PER_SEC;
+      std::cout << "ThreadIndex " << threadIndex << " rendering time = " << (1.0/60)*pastsec << " min." << endl;
+    }, threadIndex );
+    threads.push_back(new_thread);
   }
+  
+  for (auto &thread : threads) {
+    thread->join();
+    delete thread;
+  }
+}
+  
+// ScanPixelsOnYAndCastRays で y 方向のループ内部の処理。マルチスレッドで呼ばれる可能性もある
+void PathTracer::scanPixelsOnYAndCastRays(const Scene &scene, int y, int previous_samples, int next_samples)
+{
+  const size_t height = m_camera.GetScreenHeight();
+  const size_t width  = m_camera.GetScreenWidth();
+  
+  
+  const double averaging_factor = next_samples * m_supersamples * m_supersamples;
+
+  Random rnd(static_cast<unsigned int>(y+1+previous_samples*height));
+  for (int x = 0; x<(signed)width && m_enableRendering; x++) {
+    const int index = static_cast<int>(x + (height - y - 1)*width);
+    
+    Color accumulated_radiance;
+    
+    // super-sampling
+    for (int sy = 0; sy<m_supersamples && m_enableRendering; sy++) for (int sx = 0; sx < m_supersamples && m_enableRendering; sx++) {
+      // (x,y)ピクセル内での位置: [0,1]
+      const double rx = (2.0*sx + 1.0)/(2*m_supersamples);
+      const double ry = (2.0*sy + 1.0)/(2*m_supersamples);
+      
+      Ray ray(m_camera.SampleRayForPixel(x + rx, y + ry, rnd));
+      
+      // (m_samples)回サンプリングする
+      for (int s=previous_samples+1; s<=next_samples; s++) {
+        accumulated_radiance += Radiance(scene, ray, rnd, 0);
+        m_omittedRayCount++;
+      }
+    }
+    // img_n+c(x) = n/(n+c)*img_n(x) + 1/(n+c)*sum_{n+1}^{n+c}rad_i(x)/supersamples^2
+    m_result[index] = m_result[index] * (static_cast<double>(previous_samples) / next_samples) + accumulated_radiance / averaging_factor;
+  }
+  m_processed_y_counts++;
+  //cerr << "y = " << y << ": " << static_cast<double>(m_processed_y_counts)/height*100 << "% finished" << endl;
+ 
 }
 
 const static int MinDepth = 5;

@@ -98,12 +98,13 @@ int main(int argc, char *argv[]) {
   Camera camera(settings->GetWidth(), settings->GetHeight(), settings->GetCameraPosition(), settings->GetCameraDirection(),
     settings->GetCameraUp(), settings->GetScreenHeightInWorldCoordinate(), settings->GetDistanceFromCameraToScreen(), 300);
   camera.SetAperture(std::shared_ptr<Aperture>(new CircleAperture(1.3)));
-
+  
   // レンダラ生成
   std::shared_ptr<PathTracer> renderer = std::make_shared<PathTracer>(
     camera, settings->GetSampleStart(), settings->GetSampleEnd(), settings->GetSampleStep(), settings->GetSuperSamples(), callback);
   renderer->EnableNextEventEstimation(Utils::parseBoolean(settings->GetRawSetting("next event estimation")));
-
+  renderer->SetMaxThreadCount(thread_num);
+  
   // 時間監視してファイルを保存するインスタンス
   FileSaverCallerWithTimer timeSaver(renderer, pngSaver);
   if (hdrSaver) {

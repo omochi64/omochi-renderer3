@@ -16,18 +16,23 @@ class IBL;
 
 class PathTracer : public Renderer {
 public:
-  // ƒŒƒ“ƒ_ƒŠƒ“ƒOŠ®—¹‚ÉŒÄ‚Ño‚·ƒR[ƒ‹ƒoƒbƒN—pƒƒ\ƒbƒh’è‹`
+  // ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°å®Œäº†æ™‚ã«å‘¼ã³å‡ºã™ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ç”¨ãƒ¡ã‚½ãƒƒãƒ‰å®šç¾©
   typedef std::function<void(int samples, const Color *result, double accumulatedRenderingTime)> RenderingFinishCallbackFunction;
 
 public:
-	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^AƒfƒXƒgƒ‰ƒNƒ^
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã€ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
   PathTracer(const Camera &camera, int samples, int supersamples);
   PathTracer(const Camera &camera, int min_samples, int max_samples, int step, int supersamples, RenderingFinishCallbackFunction callback);
 	virtual ~PathTracer();
 
-  // Next Event Estimation ‚Ì—LŒø‰»/–³Œø‰»‚ÌØ‚è‘Ö‚¦
+  // Next Event Estimation ã®æœ‰åŠ¹åŒ–/ç„¡åŠ¹åŒ–ã®åˆ‡ã‚Šæ›¿ãˆ
   void EnableNextEventEstimation(bool enable = true) {
     m_performNextEventEstimation = enable;
+  }
+  
+  // å®Ÿè¡Œæ™‚ã«åˆ©ç”¨å¯èƒ½ãªã‚¹ãƒ¬ãƒƒãƒ‰æ•°è¨­å®š
+  void SetMaxThreadCount(size_t count) {
+    m_threadCount = count == 0 ? 1 : count;   // 0ã¯ã‚ã‚Šãˆãªã„
   }
 
 	virtual void RenderScene(const Scene &scene);
@@ -38,7 +43,7 @@ public:
   virtual std::string GetCurrentRenderingInfo() const;
 
 private:
-  // “à•”—p‰Šú‰»Šª”
+  // å†…éƒ¨ç”¨åˆæœŸåŒ–å·»æ•°
   void init(const Camera &camera, int min_samples, int max_samples, int step, int supersamples,
     RenderingFinishCallbackFunction callbackOnOneIterationEnded);
 
@@ -46,9 +51,10 @@ private:
     m_camera = cam;
   }
 
-  // ‘SƒsƒNƒZƒ‹‚ğƒXƒLƒƒƒ“‚µAƒŒƒC‚ğ”ò‚Î‚·ƒƒ\ƒbƒh
-  void ScanPixelsAndCastRays(const Scene &scene, int previous_samples, int next_samples);
-  // —^‚¦‚ç‚ê‚½ƒŒƒC‚É‚Â‚¢‚ÄA‚»‚Ì•úË‹P“x‚ğ‹‚ß‚é
+  // å…¨ãƒ”ã‚¯ã‚»ãƒ«ã‚’ã‚¹ã‚­ãƒ£ãƒ³ã—ã€ãƒ¬ã‚¤ã‚’é£›ã°ã™ãƒ¡ã‚½ãƒƒãƒ‰
+  void scanPixelsAndCastRays(const Scene &scene, int previous_samples, int next_samples);
+  void scanPixelsOnYAndCastRays(const Scene &scene, int y, int previous_samples, int next_samples);
+  // ä¸ãˆã‚‰ã‚ŒãŸãƒ¬ã‚¤ã«ã¤ã„ã¦ã€ãã®æ”¾å°„è¼åº¦ã‚’æ±‚ã‚ã‚‹
   Color Radiance(const Scene &scene, const Ray &ray, Random &rnd, const int depth);
 
   //Color DirectRadiance(const Scene &scene, const Ray &ray, Random &rnd, const int depth, const bool intersected, Scene::IntersectionInformation &intersect, const Vector3 &normal);
@@ -72,6 +78,8 @@ private:
   int m_checkIntersectionCount;
   int m_omittedRayCount;
   int m_hitToLightCount;
+  
+  size_t m_threadCount;
 
 	Color *m_result;
 
