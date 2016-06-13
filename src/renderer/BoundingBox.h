@@ -1,5 +1,6 @@
 #pragma once
 
+#include <float.h>
 #include <algorithm>
 #include "tools/Vector.h"
 #include "Ray.h"
@@ -81,8 +82,8 @@ public:
 
   inline bool CheckIntersection(const Ray &ray, double &distance) const {
     Vector3 t_min(INF, INF, INF), t_max(-INF, -INF, -INF);
-    double fastest_out_t = INF;
-    double latest_in_t = -INF;
+    //double fastest_out_t = INF;
+    //double latest_in_t = -INF;
 
     double min_array[3] = {m_min.x, m_min.y, m_min.z};
     double max_array[3] = {m_max.x, m_max.y, m_max.z};
@@ -121,8 +122,9 @@ public:
 
   }
 
+#ifndef __APPLE__
   // Reference: http://d.hatena.ne.jp/ototoi/20090925/p1
-  inline static bool CheckIntersection4floatAABB(
+  inline static bool CheckIntersection4floatAABB(
 	  const __m128 bboxes[2][3], // 4boxes: min-max[2] * xyz[3] * boxes[4](__m128)
 	  const __m128 rayOrig[3],   // ray origin
 	  const __m128 rayInverseDir[3], // ray inversed dir
@@ -211,6 +213,7 @@ public:
     for (int i = 0; i < 2; i++) results[i] = ((ret >> i) & 0x1) != 0;
     return true;
   }
+#endif // !__APPLE__
 
   static BoundingBox CompoundBoxes(const BoundingBox &b1, const BoundingBox &b2) {
     return BoundingBox(Vector3(std::min(b1.min().x, b2.min().x), std::min(b1.min().y, b2.min().y), std::min(b1.min().z, b2.min().z)), 

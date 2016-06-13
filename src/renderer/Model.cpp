@@ -51,7 +51,7 @@ bool Model::ReadFromObj(const std::string &filename, bool flipV_of_UV) {
   ifstream ifs(filename.c_str());
 
   string baseDir;
-  int pos = filename.find_last_of('/');
+  auto pos = filename.find_last_of('/');
   if (pos != string::npos) {
     baseDir = filename.substr(0, pos);
   }
@@ -88,7 +88,7 @@ bool Model::ReadFromObj(const std::string &filename, bool flipV_of_UV) {
       //static int index=0;
       //materialNames[line.substr(string("mtllib ").length())] = Material(Material::REFLECTION_TYPE_LAMBERT, Vector3(0,0,0), Vector3(0.999+index*0.001,0.99,0.99));
       //index++;
-      // material‚ğƒ[ƒh‚·‚é
+      // materialã‚’ãƒ­ãƒ¼ãƒ‰ã™ã‚‹
       if (!LoadMaterialFile(baseDir + "/" + line.substr(string("mtlib ").length()+1), materialNames)) {
         cerr << "failed to load material file: " << line.substr(string("mtlib ").length()) << endl;
         return false;
@@ -356,7 +356,7 @@ Model::PolygonPtr Model::Load3verticesFace(const vector<string> &face, const vec
 
   PolygonPtr ret_p;
   if (!normal_exist) {
-    // normal ‚Ìw’è‚È‚©‚Á‚½
+    // normal ã®æŒ‡å®šãªã‹ã£ãŸ
     auto auto_normal = Polygon::CalculateNormal(vec[0], vec[1], vec[2]);
     ret_p = (new Polygon(vec[0], vec[1], vec[2], uvs[0], uvs[1], uvs[2], auto_normal, auto_normal, auto_normal, mat, Vector3(0, 0, 0)));
   } else {

@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#ifndef __APPLE__
+#define USE_OPENMP
+#endif
+
 #include "renderer/PathTracer.h"
 #include "renderer/Camera.h"
 #include "renderer/LinearGammaToonMapper.h"
@@ -19,7 +23,9 @@
 #include "tools/StopRendererWithTimer.h"
 #include "renderer/Aperture.h"
 
+#ifdef USE_OPENMP
 #include <omp.h>
+#endif
 
 using namespace std;
 using namespace OmochiRenderer;
@@ -49,12 +55,12 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-  // ƒtƒ@ƒCƒ‹•Û‘¶—pƒCƒ“ƒXƒ^ƒ“ƒX
+  // ãƒ•ã‚¡ã‚¤ãƒ«ä¿å­˜ç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
   auto hdrSaver = settings->DoSaveHDR() ? std::make_shared<RadianceSaver>(settings) : nullptr;
   auto pngSaver = std::make_shared<PNGSaver>(settings);
 
   PathTracer::RenderingFinishCallbackFunction callback([&hdrSaver, &pngSaver](int samples, const Color *img, double accumulatedRenderingTime) {
-      // ƒŒƒ“ƒ_ƒŠƒ“ƒOŠ®—¹‚ÉŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒNƒƒ\ƒbƒh
+      // ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°å®Œäº†æ™‚ã«å‘¼ã°ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ãƒ¡ã‚½ãƒƒãƒ‰
       cerr << "save ppm file for sample " << samples << " ..." << endl;
       if (hdrSaver) {
         hdrSaver->Save(samples, 9999999, img, accumulatedRenderingTime);
@@ -68,29 +74,34 @@ int main(int argc, char *argv[]) {
   }
 
 
-  // OpenMP ‚É‚æ‚é•À—ñ”‚Ìİ’è
-  auto max_thread_num = omp_get_max_threads();
+  // OpenMP ã«ã‚ˆã‚‹ä¸¦åˆ—æ•°ã®è¨­å®š
+  size_t max_thread_num = 1;
+#ifdef USE_OPENMP
+  max_thread_num = omp_get_max_threads();
+#endif
   auto setting_thread_num = settings->GetNumberOfThreads();
   int thread_num = setting_thread_num;
   if (setting_thread_num <= 0) {
-    thread_num = max_thread_num;
+    thread_num = static_cast<int>(max_thread_num);
   }
-  if (thread_num > max_thread_num) thread_num = max_thread_num;
+  if (thread_num > max_thread_num) thread_num = static_cast<int>(max_thread_num);
 
   cerr << "thread num = " << thread_num << endl;
+#ifdef USE_OPENMP
   omp_set_num_threads(thread_num);
-
-  // ƒJƒƒ‰İ’è
+#endif
+  
+  // ã‚«ãƒ¡ãƒ©è¨­å®š
   Camera camera(settings->GetWidth(), settings->GetHeight(), settings->GetCameraPosition(), settings->GetCameraDirection(),
     settings->GetCameraUp(), settings->GetScreenHeightInWorldCoordinate(), settings->GetDistanceFromCameraToScreen(), 300);
   camera.SetAperture(std::shared_ptr<Aperture>(new CircleAperture(1.3)));
 
-  // ƒŒƒ“ƒ_ƒ‰¶¬
+  // ãƒ¬ãƒ³ãƒ€ãƒ©ç”Ÿæˆ
   std::shared_ptr<PathTracer> renderer = std::make_shared<PathTracer>(
     camera, settings->GetSampleStart(), settings->GetSampleEnd(), settings->GetSampleStep(), settings->GetSuperSamples(), callback);
   renderer->EnableNextEventEstimation(Utils::parseBoolean(settings->GetRawSetting("next event estimation")));
 
-  // ŠÔŠÄ‹‚µ‚Äƒtƒ@ƒCƒ‹‚ğ•Û‘¶‚·‚éƒCƒ“ƒXƒ^ƒ“ƒX
+  // æ™‚é–“ç›£è¦–ã—ã¦ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿å­˜ã™ã‚‹ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
   FileSaverCallerWithTimer timeSaver(renderer, pngSaver);
   if (hdrSaver) {
     timeSaver.AddSaver(hdrSaver);
@@ -100,14 +111,14 @@ int main(int argc, char *argv[]) {
   timeSaver.SetAimTimeToSaveFile(1.5);
   timeSaver.StartTimer();
 
-  // ŠÔŠÄ‹‚µ‚ÄƒŒƒ“ƒ_ƒ‰‚ğƒXƒgƒbƒv‚·‚éƒCƒ“ƒXƒ^ƒ“ƒX
+  // æ™‚é–“ç›£è¦–ã—ã¦ãƒ¬ãƒ³ãƒ€ãƒ©ã‚’ã‚¹ãƒˆãƒƒãƒ—ã™ã‚‹ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
   StopRendererWithTimer stopTimer(renderer);
   if (settings->GetTimeToStopRenderer() > 0) {
     stopTimer.SetTimer(settings->GetTimeToStopRenderer());
     stopTimer.StartTimer();
   }
 
-  // ƒV[ƒ“¶¬
+  // ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
   auto sceneFactory = SceneFactoryManager::GetInstance().Get(settings->GetSceneType());
   if (sceneFactory == nullptr) {
     cerr << "Scene type: " << settings->GetSceneType() << " is invalid!!!" << endl;

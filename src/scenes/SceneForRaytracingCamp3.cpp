@@ -25,7 +25,7 @@ namespace OmochiRenderer {
 
     Vector3 posOffset(50 - (radius+haba) * 2 * 5, 0, -150);
 
-    int size = files.size();
+    int size = static_cast<int>(files.size());
     for (int texIdx = -10; texIdx < size; texIdx++)
     {
       double z = texIdx * (radius + haba) * 2.0 * 2.0;

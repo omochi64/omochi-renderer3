@@ -6,18 +6,16 @@
 #include "renderer/PathTracer.h"
 #include "GLUtils.h"
 
+#ifndef NO_PREVIEW_WINDOW
+
 #include <Windows.h>
 
 using namespace std;
-
-#ifndef NO_PREVIEW_WINDOW
 
 #include "glew.h"
 #include "glext.h"
 #include <gl/GL.h>
 #pragma comment(lib, "opengl32.lib")
-
-#endif // NO_PREVIEW_WINDOW
 
 namespace {
   wstring widen(const std::string &src) {
@@ -29,6 +27,7 @@ namespace {
     return dest;
   }
 }
+#endif // NO_PREVIEW_WINDOW
 
 namespace OmochiRenderer {
   class WindowViewer::WindowImpl {
@@ -79,20 +78,20 @@ namespace OmochiRenderer {
 
     static void MessageLoop() {
 
-      // ƒƒbƒZ[ƒWƒ‹[ƒv
+      // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ«ãƒ¼ãƒ—
       MSG msg;
 	    while(true)
 	    {
-		    BOOL ret = GetMessage( &msg, NULL, 0, 0 );  // ƒƒbƒZ[ƒW‚ğæ“¾‚·‚é
+		    BOOL ret = GetMessage( &msg, NULL, 0, 0 );  // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å–å¾—ã™ã‚‹
 		    if( ret == 0 || ret == -1 )
 		    {
-			    // ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğI—¹‚³‚¹‚éƒƒbƒZ[ƒW‚ª—ˆ‚Ä‚¢‚½‚çA
-			    // ‚ ‚é‚¢‚Í GetMessage() ‚ª¸”s‚µ‚½‚ç( -1 ‚ª•Ô‚³‚ê‚½‚ç jAƒ‹[ƒv‚ğ”²‚¯‚é
+			    // ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†ã•ã›ã‚‹ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒæ¥ã¦ã„ãŸã‚‰ã€
+			    // ã‚ã‚‹ã„ã¯ GetMessage() ãŒå¤±æ•—ã—ãŸã‚‰( -1 ãŒè¿”ã•ã‚ŒãŸã‚‰ ï¼‰ã€ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
 			    break;
 		    }
 		    else
 		    {
-			    // ƒƒbƒZ[ƒW‚ğˆ—‚·‚é
+			    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†ã™ã‚‹
 			    TranslateMessage( &msg );
 			    DispatchMessage( &msg );
 		    }
@@ -109,28 +108,28 @@ namespace OmochiRenderer {
 
       wstr_title = widen(viewer.m_windowTitle.c_str());
 
-      // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ìî•ñ‚ğİ’è
-      wc.cbSize = sizeof(wc);               // \‘¢‘ÌƒTƒCƒY
-      wc.style = CS_HREDRAW | CS_VREDRAW;   // ƒXƒ^ƒCƒ‹
-      wc.lpfnWndProc = WindowImpl::WndProc;             // ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
-      wc.cbClsExtra = 0;                    // Šg’£î•ñ‚P
-      wc.cbWndExtra = 0;                    // Šg’£î•ñ‚Q
-      wc.hInstance = hInst;                 // ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-      wc.hIcon = (HICON)LoadImage(          // ƒAƒCƒRƒ“
+      // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®æƒ…å ±ã‚’è¨­å®š
+      wc.cbSize = sizeof(wc);               // æ§‹é€ ä½“ã‚µã‚¤ã‚º
+      wc.style = CS_HREDRAW | CS_VREDRAW;   // ã‚¹ã‚¿ã‚¤ãƒ«
+      wc.lpfnWndProc = WindowImpl::WndProc;             // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
+      wc.cbClsExtra = 0;                    // æ‹¡å¼µæƒ…å ±ï¼‘
+      wc.cbWndExtra = 0;                    // æ‹¡å¼µæƒ…å ±ï¼’
+      wc.hInstance = hInst;                 // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+      wc.hIcon = (HICON)LoadImage(          // ã‚¢ã‚¤ã‚³ãƒ³
 	      NULL, MAKEINTRESOURCE(IDI_APPLICATION), IMAGE_ICON,
 	      0, 0, LR_DEFAULTSIZE | LR_SHARED
       );
-      wc.hIconSm = wc.hIcon;                // qƒAƒCƒRƒ“
-      wc.hCursor = (HCURSOR)LoadImage(      // ƒ}ƒEƒXƒJ[ƒ\ƒ‹
+      wc.hIconSm = wc.hIcon;                // å­ã‚¢ã‚¤ã‚³ãƒ³
+      wc.hCursor = (HCURSOR)LoadImage(      // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«
 	      NULL, MAKEINTRESOURCE(IDC_ARROW), IMAGE_CURSOR,
 	      0, 0, LR_DEFAULTSIZE | LR_SHARED
       );
-      wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH); // ƒEƒBƒ“ƒhƒE”wŒi
-      wc.lpszMenuName = NULL;                     // ƒƒjƒ…[–¼
+      wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH); // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦èƒŒæ™¯
+      wc.lpszMenuName = NULL;                     // ãƒ¡ãƒ‹ãƒ¥ãƒ¼å
       // ugly code
-      wc.lpszClassName = wstr_title.c_str();// ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX–¼
+      wc.lpszClassName = wstr_title.c_str();// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹å
 
-      // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚ğ“o˜^‚·‚é
+      // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã‚’ç™»éŒ²ã™ã‚‹
       if( RegisterClassEx( &wc ) == 0 ){ return (HWND)INVALID_HANDLE_VALUE; }
 
       int width = viewer.m_camera.GetScreenWidth();
@@ -139,19 +138,19 @@ namespace OmochiRenderer {
       int x = ( GetSystemMetrics( SM_CXSCREEN ) - width ) / 2;
       int y = ( GetSystemMetrics( SM_CYSCREEN ) - height ) / 2;
 
-      // ƒEƒBƒ“ƒhƒE‚ğì¬‚·‚é
+      // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆã™ã‚‹
       hWnd = CreateWindow(
-	      wc.lpszClassName,      // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX–¼
-        wstr_title.c_str(),  // ƒ^ƒCƒgƒ‹ƒo[‚É•\¦‚·‚é•¶š—ñ
-	      WS_OVERLAPPEDWINDOW,   // ƒEƒBƒ“ƒhƒE‚Ìí—Ş
-	      x,         // ƒEƒBƒ“ƒhƒE‚ğ•\¦‚·‚éˆÊ’uiXÀ•Wj
-	      y,         // ƒEƒBƒ“ƒhƒE‚ğ•\¦‚·‚éˆÊ’uiYÀ•Wj
-	      width,         // ƒEƒBƒ“ƒhƒE‚Ì•
-	      height,         // ƒEƒBƒ“ƒhƒE‚Ì‚‚³
-	      NULL,                  // eƒEƒBƒ“ƒhƒE‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-	      NULL,                  // ƒƒjƒ…[ƒnƒ“ƒhƒ‹
-	      hInst,                 // ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-	      NULL                   // ‚»‚Ì‘¼‚Ìì¬ƒf[ƒ^
+	      wc.lpszClassName,      // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹å
+        wstr_title.c_str(),  // ã‚¿ã‚¤ãƒˆãƒ«ãƒãƒ¼ã«è¡¨ç¤ºã™ã‚‹æ–‡å­—åˆ—
+	      WS_OVERLAPPEDWINDOW,   // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ç¨®é¡
+	      x,         // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’è¡¨ç¤ºã™ã‚‹ä½ç½®ï¼ˆXåº§æ¨™ï¼‰
+	      y,         // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’è¡¨ç¤ºã™ã‚‹ä½ç½®ï¼ˆYåº§æ¨™ï¼‰
+	      width,         // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å¹…
+	      height,         // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®é«˜ã•
+	      NULL,                  // è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+	      NULL,                  // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ³ãƒ‰ãƒ«
+	      hInst,                 // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+	      NULL                   // ãã®ä»–ã®ä½œæˆãƒ‡ãƒ¼ã‚¿
       );
 
       if (hWnd == 0 || hWnd == INVALID_HANDLE_VALUE) return (HWND)INVALID_HANDLE_VALUE;
@@ -164,7 +163,7 @@ namespace OmochiRenderer {
       y = (GetSystemMetrics(SM_CYSCREEN) - trueheight)/2;
       MoveWindow(hWnd, x, y, truewidth, trueheight, TRUE);
 
-      // ƒEƒBƒ“ƒhƒE‚ğ•\¦‚·‚é
+      // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’è¡¨ç¤ºã™ã‚‹
 	    ShowWindow( hWnd, SW_SHOW );
 	    UpdateWindow( hWnd );
 
@@ -182,7 +181,7 @@ namespace OmochiRenderer {
       HDC hdc = GetDC(hWnd);
 
       try {
-        // ƒsƒNƒZƒ‹ƒtƒH[ƒ}ƒbƒg‚Ìİ’è
+        // ãƒ”ã‚¯ã‚»ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®è¨­å®š
         PIXELFORMATDESCRIPTOR pdf = {
           sizeof(PIXELFORMATDESCRIPTOR),
           1, // version
@@ -207,7 +206,7 @@ namespace OmochiRenderer {
 
         if (!SetPixelFormat(hdc, format, &pdf)) throw "";
 
-        // ƒŒƒ“ƒ_ƒŠƒ“ƒOƒRƒ“ƒeƒLƒXƒgì¬
+        // ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆä½œæˆ
         m_glrc = wglCreateContext(hdc);
       }
       catch (...) {
@@ -489,3 +488,4 @@ namespace OmochiRenderer {
 #endif // NO_PREVIEW_WINDOW
   }
 }
+

@@ -8,7 +8,7 @@
 
 namespace OmochiRenderer {
 
-  // �t�@�C���ۑ��̂��߂̊��N���X�B���̉��s��
+  // ファイル保存のための基底クラス。実体化不可
   class FileSaver {
   public:
     explicit FileSaver(std::shared_ptr<Settings> settings)
@@ -23,22 +23,22 @@ namespace OmochiRenderer {
       m_img = ImageHandler::INVALID_IMAGE_ID;
     }
 
-    // �ۑ����ɌĂ΂��֐�
+    // 保存時に呼ばれる関数
     virtual void Save(int samples, int saveCount, const Color *img, double accumulatedPastTime) = 0;
 
   protected:
 
-    // �����p�B�����̃f�[�^�����̃C���X�^���X�̃f�[�^�ɃR�s�[
+    // 内部用。引数のデータをこのインスタンスのデータにコピー
     void CopyColorArrayToImage(const Color *img)
     {
       auto myImg = ImageHandler::GetInstance().GetImage(m_img);
       if (myImg)
       {
-        CopyColorArrayToImage(img, myImg->m_image, myImg->GetWidth(), myImg->GetHeight());
+        CopyColorArrayToImage(img, myImg->m_image, static_cast<int>(myImg->GetWidth()), static_cast<int>(myImg->GetHeight()));
       }
     }
 
-    // �����ɗ^�����ϐ��Ԃ�Color�f�[�^�R�s�[
+    // 引数に与えた変数間でColorデータコピー
     static void CopyColorArrayToImage(const Color *img, std::vector<Color> &copyTo, int width, int height, bool gamma = true)
     {
       std::vector<Color> tmp(width*height);
@@ -112,7 +112,7 @@ namespace OmochiRenderer {
       }
     }
 
-    // settings ��ۑ����̌Ăяo����������t�@�C�����𐶐���������p���\�b�h
+    // settings や保存時の呼び出し引数からファイル名を生成する内部用メソッド
     std::string P_CreateFileName(int samples, int saveCount, double accumulatedPastTime) const {
       const static std::string file_format_key = "save filename format for pathtracer";
 

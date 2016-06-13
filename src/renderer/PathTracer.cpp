@@ -48,7 +48,7 @@ PathTracer::~PathTracer()
 
 void PathTracer::RenderScene(const Scene &scene) {
 
-  // ƒXƒNƒŠ[ƒ“’†S
+  // ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ä¸­å¿ƒ
   const Vector3 screen_center = m_camera.GetScreenCenterPosition();
 
   m_omittedRayCount = 0;
@@ -81,21 +81,21 @@ void PathTracer::ScanPixelsAndCastRays(const Scene &scene, int previous_samples,
   const double averaging_factor = next_samples * m_supersamples * m_supersamples;
 #pragma omp parallel for schedule(dynamic, 1)
   for (int y = 0; y<(signed)height; y++) {
-    Random rnd(y+1+previous_samples*height);
+    Random rnd(static_cast<unsigned int>(y+1+previous_samples*height));
     for (int x = 0; x<(signed)width && m_enableRendering; x++) {
-      const int index = x + (height - y - 1)*width;
+      const int index = static_cast<int>(x + (height - y - 1)*width);
 
       Color accumulated_radiance;
 
       // super-sampling
       for (int sy = 0; sy<m_supersamples && m_enableRendering; sy++) for (int sx = 0; sx < m_supersamples && m_enableRendering; sx++) {
-        // (x,y)ƒsƒNƒZƒ‹“à‚Å‚ÌˆÊ’u: [0,1]
+        // (x,y)ãƒ”ã‚¯ã‚»ãƒ«å†…ã§ã®ä½ç½®: [0,1]
         const double rx = (2.0*sx + 1.0)/(2*m_supersamples);
         const double ry = (2.0*sy + 1.0)/(2*m_supersamples);
 
         Ray ray(m_camera.SampleRayForPixel(x + rx, y + ry, rnd));
 
-        // (m_samples)‰ñƒTƒ“ƒvƒŠƒ“ƒO‚·‚é
+        // (m_samples)å›ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã™ã‚‹
         for (int s=previous_samples+1; s<=next_samples; s++) {
           accumulated_radiance += Radiance(scene, ray, rnd, 0);
           m_omittedRayCount++;
@@ -138,8 +138,8 @@ Color PathTracer::Radiance(const Scene &scene, const Ray &ray, Random &rnd, cons
 Color PathTracer::DirectRadiance(const Scene &scene, const Ray &ray, Random &rnd, const int depth, const bool intersected, Scene::IntersectionInformation &intersect, const Vector3 &normal) {
   if (!intersected) {
     if (scene.GetIBL()) {
-      return scene.GetIBL()->Sample(ray);    // ³Šm‚É”wŒi‚Æ‚ÌÕ“ËˆÊ’u‚ğŒvZ‚·‚é
-      // return scene.GetIBL()->Sample(ray.dir); // ƒŒƒC‚ªŒ´“_‚©‚çn‚Ü‚Á‚Ä‚¢‚é‚Æ‚İ‚È‚µ‚ÄŒvZ‚·‚é
+      return scene.GetIBL()->Sample(ray);    // æ­£ç¢ºã«èƒŒæ™¯ã¨ã®è¡çªä½ç½®ã‚’è¨ˆç®—ã™ã‚‹
+      // return scene.GetIBL()->Sample(ray.dir); // ãƒ¬ã‚¤ãŒåŸç‚¹ã‹ã‚‰å§‹ã¾ã£ã¦ã„ã‚‹ã¨ã¿ãªã—ã¦è¨ˆç®—ã™ã‚‹
     } else {
       return scene.Background();
     }
@@ -150,14 +150,14 @@ Color PathTracer::DirectRadiance(const Scene &scene, const Ray &ray, Random &rnd
   if (intersect.object->material.emission.lengthSq() == 0) {
     switch (intersect.object->material.reflection_type) {
     case Material::REFLECTION_TYPE_LAMBERT:
-      // ƒ‰ƒCƒg‚©‚çƒTƒ“ƒvƒŠƒ“ƒO‚ğs‚¤
-      // IBL ‚àŠÜ‚ß‚é
+      // ãƒ©ã‚¤ãƒˆã‹ã‚‰ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã‚’è¡Œã†
+      // IBL ã‚‚å«ã‚ã‚‹
       //income = DirectRadiance_Lambert(scene, ray, rnd, depth, intersected, intersect, normal);
       break;
 
     case Material::REFLECTION_TYPE_SPECULAR:
     case Material::REFLECTION_TYPE_REFRACTION:
-      // ŠÔÚŒõ•]‰¿‚Ì‚İ‚Å—Ç‚¢
+      // é–“æ¥å…‰è©•ä¾¡ã®ã¿ã§è‰¯ã„
       break;
     }
   } else {
@@ -171,7 +171,7 @@ Color PathTracer::DirectRadiance(const Scene &scene, const Ray &ray, Random &rnd
 }
 */
 
-// ’¼ÚŒõ‚É‚æ‚é Radiance ‚Ì•]‰¿
+// ç›´æ¥å…‰ã«ã‚ˆã‚‹ Radiance ã®è©•ä¾¡
 Color PathTracer::DirectRadiance_Lambert(const Scene &scene,
                                          const Ray &ray,
                                          Random &rnd,
@@ -182,7 +182,7 @@ Color PathTracer::DirectRadiance_Lambert(const Scene &scene,
                                          const Material &material) {
   assert(intersected);
 
-  // ƒ‰ƒCƒg‚É“–‚½‚Á‚Ä‚¢‚½‚ç–³‹
+  // ãƒ©ã‚¤ãƒˆã«å½“ãŸã£ã¦ã„ãŸã‚‰ç„¡è¦–
   if (dynamic_cast<LightBase *>(intersect.object) != nullptr)
   {
     return Color(0, 0, 0);
@@ -201,7 +201,7 @@ Color PathTracer::DirectRadiance_Lambert(const Scene &scene,
     totalPower += power;
   }
 
-  // Šm—¦‚Ö³‹K‰»
+  // ç¢ºç‡ã¸æ­£è¦åŒ–
   for (size_t i = 0; i < lights.size(); i++) {
     eachLightProbability[i] /= totalPower;
     accumulatedProbability[i] /= totalPower;
@@ -216,7 +216,7 @@ Color PathTracer::DirectRadiance_Lambert(const Scene &scene,
     int index = 0;
     for (size_t i = 0; i < lights.size(); i++) {
       if (next <= accumulatedProbability[i]) {
-        index = i; break;
+        index = static_cast<int>(i); break;
       }
     }
 
@@ -248,7 +248,7 @@ Color PathTracer::DirectRadiance_Lambert(const Scene &scene,
         income.x += reflect_rate.x * material.emission.x;
         income.y += reflect_rate.y * material.emission.y;
         income.z += reflect_rate.z * material.emission.z;
-        // direct_illum = 1/N*ƒ°L_e*BRDF*G*V/pdf(light)
+        // direct_illum = 1/N*Î£L_e*BRDF*G*V/pdf(light)
         m_hitToLightCount++;
       }
     }
@@ -292,17 +292,17 @@ Color PathTracer::Radiance_internal(const Scene &scene,
 
   if (!intersected) {
     if (scene.GetIBL()) {
-      //return scene.GetIBL()->Sample(ray);    // ³Šm‚É”wŒi‚Æ‚ÌÕ“ËˆÊ’u‚ğŒvZ‚·‚é
-      return scene.GetIBL()->Sample(ray.dir); // ƒŒƒC‚ªŒ´“_‚©‚çn‚Ü‚Á‚Ä‚¢‚é‚Æ‚İ‚È‚µ‚ÄŒvZ‚·‚é
+      //return scene.GetIBL()->Sample(ray);    // æ­£ç¢ºã«èƒŒæ™¯ã¨ã®è¡çªä½ç½®ã‚’è¨ˆç®—ã™ã‚‹
+      return scene.GetIBL()->Sample(ray.dir); // ãƒ¬ã‚¤ãŒåŸç‚¹ã‹ã‚‰å§‹ã¾ã£ã¦ã„ã‚‹ã¨ã¿ãªã—ã¦è¨ˆç®—ã™ã‚‹
     } else {
       return scene.Background();
     }
   }
 
-  assert(intersect.object->materials_.size() > 0);
+  assert(intersect.object->GetMaterialCount() > 0);
 
-  // Šm—¦‚ÉŠî‚Ã‚¢‚Ä’Š‘I‚ğs‚¤ (Šm—¦‚Í³‹K‰»‚³‚ê‚Ä‚¢‚é‘O’ñ‚Å“®ì‚·‚é)
-  // ƒ‹[ƒŒƒbƒg‘I‘ğ
+  // ç¢ºç‡ã«åŸºã¥ã„ã¦æŠ½é¸ã‚’è¡Œã† (ç¢ºç‡ã¯æ­£è¦åŒ–ã•ã‚Œã¦ã„ã‚‹å‰æã§å‹•ä½œã™ã‚‹)
+  // ãƒ«ãƒ¼ãƒ¬ãƒƒãƒˆé¸æŠ
   double value = rnd.nextDouble();
   int selectedIndex = -1;
   for (int i = 0; i < intersect.object->GetMaterialCount(); i++)
@@ -315,9 +315,9 @@ Color PathTracer::Radiance_internal(const Scene &scene,
     }
     value -= mat.rate_;
   }
-  if (selectedIndex == -1) selectedIndex = intersect.object->GetMaterialCount() - 1;
+  if (selectedIndex == -1) selectedIndex = static_cast<int>(intersect.object->GetMaterialCount() - 1);
 
-  double multi_layer_prob = intersect.object->GetMaterial(selectedIndex)->rate_;
+  //double multi_layer_prob = intersect.object->GetMaterial(selectedIndex)->rate_;
 
   const Material &mat = intersect.object->GetMaterial(selectedIndex)->material_;
 
@@ -326,19 +326,19 @@ Color PathTracer::Radiance_internal(const Scene &scene,
 
   Color income;
 
-  // ‚±‚Ì if •¶‚ğ—LŒø‚É‚·‚é‚ÆA’¼ÚŒõ‚Ì‚İl—¶‚·‚é‚æ‚¤‚É‚È‚é
+  // ã“ã® if æ–‡ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã¨ã€ç›´æ¥å…‰ã®ã¿è€ƒæ…®ã™ã‚‹ã‚ˆã†ã«ãªã‚‹
   //if (depth >= 1) {
   //  return intersect.object->material.emission;
   //}
 
-  double russian_roulette_probability = std::max(textured.x, std::max(textured.y, textured.z)); // “K“–
+  double russian_roulette_probability = std::max(textured.x, std::max(textured.y, textured.z)); // é©å½“
   if (depth > MaxDepth) {
     russian_roulette_probability *= pow(0.5, depth - MaxDepth);
   }
   if (depth > MinDepth) {
     if (rnd.nextDouble() >= russian_roulette_probability) {
-      // Še radiance ‚ğŒvZ‚·‚é‚Æ‚«‚É’¼ÚŒõ‚ğŒvZ‚µ‚Ä‚¢‚é‚Ì‚ÅA
-      // ueye ‚©‚ç’¼Ú light ‚É hit ‚µ‚½ê‡v‚Ì‚İAemission ‚ğ income ‚É‰Á‚¦‚é
+      // å„ radiance ã‚’è¨ˆç®—ã™ã‚‹ã¨ãã«ç›´æ¥å…‰ã‚’è¨ˆç®—ã—ã¦ã„ã‚‹ã®ã§ã€
+      // ã€Œeye ã‹ã‚‰ç›´æ¥ light ã« hit ã—ãŸå ´åˆã€ã®ã¿ã€emission ã‚’ income ã«åŠ ãˆã‚‹
       if (depth == 0 || !m_performNextEventEstimation) {
         if (mat.emission.lengthSq() != 0) {
           m_hitToLightCount++;
@@ -364,10 +364,10 @@ Color PathTracer::Radiance_internal(const Scene &scene,
       break;
   }
 
-  // Še radiance ‚ğŒvZ‚·‚é‚Æ‚«‚É’¼ÚŒõ‚ğŒvZ‚µ‚Ä‚¢‚é‚Ì‚ÅA
-  // ueye ‚©‚ç’¼Ú light ‚É hit ‚µ‚½ê‡v‚Ì‚İAemission ‚ğ income ‚É‰Á‚¦‚é
+  // å„ radiance ã‚’è¨ˆç®—ã™ã‚‹ã¨ãã«ç›´æ¥å…‰ã‚’è¨ˆç®—ã—ã¦ã„ã‚‹ã®ã§ã€
+  // ã€Œeye ã‹ã‚‰ç›´æ¥ light ã« hit ã—ãŸå ´åˆã€ã®ã¿ã€emission ã‚’ income ã«åŠ ãˆã‚‹
   if (depth == 0 || !m_performNextEventEstimation) {
-    // --> eye ‚©‚ç’¼Ú light ‚É hit ‚µA light ©g‚ª”½Ë—¦‚ğ‚Âê‡‚É‚±‚±‚ª—LŒø‚É‚È‚é
+    // --> eye ã‹ã‚‰ç›´æ¥ light ã« hit ã—ã€ light è‡ªèº«ãŒåå°„ç‡ã‚’æŒã¤å ´åˆã«ã“ã“ãŒæœ‰åŠ¹ã«ãªã‚‹
     income += mat.emission;
     if (mat.emission.lengthSq() != 0) {
       m_hitToLightCount++;
@@ -377,7 +377,7 @@ Color PathTracer::Radiance_internal(const Scene &scene,
   return income;
 }
 
-// Lambert –Ê‚Ì Radiance ‚Ì•]‰¿
+// Lambert é¢ã® Radiance ã®è©•ä¾¡
 Color PathTracer::Radiance_Lambert(const Scene &scene,
                                    const Ray &ray,
                                    Random &rnd,
@@ -389,7 +389,7 @@ Color PathTracer::Radiance_Lambert(const Scene &scene,
 
   Color direct;
 
-  // ’¼ÚŒõ‚ğ•]‰¿‚·‚é
+  // ç›´æ¥å…‰ã‚’è©•ä¾¡ã™ã‚‹
   if (m_performNextEventEstimation && material.emission.lengthSq() == 0) {
     direct = DirectRadiance_Lambert(scene, ray, rnd, depth, true, intersect, normal, material);
   }
@@ -405,16 +405,16 @@ Color PathTracer::Radiance_Lambert(const Scene &scene,
   v = w.cross(u);
   double u1 = rnd.nextDouble(); double u2 = rnd.nextDouble();
   // pdf is 1/PI
-  //double r1 = PI*u1; // ƒ³
-  //double r2 = 1-u2; // cosƒÆ
-  //double r3 = sqrt(1-r2*r2); // sinƒÆ
+  //double r1 = PI*u1; // Î¦
+  //double r2 = 1-u2; // cosÎ¸
+  //double r3 = sqrt(1-r2*r2); // sinÎ¸
   //double pdf = 1/PI;
 
-  // pdf is cosƒÆ/PI
+  // pdf is cosÎ¸/PI
   double r1 = 2*PI*u1;
-  double r2 = sqrt(u2); // cosƒÆ
-  double r3 = sqrt(1-u2); // sinƒÆ
-  double pdf = r2/PI;
+  double r2 = sqrt(u2); // cosÎ¸
+  double r3 = sqrt(1-u2); // sinÎ¸
+  //double pdf = r2/PI;
 
   //const double r1 = 2 * PI * rnd.nextDouble();
   //const double r2 = rnd.nextDouble(), r2s = sqrt(r2);
@@ -431,20 +431,20 @@ Color PathTracer::Radiance_Lambert(const Scene &scene,
   if (material.emission.lengthSq() == 0) {
     income = Radiance(scene, Ray(intersect.hit.position, dir), rnd, depth + 1);
   } 
-  // direct ‚Í‚·‚Å‚É”½Ë—¦‚ªæZÏ‚İ‚È‚Ì‚ÅAweight‚ğŠ|‚¯‚é•K—v‚Í‚È‚¢
+  // direct ã¯ã™ã§ã«åå°„ç‡ãŒä¹—ç®—æ¸ˆã¿ãªã®ã§ã€weightã‚’æ›ã‘ã‚‹å¿…è¦ã¯ãªã„
   return ( Vector3(weight.x*income.x, weight.y*income.y, weight.z*income.z) + direct ) / russian_roulette_prob;
 }
 
-// ‹¾–Ê”½Ë
+// é¡é¢åå°„
 Color PathTracer::Radiance_Specular(const Scene &scene, const Ray &ray, Random &rnd, const int depth, Scene::IntersectionInformation &intersect, const Vector3 &normal, double russian_roulette_prob, const Material &material) {
   Vector3 reflected_dir(ray.dir - normal*2*ray.dir.dot(normal));
   reflected_dir.normalize();
 
-  // ŠÔÚŒõ‚Ì•]‰¿
+  // é–“æ¥å…‰ã®è©•ä¾¡
   Ray newray(intersect.hit.position, reflected_dir);
   Color income = Radiance(scene, newray, rnd, depth+1);
 
-  // ’¼ÚŒõ‚Ì•]‰¿
+  // ç›´æ¥å…‰ã®è©•ä¾¡
   Scene::IntersectionInformation newhit;
   if (m_performNextEventEstimation && scene.CheckIntersection(newray, newhit)) {
     income += material.emission;
@@ -455,7 +455,7 @@ Color PathTracer::Radiance_Specular(const Scene &scene, const Ray &ray, Random &
 
 }
 
-// ‹üÜ–Ê
+// å±ˆæŠ˜é¢
 Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random &rnd, const int depth, Scene::IntersectionInformation &intersect, const Vector3 &normal, double russian_roulette_prob, const Material &material) {
   bool into = intersect.hit.normal.dot(normal) > 0.0;
 
@@ -468,7 +468,7 @@ Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random
   double dot = ray.dir.dot(normal);
   double cos2t = 1-n_ratio*n_ratio*(1-dot*dot);
 
-  // ”½Ë•ûŒü‚Ì’¼ÚŒõ‚Ì•]‰¿
+  // åå°„æ–¹å‘ã®ç›´æ¥å…‰ã®è©•ä¾¡
   Color reflect_direct;
   Ray reflect_ray(intersect.hit.position, reflect_dir);
   Scene::IntersectionInformation reflected_hit;
@@ -477,45 +477,45 @@ Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random
   }
 
   if (cos2t < 0) {
-    // ‘S”½Ë
+    // å…¨åå°„
     Color income = reflect_direct + Radiance(scene, Ray(intersect.hit.position, reflect_dir), rnd, depth+1);
     Color weight = material.color / russian_roulette_prob;
     return Vector3(weight.x*income.x, weight.y*income.y, weight.z*income.z);
   }
 
-  // ‹üÜ•ûŒü
+  // å±ˆæŠ˜æ–¹å‘
   Vector3 refract_dir( ray.dir*n_ratio - intersect.hit.normal * (into ? 1.0 : -1.0) * (dot*n_ratio + sqrt(cos2t)) );
   refract_dir.normalize();
   const Ray refract_ray(intersect.hit.position, refract_dir);
-  // ‹üÜ•ûŒü‚Ì’¼ÚŒõ‚Ì•]‰¿
+  // å±ˆæŠ˜æ–¹å‘ã®ç›´æ¥å…‰ã®è©•ä¾¡
   Color refract_direct;
   if (m_performNextEventEstimation && scene.CheckIntersection(refract_ray, reflected_hit)) {
     refract_direct = material.emission;
   }
 
-  // Fresnel ‚Ì®
+  // Fresnel ã®å¼
   double F0 = (n_obj-n_vacuum)*(n_obj-n_vacuum)/((n_obj+n_vacuum)*(n_obj+n_vacuum));
-  double c = 1 - ( into ? -dot : -refract_dir.dot(normal) );  // 1-cosƒÆ
-  double Fr = F0 + (1-F0)*pow(c, 5.0);    // Fresnel (”½Ë‚ÌŠ„‡)
-  double n_ratio2 = n_ratio*n_ratio;  // ‹üÜ‘OŒã‚Å‚Ì•úË‹P“x‚Ì•Ï‰»—¦
-  double Tr = (1-Fr)*n_ratio2;        // ‹üÜ’¼Œã¨’¼‘O‚ÌŠ„‡
+  double c = 1 - ( into ? -dot : -refract_dir.dot(normal) );  // 1-cosÎ¸
+  double Fr = F0 + (1-F0)*pow(c, 5.0);    // Fresnel (åå°„ã®å‰²åˆ)
+  double n_ratio2 = n_ratio*n_ratio;  // å±ˆæŠ˜å‰å¾Œã§ã®æ”¾å°„è¼åº¦ã®å¤‰åŒ–ç‡
+  double Tr = (1-Fr)*n_ratio2;        // å±ˆæŠ˜ç›´å¾Œâ†’ç›´å‰ã®å‰²åˆ
 
   Color income, weight;
 
   if (depth > 2) {
-    // ”½Ë or ‹üÜ‚Ì‚İ’ÇÕ
+    // åå°„ or å±ˆæŠ˜ã®ã¿è¿½è·¡
     const double reflect_prob = 0.1 + 0.8 * Fr;
     if (rnd.nextDouble() < reflect_prob) {
-      // ”½Ë
+      // åå°„
       income = (reflect_direct + Radiance(scene, Ray(intersect.hit.position, reflect_dir), rnd, depth+1)) * Fr;
       weight = intersect.texturedHitpointColor / (russian_roulette_prob * reflect_prob);
     } else {
-      // ‹üÜ
+      // å±ˆæŠ˜
       income = (refract_direct + Radiance(scene, refract_ray, rnd, depth+1)) * Tr;
       weight = intersect.texturedHitpointColor / (russian_roulette_prob * (1 - reflect_prob));
     }
   } else {
-    // ”½Ë‚Æ‹üÜ—¼•û’ÇÕ
+    // åå°„ã¨å±ˆæŠ˜ä¸¡æ–¹è¿½è·¡
     m_omittedRayCount++;
     income =
       (reflect_direct + Radiance(scene, Ray(intersect.hit.position, reflect_dir), rnd, depth+1)) * Fr +
@@ -526,7 +526,7 @@ Color PathTracer::Radiance_Refraction(const Scene &scene, const Ray &ray, Random
   return /*intersect.object->material.emission +*/ Vector3(weight.x*income.x, weight.y*income.y, weight.z*income.z);
 }
 
-// ‰æ–Ê•\¦—p‚Ìî•ñæ“¾ƒƒ\ƒbƒh
+// ç”»é¢è¡¨ç¤ºç”¨ã®æƒ…å ±å–å¾—ãƒ¡ã‚½ãƒƒãƒ‰
 std::string PathTracer::GetCurrentRenderingInfo() const {
 
   stringstream ss;

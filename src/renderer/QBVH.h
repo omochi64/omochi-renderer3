@@ -6,13 +6,17 @@
 #include "BVH.h"
 
 namespace OmochiRenderer {
+
   class SceneObject;
   class Ray;
-  struct Scene::IntersectionInformation;
 
   class QBVH {
   public:
+#ifdef _WIN32
     explicit QBVH() : m_root(NULL), m_allocatedQBVHNodeSize(0), m_usedNodeCount(0), m_leafObjectArray(NULL) {}
+#else
+    QBVH() {}
+#endif
     ~QBVH();
 
     bool Construct(const std::vector<SceneObject *> &targets);
@@ -37,7 +41,8 @@ namespace OmochiRenderer {
     void ReallocateQBVH_root(size_t addSize);
 
   private:
-    struct QBVH_structure  {
+#ifdef _WIN32
+    struct QBVH_structure  {
       __m128 bboxes[2][3];//4 float min-max xyz
       size_t children[4]; //4 children
       int axis_top;       //top axis
@@ -48,6 +53,7 @@ namespace OmochiRenderer {
     std::shared_ptr<QBVH_structure> m_root;
     size_t m_allocatedQBVHNodeSize, m_usedNodeCount;
     std::vector<SceneObject *> m_leafObjectArray;
-    
+#endif
   };
+
 }

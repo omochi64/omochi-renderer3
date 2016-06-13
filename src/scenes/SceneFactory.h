@@ -9,7 +9,7 @@ namespace OmochiRenderer {
     virtual std::shared_ptr<Scene> Create(const std::string &sceneInformation) const = 0;
   };
 
-  // ƒV[ƒ“Factory‚Ìƒ}ƒl[ƒWƒƒBƒV[ƒ“ƒtƒ@ƒNƒgƒŠ–¼‚©‚çfactory‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ªˆø‚¯‚é
+  // ã‚·ãƒ¼ãƒ³Factoryã®ãƒãƒãƒ¼ã‚¸ãƒ£ã€‚ã‚·ãƒ¼ãƒ³ãƒ•ã‚¡ã‚¯ãƒˆãƒªåã‹ã‚‰factoryã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãŒå¼•ã‘ã‚‹
   class SceneFactoryManager {
   public:
     static SceneFactoryManager & GetInstance()
@@ -18,7 +18,7 @@ namespace OmochiRenderer {
       return s;
     }
 
-    void Register(const std::string &name, std::shared_ptr<SceneFactory> factory)
+    void Register(const std::string &name, const std::shared_ptr<SceneFactory> &factory)
     {
       m_factories[name] = factory;
     }

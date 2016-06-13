@@ -33,8 +33,8 @@ namespace OmochiRenderer {
       return false;
     }
 
-    m_imageInfo.width = m_width;
-    m_imageInfo.height = m_height;
+    m_imageInfo.width  = static_cast<int>(m_width);
+    m_imageInfo.height = static_cast<int>(m_height);
     /*m_imageInfo.exposure = 0.0;
     m_imageInfo.valid |= RGBE_Header::RGBE_VALID_EXPOSURE;
     m_imageInfo.gamma = 1.0;
@@ -43,7 +43,7 @@ namespace OmochiRenderer {
     m_imageInfo.valid |= RGBE_Header::RGBE_VALID_PROGRAMTYPE;
     
     if (!WriteHeaderToRadianceFile(ofs, m_imageInfo)) return false;
-    if (!WritePixels_RLE(ofs, this->m_image.data(), m_width, m_height)) return false;
+    if (!WritePixels_RLE(ofs, this->m_image.data(), static_cast<int>(m_width), static_cast<int>(m_height))) return false;
 
     return true;
   }

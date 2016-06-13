@@ -1,8 +1,6 @@
 #include "stdafx.h"
 
-#include <thread>
-#include <Windows.h>
-
+#include <thread>     //
 #include "FileSaverCallerWithTimer.h"
 #include "FileSaver.h"
 #include "renderer/Renderer.h"
@@ -27,12 +25,12 @@ namespace OmochiRenderer {
 
   bool FileSaverCallerWithTimer::StartTimer()
   {
-    // ƒ^ƒCƒ}[‚ğn‚ß‚ç‚ê‚éğŒ‚ğƒ`ƒFƒbƒN
+    // ã‚¿ã‚¤ãƒãƒ¼ã‚’å§‹ã‚ã‚‰ã‚Œã‚‹æ¡ä»¶ã‚’ãƒã‚§ãƒƒã‚¯
     if (m_saveSpan == 0) return false;
     if (m_renderer.expired()) return false;
     if (m_savers.size() == 0) return false;
 
-    // 2‚ÂˆÈã‘–‚ç‚¹‚È‚¢
+    // 2ã¤ä»¥ä¸Šèµ°ã‚‰ã›ãªã„
     if (m_thread != nullptr) {
       StopAndWaitStopping();
     }
@@ -49,13 +47,13 @@ namespace OmochiRenderer {
 
         while (!m_stopSignal) {
 
-          // Sleep ‚µ‚Â‚ÂÀŠÔŒv‘ª
-          DWORD sleepTime = saveSpan + accDiff - m_aimTimeToSaveFile * 1000;
+          // Sleep ã—ã¤ã¤å®Ÿæ™‚é–“è¨ˆæ¸¬
+          unsigned long sleepTime = saveSpan + accDiff - m_aimTimeToSaveFile * 1000;
           cerr << "Begin sleeping...: Sleep(static_cast<DWORD>(" << sleepTime << ")" << endl;
           start = clock();
-          Sleep(sleepTime);
+          std::this_thread::sleep_for(std::chrono::microseconds(sleepTime));
 
-          // •Û‘¶Às
+          // ä¿å­˜å®Ÿè¡Œ
           double tmpAccTime = accTime + 1000.0*(clock() - start) / CLOCKS_PER_SEC;
           if (std::shared_ptr<Renderer> render = m_renderer.lock())
           {
@@ -66,20 +64,20 @@ namespace OmochiRenderer {
           }
           else
           {
-            // ƒŒƒ“ƒ_ƒ‰‚ªÁ‚¦‚Ä‚¢‚½‚Ì‚Å‚¨‚µ‚Ü‚¢
+            // ãƒ¬ãƒ³ãƒ€ãƒ©ãŒæ¶ˆãˆã¦ã„ãŸã®ã§ãŠã—ã¾ã„
             break;
           }
 
           end = clock();
 
-          // ‚Ò‚Á‚½‚è‡‚í‚È‚©‚Á‚½ŠÔ‚ğŸ‚É‰z‚µ
+          // ã´ã£ãŸã‚Šåˆã‚ãªã‹ã£ãŸæ™‚é–“ã‚’æ¬¡ã«æŒè¶Šã—
           double pastTime = 1000.0*(end - start) / CLOCKS_PER_SEC;
           accDiff += saveSpan - pastTime;
 
           cerr << pastTime << " second past." << endl;
           accTime += pastTime;
 
-          // •Û‘¶‰ñ”§ŒÀƒ`ƒFƒbƒN
+          // ä¿å­˜å›æ•°åˆ¶é™ãƒã‚§ãƒƒã‚¯
           m_saveCount++;
           if (m_maxSaveCount > 0 && m_saveCount >= m_maxSaveCount) {
             break;

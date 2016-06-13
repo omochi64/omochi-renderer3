@@ -61,7 +61,7 @@ bool BVH::CheckIntersection(const Ray &ray, Scene::IntersectionInformation &info
       const BVH_structure *next1 = &m_root[next->children[0]];
       bool hit1 = BoundingBox::CheckIntersection(rayDir, rayOrig, next1->box[0], next1->box[1], dist1);//next1->box.Intersect(ray, dist1);
       bool hit2 = false;
-      if (next->children[1] >= 0) {
+      if (next->IsSecondChildValid()) {
         const BVH_structure *next2 = &m_root[next->children[1]];
         hit2 = BoundingBox::CheckIntersection(rayDir, rayOrig, next2->box[0], next2->box[1], dist2); //m_root[next->children[1]].box.Intersect(ray, dist2);
       }
@@ -204,7 +204,7 @@ void BVH::Construct_internal(const CONSTRUCTION_TYPE type, const std::vector<Sce
           //if (index <= 0)
         {
           // select the media of the objects
-          int select = axisSortedLeft[axis].size() / 2 - 1;
+          int select = static_cast<int>(axisSortedLeft[axis].size()) / 2 - 1;
           SceneObject *selectedObj = axisSortedLeft[axis][select];
           SceneObject *leftest = axisSortedLeft[axis][0];
           SceneObject *rightest = axisSortedLeft[axis][axisSortedLeft[axis].size() - 1];
@@ -261,8 +261,6 @@ void BVH::Construct_internal(const CONSTRUCTION_TYPE type, const std::vector<Sce
             bestCost = cost;
             bestIndex = cutIndex;
             bestAxis = axis;
-          } else {
-            int a = 10;
           }
 
         }
@@ -298,8 +296,8 @@ void BVH::Construct_internal(const CONSTRUCTION_TYPE type, const std::vector<Sce
 
     BVH_structure *current = &m_root[index];
     current->axis = bestAxis;
-    current->children[0] = m_root.size();
-    current->children[1] = m_root.size() + 1;
+    current->children[0] = static_cast<int>(m_root.size());
+    current->children[1] = static_cast<int>(m_root.size() + 1);
     if (m_root.capacity() < m_root.size() + 2)
     {
       m_root.reserve(m_root.capacity() + targets.size());
@@ -364,7 +362,7 @@ const BVH::BVH_structure *BVH::GetSecondChild(const BVH::BVH_structure *parent) 
 
 bool BVH::IsLeaf(const BVH_structure *node) const {
   assert (node);
-  return node->children[0] == static_cast<size_t>(-1);
+  return !node->IsFirstChildValid();
 }
 
 }

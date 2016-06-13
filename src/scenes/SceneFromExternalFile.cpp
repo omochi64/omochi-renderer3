@@ -155,6 +155,8 @@ namespace OmochiRenderer {
           ret = ReadSphere(readLines, type == SPHERE_LIGHT); break;
         case INFINITE_FLOOR:
           ret = ReadInfiniteFloor(readLines); break;
+        default:
+          ret = false;
         }
         if (!ret) {
           cerr << "failed to load object: line " << line_number << endl;

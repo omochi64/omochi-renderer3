@@ -57,7 +57,7 @@ namespace OmochiRenderer {
         v += 1.0f;
 
       const int x = (int)(u * m_image.GetWidth()) % m_image.GetWidth();
-      const int y = m_image.GetHeight() - 1 - (int)(v * m_image.GetHeight()) % m_image.GetHeight();
+      const int y = static_cast<int>(m_image.GetHeight()) - 1 - (int)(v * m_image.GetHeight()) % m_image.GetHeight();
 
       return m_image.GetPixel(x, y);
     }

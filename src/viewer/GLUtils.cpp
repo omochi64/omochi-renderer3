@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#ifndef NO_PREVIEW_WINDOW
-
 #include "GLUtils.h"
+
+#ifndef NO_PREVIEW_WINDOW
 
 #include <gl/GL.h>
 #include <sstream>
@@ -99,7 +99,7 @@ namespace OmochiRenderer {
   void GLProgramUtils::PrintProgramInfoLog() {
     GLsizei bufSize;
 
-    /* ƒVƒF[ƒ_‚ÌƒŠƒ“ƒN‚ÌƒƒO‚Ì’·‚³‚ğæ“¾‚·‚é */
+    /* ã‚·ã‚§ãƒ¼ãƒ€ã®ãƒªãƒ³ã‚¯æ™‚ã®ãƒ­ã‚°ã®é•·ã•ã‚’å–å¾—ã™ã‚‹ */
     glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &bufSize);
 
     if (bufSize > 1) {
@@ -108,7 +108,7 @@ namespace OmochiRenderer {
       if (infoLog != NULL) {
         GLsizei length;
 
-        /* ƒVƒF[ƒ_‚ÌƒŠƒ“ƒN‚ÌƒƒO‚Ì“à—e‚ğæ“¾‚·‚é */
+        /* ã‚·ã‚§ãƒ¼ãƒ€ã®ãƒªãƒ³ã‚¯æ™‚ã®ãƒ­ã‚°ã®å†…å®¹ã‚’å–å¾—ã™ã‚‹ */
         glGetProgramInfoLog(m_program, bufSize, &length, infoLog);
         fprintf(stderr, "InfoLog:\n%s\n\n", infoLog);
         free(infoLog);

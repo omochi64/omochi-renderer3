@@ -1,8 +1,13 @@
 #include "stdafx.h"
 
+
 #include <iostream>
 #include <limits>
+#ifdef __APPLE__
+#include <malloc/malloc.h>
+#else
 #include <malloc.h>
+#endif
 #include "QBVH.h"
 #include "BVH.h"
 
@@ -14,6 +19,13 @@ namespace OmochiRenderer {
 
   QBVH::~QBVH() {
   }
+
+#ifndef _WIN32
+  bool QBVH::CheckIntersection(const Ray &ray, Scene::IntersectionInformation &info) const {
+    assert(false);  // not supported except for windows
+    return false;
+  }
+#else // !_WIN32
 
   bool QBVH::CheckIntersection(const Ray &ray, Scene::IntersectionInformation &info) const {
 
@@ -95,14 +107,14 @@ namespace OmochiRenderer {
           ordering[rightIndexFirst] = 3; ordering[rightIndexFirst+1] = 2;
         }
 
-        // ret ‚ª0‚È‚çA‚·‚×‚Ä‚ÌAABB‚ÍŒ»İ‚Ì shortest distance ‚æ‚è‰“‚¢ˆÊ’u‚ÅƒŒƒC‚ÆÕ“Ë‚µ‚Ä‚¢‚é
+        // ret ãŒ0ãªã‚‰ã€ã™ã¹ã¦ã®AABBã¯ç¾åœ¨ã® shortest distance ã‚ˆã‚Šé ã„ä½ç½®ã§ãƒ¬ã‚¤ã¨è¡çªã—ã¦ã„ã‚‹
         int shortestCheckRes = _mm_movemask_ps(_mm_cmpge_ps(currentShortestDistance, distancesToAABB));
 
         if (shortestCheckRes == 0) continue;
 
         for (int i = 0; i < 4; i++) {
           int childindex = ordering[i];
-          bool aabbIsNearThanShortest = (((shortestCheckRes >> childindex) & 0x01) != 0); // childindex ‚ªw‚·AABB‚ªŒ»İ‚Ì shortest ‚æ‚è‹ß‚¢‚©‚Ç‚¤‚©
+          bool aabbIsNearThanShortest = (((shortestCheckRes >> childindex) & 0x01) != 0); // childindex ãŒæŒ‡ã™AABBãŒç¾åœ¨ã® shortest ã‚ˆã‚Šè¿‘ã„ã‹ã©ã†ã‹
           if (intersection_results[childindex] && aabbIsNearThanShortest && IsValidIndex(node->children[childindex])) {
             // intersected. check it
             if (IsChildindexLeaf(node->children[childindex])) {
@@ -316,4 +328,7 @@ namespace OmochiRenderer {
       }
     }
   }
+  
+#endif // !__APPLE__
+
 }

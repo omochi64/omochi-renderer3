@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef _WIN32
+#define NO_PREVIEW_WINDOW
+#endif
+
 #ifndef NO_PREVIEW_WINDOW
 
 #include <string>

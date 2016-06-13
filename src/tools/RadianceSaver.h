@@ -25,7 +25,9 @@ namespace OmochiRenderer {
       clock_t begin, end;
       begin = clock();
 
-      CopyColorArrayToImage(img, hdrImage.m_image, hdrImage.m_width, hdrImage.m_height, false);
+      CopyColorArrayToImage(img, hdrImage.m_image,
+                            static_cast<int>(hdrImage.m_width),
+                            static_cast<int>(hdrImage.m_height), false);
 
       hdrImage.WriteToRadianceFile(name + ".hdr");
 

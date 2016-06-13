@@ -14,7 +14,7 @@ namespace OmochiRenderer {
       m_timeToStop = timeToStop;
     }
 
-    // �ʃX���b�h�ł̃^�C�}�[�Ď����J�n����B�K�v�Ȑݒ肪�s���Ă��Ȃ������ꍇ�͎��s���� false ���Ԃ��Ă���
+    // 別スレッドでのタイマー監視を開始する。必要な設定が行われていなかった場合は失敗して false が返ってくる
     bool StartTimer();
 
   private:

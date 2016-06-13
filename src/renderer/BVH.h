@@ -28,6 +28,13 @@ public:
     std::vector<SceneObject *> objects;
 
     BVH_structure() : objects() {}
+    
+    bool IsFirstChildValid() const {
+      return children[0] != static_cast<unsigned int>(-1);
+    }
+    bool IsSecondChildValid() const {
+      return children[1] != static_cast<unsigned int>(-1);
+    }
   };
 
 public:

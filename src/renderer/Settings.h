@@ -6,18 +6,17 @@
 #include <map>
 #include "tools/Vector.h"
 #include "tools/Utils.h"
-#include <omp.h>
 
 namespace OmochiRenderer {
-
-  // İ’èƒtƒ@ƒCƒ‹Bsettings.txt ‚©‚ç‚¢‚ë‚¢‚ë“Ç‚İ‚Ş
+  
+  // è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã€‚settings.txt ã‹ã‚‰ã„ã‚ã„ã‚èª­ã¿è¾¼ã‚€
   class Settings {
   public:
     Settings()
       : m_supersamples(2)
       , m_sampleStart(8), m_sampleEnd(8), m_sampleStep(1)
       , m_width(640), m_height(480)
-      , m_numThreads(omp_get_num_procs()-1)
+      , m_numThreads(1)
       , m_sceneType("SceneFromExternalFile")
       , m_sceneInfo("input_data/default.scene")
       , m_camPos(50.0, 40.0, 220.0)
@@ -33,6 +32,9 @@ namespace OmochiRenderer {
       , m_rawSettings()
       , m_saveHDR(true)
     {
+#ifndef __APPLE__
+      m_numThreads = omp_get_num_procs()-1;
+#endif
     }
     ~Settings() {}
 
@@ -113,7 +115,7 @@ namespace OmochiRenderer {
       return true;
     }
 
-    // İ’è‚Ö‚ÌƒAƒNƒZƒT‚½‚¿
+    // è¨­å®šã¸ã®ã‚¢ã‚¯ã‚»ã‚µãŸã¡
     int GetSuperSamples() const { return m_supersamples; }
     int GetSampleStart() const { return m_sampleStart; }
     int GetSampleEnd() const { return m_sampleEnd; }

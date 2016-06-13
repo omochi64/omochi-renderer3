@@ -29,13 +29,13 @@ public:
   void ConstructBVH();
   void ConstructQBVH();
 
-  // ƒV[ƒ“’†‚ÌƒIƒuƒWƒFƒNƒg‚É‘Î‚µ‚ÄŒğ·”»’è‚ğs‚¤
+  // ã‚·ãƒ¼ãƒ³ä¸­ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«å¯¾ã—ã¦äº¤å·®åˆ¤å®šã‚’è¡Œã†
   bool CheckIntersection(const Ray &ray, IntersectionInformation &info) const;
 
-  // ƒ‰ƒCƒgƒŠƒXƒgæ“¾
+  // ãƒ©ã‚¤ãƒˆãƒªã‚¹ãƒˆå–å¾—
   const std::vector<LightBase *> GetLights() const { return m_lights; }
 
-  // ”wŒiæ“¾
+  // èƒŒæ™¯å–å¾—
   const IBL *GetIBL() const { return m_ibl.get(); }
   virtual Color Background() const { return Color(0,0,0);  }
 
@@ -44,7 +44,7 @@ public:
 protected:
   Scene() : m_objects(), m_models(), m_inBVHObjects(), m_notInBVHObjects(), m_lights(), m_bvh(NULL), m_qbvh(NULL), m_ibl(NULL) {}
 
-  // ƒV[ƒ“‚ÖƒIƒuƒWƒFƒNƒg’Ç‰Á
+  // ã‚·ãƒ¼ãƒ³ã¸ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆè¿½åŠ 
   void AddObject(SceneObject *obj, bool doDelete = true, bool containedInBVH = true) {
     m_objects.push_back(SceneObjectInfo(obj, doDelete, containedInBVH));
     if (containedInBVH) {
@@ -58,23 +58,23 @@ protected:
     }
   }
 
-  // ƒwƒ‹ƒp[
-  // XZ•½–Êã‚ÉAyUP‚Å°‚ğ’Ç‰Á
+  // ãƒ˜ãƒ«ãƒ‘ãƒ¼
+  // XZå¹³é¢ä¸Šã«ã€yUPã§åºŠã‚’è¿½åŠ 
   std::vector<SceneObject *> AddFloorXZ_yUp(const double size_x, const double size_z, const Vector3 &position, const Material &material);
-  // XY•½–Êã‚ÉAzUP‚Å°‚ğ’Ç‰Á
+  // XYå¹³é¢ä¸Šã«ã€zUPã§åºŠã‚’è¿½åŠ 
   std::vector<SceneObject *> AddFloorXY_zUp(const double size_x, const double size_y, const Vector3 &position, const Material &material);
-  // YZ•½–Êã‚ÉAxUP‚Å°‚ğ’Ç‰Á
+  // YZå¹³é¢ä¸Šã«ã€xUPã§åºŠã‚’è¿½åŠ 
   std::vector<SceneObject *> AddFloorYZ_xUp(const double size_y, const double size_z, const Vector3 &position, const Material &material);
-  // XZ•½–Êã‚ÉAyDown‚Å°‚ğ’Ç‰Á
+  // XZå¹³é¢ä¸Šã«ã€yDownã§åºŠã‚’è¿½åŠ 
   std::vector<SceneObject *> AddFloorXZ_yDown(const double size_x, const double size_z, const Vector3 &position, const Material &material);
-  // XY•½–Êã‚ÉAzDown‚Å°‚ğ’Ç‰Á
+  // XYå¹³é¢ä¸Šã«ã€zDownã§åºŠã‚’è¿½åŠ 
   std::vector<SceneObject *> AddFloorXY_zDown(const double size_x, const double size_y, const Vector3 &position, const Material &material);
-  // YZ•½–Êã‚ÉAxDown‚Å°‚ğ’Ç‰Á
+  // YZå¹³é¢ä¸Šã«ã€xDownã§åºŠã‚’è¿½åŠ 
   std::vector<SceneObject *> AddFloorYZ_xDown(const double size_y, const double size_z, const Vector3 &position, const Material &material);
-  // –³ŒÀ°’Ç‰Á
+  // ç„¡é™åºŠè¿½åŠ 
   SceneObject *AddInfiniteFLoor(const double y, const Material &material);
 
-  // “Ç‚İ‚ñ‚¾ƒ‚ƒfƒ‹‚ğ’Ç‰Á
+  // èª­ã¿è¾¼ã‚“ã ãƒ¢ãƒ‡ãƒ«ã‚’è¿½åŠ 
   void AddModel(Model *obj, bool doDelete = true, bool containedInBVH = true) {
     m_models.push_back(ModelObjectInfo(obj, doDelete));
 

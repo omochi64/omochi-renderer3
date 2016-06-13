@@ -4,13 +4,13 @@
 
 namespace OmochiRenderer
 {
-  // ‰æ‘œ‚Ì“üo—ÍA¶¬‚ğŠÇ—‚·‚éƒNƒ‰ƒX
+  // ç”»åƒã®å…¥å‡ºåŠ›ã€ç”Ÿæˆã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
   class ImageHandler
   {
   public:
-    // ‰æ‘œ‚É‘Î‚µ‚Äƒ†ƒj[ƒN‚É•t—^‚³‚ê‚éID
+    // ç”»åƒã«å¯¾ã—ã¦ãƒ¦ãƒ‹ãƒ¼ã‚¯ã«ä»˜ä¸ã•ã‚Œã‚‹ID
     typedef int IMAGE_ID;
-    // —LŒø‚Å‚È‚¢‰æ‘œID
+    // æœ‰åŠ¹ã§ãªã„ç”»åƒID
     static const IMAGE_ID INVALID_IMAGE_ID = -1;
   private:
     ImageHandler() : m_filenameToImageIndex(), m_images() {}
@@ -24,18 +24,18 @@ namespace OmochiRenderer
       return s;
     }
 
-    // ŠO•”ƒtƒ@ƒCƒ‹‚©‚ç‚Ì“Ç‚İ‚İBpng, jpg, bmp“™‚É‘Î‰ (hdr‚Í‚±‚±‚Å‚Í”ñ‘Î‰)
+    // å¤–éƒ¨ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã®èª­ã¿è¾¼ã¿ã€‚png, jpg, bmpç­‰ã«å¯¾å¿œ (hdrã¯ã“ã“ã§ã¯éå¯¾å¿œ)
     IMAGE_ID LoadFromFile(const std::string &fname, bool doReverseGamma = true);
-    // ‹ó‚Ì‰æ‘œì¬
+    // ç©ºã®ç”»åƒä½œæˆ
     IMAGE_ID CreateImage(size_t width, size_t height);
-    // w’è‚µ‚½ID‚É•R‚Ã‚¢‚½À‘Ìæ“¾
+    // æŒ‡å®šã—ãŸIDã«ç´ã¥ã„ãŸå®Ÿä½“å–å¾—
     Image * GetImage(IMAGE_ID id);
     const Image * GetImage(IMAGE_ID id) const;
-    // ‰æ‘œ‰ğ•ú
+    // ç”»åƒè§£æ”¾
     void ReleaseImage(IMAGE_ID id);
-    // PNG ƒtƒ@ƒCƒ‹‚Ö‚Ì•Û‘¶
+    // PNG ãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ä¿å­˜
     bool SaveToPngFile(const std::string &fname, const Image *image) const;
-    // PPM ƒtƒ@ƒCƒ‹‚Ö‚Ì•Û‘¶
+    // PPM ãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ä¿å­˜
     bool SaveToPpmFile(const std::string &fname, const Image *image) const;
   };
 }

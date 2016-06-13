@@ -26,10 +26,10 @@ namespace OmochiRenderer {
       m_aimTimeToSaveFile = timeToSave;
     }
 
-    // �ʃX���b�h�ł̃^�C�}�[�Ď����J�n����B�K�v�Ȑݒ肪�s���Ă��Ȃ������ꍇ�͎��s���� false ���Ԃ��Ă���
+    // 別スレッドでのタイマー監視を開始する。必要な設定が行われていなかった場合は失敗して false が返ってくる
     bool StartTimer();
 
-    // �^�C�}�[�X�g�b�v�𖽗߂��A�X�g�b�v����܂ő҂�
+    // タイマーストップを命令し、ストップするまで待つ
     void StopAndWaitStopping();
 
   private:

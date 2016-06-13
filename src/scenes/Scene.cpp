@@ -35,6 +35,9 @@ void Scene::ConstructBVH()
 
 void Scene::ConstructQBVH()
 {
+#ifndef _WIN32
+  m_qbvh = nullptr;
+#else
   if (m_qbvh) delete m_qbvh;
 
   m_qbvh = new QBVH();
@@ -42,6 +45,7 @@ void Scene::ConstructQBVH()
   {
     delete m_qbvh; m_qbvh = nullptr;
   }
+#endif // _WIN32
 }
 
 bool Scene::CheckIntersection(const Ray &ray, IntersectionInformation &info) const {
@@ -98,7 +102,7 @@ std::vector<SceneObject *> Scene::AddFloorXZ_yUp(const double size_x, const doub
   return objs;
 }
 
-// XY平面上に、zUPで床を追加
+// XY蟷ｳ髱｢荳翫↓縲】UP縺ｧ蠎翫ｒ霑ｽ蜉
 std::vector<SceneObject *> Scene::AddFloorXY_zUp(const double size_x, const double size_y, const Vector3 &position, const Material &material) {
   std::vector<SceneObject *> objs;
   objs.push_back(new Polygon(
@@ -116,7 +120,7 @@ std::vector<SceneObject *> Scene::AddFloorXY_zUp(const double size_x, const doub
   return objs;
 }
 
-// YZ平面上に、xUPで床を追加
+// YZ蟷ｳ髱｢荳翫↓縲』UP縺ｧ蠎翫ｒ霑ｽ蜉
 std::vector<SceneObject *> Scene::AddFloorYZ_xUp(const double size_y, const double size_z, const Vector3 &position, const Material &material) {
   std::vector<SceneObject *> objs;
   objs.push_back(new Polygon(
@@ -134,7 +138,7 @@ std::vector<SceneObject *> Scene::AddFloorYZ_xUp(const double size_y, const doub
   return objs;
 }
 
-// XZ平面上に、yDownで床を追加
+// XZ蟷ｳ髱｢荳翫↓縲【Down縺ｧ蠎翫ｒ霑ｽ蜉
 std::vector<SceneObject *> Scene::AddFloorXZ_yDown(const double size_x, const double size_z, const Vector3 &position, const Material &material) {
   std::vector<SceneObject *> objs;
   objs.push_back(new Polygon(
@@ -152,7 +156,7 @@ std::vector<SceneObject *> Scene::AddFloorXZ_yDown(const double size_x, const do
   return objs;
 }
 
-// XY平面上に、zDownで床を追加
+// XY蟷ｳ髱｢荳翫↓縲】Down縺ｧ蠎翫ｒ霑ｽ蜉
 std::vector<SceneObject *> Scene::AddFloorXY_zDown(const double size_x, const double size_y, const Vector3 &position, const Material &material) {
   std::vector<SceneObject *> objs;
   objs.push_back(new Polygon(
@@ -170,7 +174,7 @@ std::vector<SceneObject *> Scene::AddFloorXY_zDown(const double size_x, const do
   return objs;
 }
 
-// YZ平面上に、xDownで床を追加
+// YZ蟷ｳ髱｢荳翫↓縲』Down縺ｧ蠎翫ｒ霑ｽ蜉
 std::vector<SceneObject *> Scene::AddFloorYZ_xDown(const double size_y, const double size_z, const Vector3 &position, const Material &material) {
   std::vector<SceneObject *> objs;
   objs.push_back(new Polygon(
@@ -188,7 +192,7 @@ std::vector<SceneObject *> Scene::AddFloorYZ_xDown(const double size_y, const do
   return objs;
 }
 
-// 無限床追加
+// 辟｡髯仙ｺ願ｿｽ蜉
 SceneObject *Scene::AddInfiniteFLoor(const double y, const Material &material) {
   auto obj = new InfiniteFloor(y, material);
   AddObject(obj, true, false);

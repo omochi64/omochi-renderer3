@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include <Windows.h>
+//#include <Windows.h>
 
 #include "StopRendererWithTimer.h"
 #include "renderer/Renderer.h"
@@ -21,7 +21,7 @@ namespace OmochiRenderer {
     m_thread.reset();
   }
 
-  // �ʃX���b�h�ł̃^�C�}�[�Ď����J�n����B�K�v�Ȑݒ肪�s���Ă��Ȃ������ꍇ�͎��s���� false ���Ԃ��Ă���
+  // 別スレッドでのタイマー監視を開始する。必要な設定が行われていなかった場合は失敗して false が返ってくる
   bool StopRendererWithTimer::StartTimer() {
 
     if (m_timeToStop <= 0) return false;
@@ -29,9 +29,9 @@ namespace OmochiRenderer {
     m_thread = std::make_shared<std::thread>(
       [this]() {
 
-        DWORD timeInMsec = static_cast<DWORD>(m_timeToStop * 1000 + 0.9999);
+        unsigned int timeInMsec = static_cast<unsigned int>(m_timeToStop * 1000 + 0.9999);
 
-        Sleep(timeInMsec);
+        std::this_thread::sleep_for(std::chrono::microseconds(timeInMsec));
 
         std::cerr << "Stop renderer by timer (" << m_timeToStop << " sec.)" << std::endl;
 

@@ -21,7 +21,7 @@ public:
       if (pos != std::string::npos)
       {
         res.push_back(str.substr(nextIndex, pos - nextIndex));
-        nextIndex = pos + 1;
+        nextIndex = static_cast<int>(pos + 1);
       }
       else
       {
@@ -43,7 +43,7 @@ public:
   }
 
   static std::string rtrim(const std::string &target, const std::string &delimiters = std::string(" \t")) {
-    int index = target.length()-1;
+    int index = static_cast<int>(target.length()-1);
     while (index >= 0 && delimiters.find(target[index]) != std::string::npos) {
       index--;
     }
@@ -56,14 +56,18 @@ public:
   }
 
   static std::string toupper(const std::string &str) {
-    std::string newstr(str);
-    std::transform(newstr.begin(), newstr.end(), newstr.begin(), std::toupper);
+    std::string newstr; newstr.reserve(str.length());
+    for (size_t i=0; i<str.length(); i++) {
+      newstr += std::toupper((int)str[i]);
+    }
     return newstr;
   }
 
   static std::string tolower(const std::string &str) {
-    std::string newstr(str);
-    std::transform(newstr.begin(), newstr.end(), newstr.begin(), std::tolower);
+    std::string newstr; newstr.reserve(str.length());
+    for (size_t i=0; i<str.length(); i++) {
+      newstr += std::tolower((int)str[i]);
+    }
     return newstr;
   }
 

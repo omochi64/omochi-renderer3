@@ -16,7 +16,7 @@ namespace OmochiRenderer
   {
   }
 
-  // FX“Ç‚İ‚İBstb ‚ª‘Î‰‚µ‚Ä‚¢‚é‚à‚Ì‚È‚ç‰½‚Å‚à“Ç‚İ‚İ‰Â”\
+  // è‰²ã€…èª­ã¿è¾¼ã¿ã€‚stb ãŒå¯¾å¿œã—ã¦ã„ã‚‹ã‚‚ã®ãªã‚‰ä½•ã§ã‚‚èª­ã¿è¾¼ã¿å¯èƒ½
   ImageHandler::IMAGE_ID ImageHandler::LoadFromFile(const std::string &fname, bool doReverseGamma)
   {
     Image *image = nullptr;
@@ -37,7 +37,7 @@ namespace OmochiRenderer
       int bpp;
       int width, height;
 
-      // Šù‚É“Ç‚İ‚ñ‚Å‚È‚¢‚©Šm”F
+      // æ—¢ã«èª­ã¿è¾¼ã‚“ã§ãªã„ã‹ç¢ºèª
       auto findIt = m_filenameToImageIndex.find(fname);
       if (findIt != m_filenameToImageIndex.end())
       {
@@ -48,7 +48,7 @@ namespace OmochiRenderer
         }
       }
 
-      // “Ç‚İ‚İÀ‘Ì
+      // èª­ã¿è¾¼ã¿å®Ÿä½“
 
       auto pixels = stbi_load(fname.c_str(), &width, &height, &bpp, 0);
       if (pixels == nullptr) {
@@ -84,12 +84,12 @@ namespace OmochiRenderer
 
     m_images.push_back(image);
     auto id = m_images.size() - 1;
-    m_filenameToImageIndex[fname] = id;
+    m_filenameToImageIndex[fname] = static_cast<int>(id);
 
-    return id;
+    return static_cast<int>(id);
   }
 
-  // ‰ğ•ú
+  // è§£æ”¾
   void ImageHandler::ReleaseImage(IMAGE_ID id)
   {
     if (id < 0 || id >= (signed)m_images.size()) {
@@ -100,7 +100,7 @@ namespace OmochiRenderer
     m_images[id] = nullptr;
   }
 
-  // ‹ó‚Ì‰æ‘œì¬
+  // ç©ºã®ç”»åƒä½œæˆ
   ImageHandler::IMAGE_ID ImageHandler::CreateImage(size_t width, size_t height)
   {
     Image *img = new Image;
@@ -111,7 +111,7 @@ namespace OmochiRenderer
 
     m_images.push_back(img);
 
-    return m_images.size()-1;
+    return static_cast<int>(m_images.size()-1);
   }
 
   Image * ImageHandler::GetImage(IMAGE_ID id)
@@ -132,7 +132,8 @@ namespace OmochiRenderer
 
   bool ImageHandler::SaveToPngFile(const std::string &fname, const Image *image) const
   {
-    int width = image->GetWidth(); int height = image->GetHeight();
+    int width  = static_cast<int>(image->GetWidth());
+    int height = static_cast<int>(image->GetHeight());
     unsigned char *data = new unsigned char[width * height * 3];
 
     for (int i = 0; i < width * height; i++)
@@ -142,7 +143,11 @@ namespace OmochiRenderer
       data[i * 3 + 2] = Utils::ToRgb(image->m_image[i].z);
     }
 
-    stbi_write_png(fname.c_str(), image->GetWidth(), image->GetHeight(), 3, data, 3 * image->GetWidth());
+    stbi_write_png(fname.c_str(),
+                   static_cast<int>(image->GetWidth()),
+                   static_cast<int>(image->GetHeight()),
+                   3, data,
+                   static_cast<int>(3 * image->GetWidth()));
 
     delete[] data;
 
@@ -151,8 +156,8 @@ namespace OmochiRenderer
 
   bool ImageHandler::SaveToPpmFile(const std::string &fname, const Image *image) const
   {
-    int width = image->GetWidth();
-    int height = image->GetHeight();
+    int width  = static_cast<int>(image->GetWidth());
+    int height = static_cast<int>(image->GetHeight());
 
     std::ofstream ofs(fname.c_str());
     ofs << "P3" << std::endl;

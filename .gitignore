@@ -17,3 +17,6 @@ x64/
 *.vspx
 results/
 *.vsp
+.DS_Store
+DerivedData/
+*~
