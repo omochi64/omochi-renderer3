@@ -12,11 +12,11 @@ namespace OmochiRenderer {
 
     virtual void RenderScene(const Scene &scene);
 
-    virtual const Color *GetResult() const { return m_result; }
+    virtual const ScreenPixels *GetResult() const { return m_result; }
 
     virtual std::string GetCurrentRenderingInfo() const;
 
   private:
-    Color *m_result;
+    ScreenPixels *m_result;
   };
 }

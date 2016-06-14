@@ -59,13 +59,13 @@ int main(int argc, char *argv[]) {
   auto hdrSaver = settings->DoSaveHDR() ? std::make_shared<RadianceSaver>(settings) : nullptr;
   auto pngSaver = std::make_shared<PNGSaver>(settings);
 
-  PathTracer::RenderingFinishCallbackFunction callback([&hdrSaver, &pngSaver](int samples, const Color *img, double accumulatedRenderingTime) {
+  PathTracer::RenderingFinishCallbackFunction callback([&hdrSaver, &pngSaver](int samples, const Color *img, size_t width, size_t height, double accumulatedRenderingTime) {
       // レンダリング完了時に呼ばれるコールバックメソッド
       cerr << "save ppm file for sample " << samples << " ..." << endl;
       if (hdrSaver) {
-        hdrSaver->Save(samples, 9999999, img, accumulatedRenderingTime);
+        hdrSaver->Save(samples, 9999999, img, width, height, accumulatedRenderingTime);
       }
-      pngSaver->Save(samples, 9999999, img, accumulatedRenderingTime);
+      pngSaver->Save(samples, 9999999, img, width, height, accumulatedRenderingTime);
       cerr << "Total rendering time = " << accumulatedRenderingTime << " min." << endl;
   });
 
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
     thread_num = static_cast<int>(max_thread_num);
   }
   if (thread_num > max_thread_num) thread_num = static_cast<int>(max_thread_num);
-
+  
   cerr << "thread num = " << thread_num << endl;
 #ifdef USE_OPENMP
   omp_set_num_threads(thread_num);

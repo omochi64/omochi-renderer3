@@ -29,6 +29,7 @@
 		5038B04A1D0ED88000E85C00 /* TestScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5038B0431D0ED88000E85C00 /* TestScene.cpp */; };
 		5038B04F1D0ED88B00E85C00 /* GLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5038B04B1D0ED88B00E85C00 /* GLUtils.cpp */; };
 		5038B0501D0ED88B00E85C00 /* WindowViewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5038B04D1D0ED88B00E85C00 /* WindowViewer.cpp */; };
+		5038B0531D0FD9DC00E85C00 /* ScreenPixels.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5038B0511D0FD9DC00E85C00 /* ScreenPixels.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -118,6 +119,8 @@
 		5038B04C1D0ED88B00E85C00 /* GLUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLUtils.h; path = src/viewer/GLUtils.h; sourceTree = "<group>"; };
 		5038B04D1D0ED88B00E85C00 /* WindowViewer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WindowViewer.cpp; path = src/viewer/WindowViewer.cpp; sourceTree = "<group>"; };
 		5038B04E1D0ED88B00E85C00 /* WindowViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WindowViewer.h; path = src/viewer/WindowViewer.h; sourceTree = "<group>"; };
+		5038B0511D0FD9DC00E85C00 /* ScreenPixels.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScreenPixels.cpp; path = src/renderer/ScreenPixels.cpp; sourceTree = "<group>"; };
+		5038B0521D0FD9DC00E85C00 /* ScreenPixels.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ScreenPixels.hpp; path = src/renderer/ScreenPixels.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -186,6 +189,8 @@
 				5038B00D1D0ED6C000E85C00 /* Sphere.h */,
 				5038B00E1D0ED6C000E85C00 /* SphereLight.h */,
 				5038B00F1D0ED6C000E85C00 /* ToonMapper.h */,
+				5038B0511D0FD9DC00E85C00 /* ScreenPixels.cpp */,
+				5038B0521D0FD9DC00E85C00 /* ScreenPixels.hpp */,
 			);
 			name = renderer;
 			sourceTree = "<group>";
@@ -334,6 +339,7 @@
 				5038B0451D0ED88000E85C00 /* CornellBoxScene.cpp in Sources */,
 				5038B0501D0ED88B00E85C00 /* WindowViewer.cpp in Sources */,
 				5038B01C1D0ED84D00E85C00 /* stb_image.cpp in Sources */,
+				5038B0531D0FD9DC00E85C00 /* ScreenPixels.cpp in Sources */,
 				5038B0131D0ED6C000E85C00 /* PhotonMapping.cpp in Sources */,
 				5038B0111D0ED6C000E85C00 /* Model.cpp in Sources */,
 				5038B0481D0ED88000E85C00 /* SceneForRaytracingCamp3.cpp in Sources */,

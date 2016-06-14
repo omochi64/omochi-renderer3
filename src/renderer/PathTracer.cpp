@@ -41,7 +41,8 @@ void PathTracer::init(const Camera &camera, int min_samples, int max_samples, in
   m_threadCount          = 1;
 
   m_checkIntersectionCount = 0;
-  m_result = new Color[m_camera.GetScreenHeight()*m_camera.GetScreenWidth()];
+  delete m_result;
+  m_result = nullptr;
 }
 
 PathTracer::~PathTracer()
@@ -53,6 +54,13 @@ void PathTracer::RenderScene(const Scene &scene) {
 
   // スクリーン中心
   const Vector3 screen_center = m_camera.GetScreenCenterPosition();
+
+  // Result初期化
+  delete m_result;
+  m_result = new ScreenPixels();
+  m_result->InitializePixels(m_camera.GetScreenWidth(), m_camera.GetScreenHeight(), m_threadCount/2 + m_threadCount%2, m_threadCount/2 + m_threadCount%2);
+  std::cerr << "width,height = " << m_camera.GetScreenWidth() << "," << m_camera.GetScreenHeight() << std::endl;
+  std::cerr << "total width,height = " << m_result->CalcScreenWidth() << "," << m_result->CalcScreenHeight() << std::endl;
 
   m_omittedRayCount = 0;
   m_hitToLightCount = 0;
@@ -69,7 +77,7 @@ void PathTracer::RenderScene(const Scene &scene) {
     cerr << "rendering time = " << (1.0/60)*pastsec << " min." << endl;
     cerr << "speed = " << m_checkIntersectionCount / pastsec*(m_currentSamples - m_previous_samples) << " rays (intersection check)/sec" << endl;
     if (m_renderFinishCallback) {
-      m_renderFinishCallback(m_currentSamples, m_result, pastsec / 60.0);
+      m_renderFinishCallback(m_currentSamples, m_result->GetScreen(), m_result->CalcScreenWidth(), m_result->CalcScreenHeight(), pastsec / 60.0);
     }
   }
 }
@@ -85,20 +93,35 @@ void PathTracer::scanPixelsAndCastRays(const Scene &scene, int previous_samples,
   std::atomic_int atomic_y_index;
   atomic_y_index.store(0);
   m_processed_y_counts = 0;
+  
+  auto xImageCount = m_threadCount/2 + m_threadCount%2;
+  auto yImageCount = m_threadCount/2 + m_threadCount%2;
+  
   for (size_t threadIndex = 0; threadIndex < m_threadCount; threadIndex++) {
+    
+    auto imageY = threadIndex / yImageCount;
+    auto imageX = threadIndex % xImageCount;
+    ScreenPixels::ScreenViewport *viewPort = m_result->GetViewport(imageX, imageY);
 
-    auto new_thread = new std::thread( [&] (const size_t threadIndex) {
+    auto new_thread = new std::thread( [height, &scene, viewPort, previous_samples, next_samples, this] (const size_t threadIndex) {
       //for (int y = 0; y<(signed)height; y++) {
       clock_t t1, t2;
       t1 = clock();
-      int y = atomic_y_index.fetch_add(1);
-      for (; y<(signed)height ; y = atomic_y_index.fetch_add(1)) {
-        std::cout << "ThreadIndex " << threadIndex << ": y=" << y << std::endl;
-        scanPixelsOnYAndCastRays(scene, y, previous_samples, next_samples);
+
+//      int y = atomic_y_index.fetch_add(1);
+//      for (; y<(signed)height ; y = atomic_y_index.fetch_add(1)) {
+      size_t startY = threadIndex * (height / m_threadCount);
+      size_t nextY = (threadIndex+1) * (height / m_threadCount);
+      if (threadIndex +  1 == m_threadCount) nextY = height;
+      
+      int y = startY;
+      for (; y < nextY; y++) {
+        scanPixelsOnYAndCastRays(scene, viewPort, y, previous_samples, next_samples);
       }
+      
       t2 = clock();
       double pastsec = 1.0*(t2-t1)/CLOCKS_PER_SEC;
-      std::cout << "ThreadIndex " << threadIndex << " rendering time = " << (1.0/60)*pastsec << " min." << endl;
+      std::cerr << "ThreadIndex " << threadIndex << " rendering time = " << pastsec << " sec." << endl;
     }, threadIndex );
     threads.push_back(new_thread);
   }
@@ -110,7 +133,7 @@ void PathTracer::scanPixelsAndCastRays(const Scene &scene, int previous_samples,
 }
   
 // ScanPixelsOnYAndCastRays で y 方向のループ内部の処理。マルチスレッドで呼ばれる可能性もある
-void PathTracer::scanPixelsOnYAndCastRays(const Scene &scene, int y, int previous_samples, int next_samples)
+void PathTracer::scanPixelsOnYAndCastRays(const Scene &scene, ScreenPixels::ScreenViewport *viewport, int y, int previous_samples, int next_samples)
 {
   const size_t height = m_camera.GetScreenHeight();
   const size_t width  = m_camera.GetScreenWidth();
@@ -120,8 +143,6 @@ void PathTracer::scanPixelsOnYAndCastRays(const Scene &scene, int y, int previou
 
   Random rnd(static_cast<unsigned int>(y+1+previous_samples*height));
   for (int x = 0; x<(signed)width && m_enableRendering; x++) {
-    const int index = static_cast<int>(x + (height - y - 1)*width);
-    
     Color accumulated_radiance;
     
     // super-sampling
@@ -139,7 +160,7 @@ void PathTracer::scanPixelsOnYAndCastRays(const Scene &scene, int y, int previou
       }
     }
     // img_n+c(x) = n/(n+c)*img_n(x) + 1/(n+c)*sum_{n+1}^{n+c}rad_i(x)/supersamples^2
-    m_result[index] = m_result[index] * (static_cast<double>(previous_samples) / next_samples) + accumulated_radiance / averaging_factor;
+    viewport->SetColor(x, y, viewport->GetColor(x, y) * (static_cast<double>(previous_samples) / next_samples) + accumulated_radiance / averaging_factor);
   }
   m_processed_y_counts++;
   //cerr << "y = " << y << ": " << static_cast<double>(m_processed_y_counts)/height*100 << "% finished" << endl;

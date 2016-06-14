@@ -24,18 +24,26 @@ namespace OmochiRenderer {
     }
 
     // 保存時に呼ばれる関数
-    virtual void Save(int samples, int saveCount, const Color *img, double accumulatedPastTime) = 0;
+    virtual void Save(int samples, int saveCount, const Color *img, size_t width, size_t height, double accumulatedPastTime) = 0;
 
   protected:
 
     // 内部用。引数のデータをこのインスタンスのデータにコピー
-    void CopyColorArrayToImage(const Color *img)
+    void CopyColorArrayToImage(const Color *img, size_t width, size_t height)
     {
+      std::cerr << "copy color width,height = " << width << "," << height << std::endl;
       auto myImg = ImageHandler::GetInstance().GetImage(m_img);
-      if (myImg)
+      if (!myImg) return;
+
+      if (width != myImg->GetWidth() || height != myImg->GetHeight())
       {
-        CopyColorArrayToImage(img, myImg->m_image, static_cast<int>(myImg->GetWidth()), static_cast<int>(myImg->GetHeight()));
+        ImageHandler::GetInstance().ReleaseImage(m_img);
+        m_img = ImageHandler::GetInstance().CreateImage(width, height);
+        myImg = ImageHandler::GetInstance().GetImage(m_img);
       }
+      if (!myImg) return;
+      
+      CopyColorArrayToImage(img, myImg->m_image, static_cast<int>(myImg->GetWidth()), static_cast<int>(myImg->GetHeight()));
     }
 
     // 引数に与えた変数間でColorデータコピー

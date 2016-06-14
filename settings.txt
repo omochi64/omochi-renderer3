@@ -18,8 +18,10 @@ Time to stop renderer = 900
 #Camera Position = 80, 82.0, 420.0
 #Camera Direction = -0.05, -0.15, -1.0
 
-Width = 1280
-Height = 720
+#Width = 1280
+Width = 640
+#Height = 720
+Height = 360
 #Camera Position = 50, 55.0, 230.0
 #Camera Direction = 0.00001, -0.15, -1.0
 Camera Position = 50, 155.0, 300.0

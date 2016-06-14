@@ -6,6 +6,7 @@
 #include "Color.h"
 #include "scenes/Scene.h"
 #include "Camera.h"
+#include "ScreenPixels.hpp"
 
 namespace OmochiRenderer {
 
@@ -17,7 +18,7 @@ class IBL;
 class PathTracer : public Renderer {
 public:
   // レンダリング完了時に呼び出すコールバック用メソッド定義
-  typedef std::function<void(int samples, const Color *result, double accumulatedRenderingTime)> RenderingFinishCallbackFunction;
+  typedef std::function<void(int samples, const Color *result, size_t width, size_t height, double accumulatedRenderingTime)> RenderingFinishCallbackFunction;
 
 public:
 	// コンストラクタ、デストラクタ
@@ -37,7 +38,7 @@ public:
 
 	virtual void RenderScene(const Scene &scene);
 
-	virtual const Color *GetResult() const {return m_result;}
+	virtual const ScreenPixels *GetResult() const {return m_result;}
   virtual const int GetCurrentSampleCount() const { return m_currentSamples; }
 
   virtual std::string GetCurrentRenderingInfo() const;
@@ -53,7 +54,7 @@ private:
 
   // 全ピクセルをスキャンし、レイを飛ばすメソッド
   void scanPixelsAndCastRays(const Scene &scene, int previous_samples, int next_samples);
-  void scanPixelsOnYAndCastRays(const Scene &scene, int y, int previous_samples, int next_samples);
+  void scanPixelsOnYAndCastRays(const Scene &scene, ScreenPixels::ScreenViewport *viewport, int y, int previous_samples, int next_samples);
   // 与えられたレイについて、その放射輝度を求める
   Color Radiance(const Scene &scene, const Ray &ray, Random &rnd, const int depth);
 
@@ -81,7 +82,7 @@ private:
   
   size_t m_threadCount;
 
-	Color *m_result;
+	ScreenPixels *m_result;
 
   bool m_performNextEventEstimation = false;
 };

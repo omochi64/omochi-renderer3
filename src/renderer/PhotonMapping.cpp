@@ -2,11 +2,12 @@
 
 #include "PhotonMapping.h"
 #include "scenes/Scene.h"
+#include "renderer/ScreenPixels.hpp"
 
 
 namespace OmochiRenderer {
   PhotonMapping::PhotonMapping(const Camera &camera)
-    : m_result(new Color[camera.GetScreenHeight()*camera.GetScreenWidth()])
+    : m_result(nullptr)
   {
     // TODO:
   }

@@ -4,6 +4,7 @@
 #include "FileSaverCallerWithTimer.h"
 #include "FileSaver.h"
 #include "renderer/Renderer.h"
+#include "renderer/ScreenPixels.hpp"
 
 using namespace std;
 
@@ -57,9 +58,11 @@ namespace OmochiRenderer {
           double tmpAccTime = accTime + 1000.0*(clock() - start) / CLOCKS_PER_SEC;
           if (std::shared_ptr<Renderer> render = m_renderer.lock())
           {
+            auto result = render->GetResult();
             for (auto it = m_savers.begin(); it != m_savers.end(); it++)
             {
-              (*it)->Save(render->GetCurrentSampleCount(), m_saveCount, render->GetResult(), tmpAccTime / 1000.0 / 60);
+              (*it)->Save(render->GetCurrentSampleCount(), m_saveCount, result->GetScreen(), result->CalcScreenWidth(), result->CalcScreenHeight(),
+                          tmpAccTime / 1000.0 / 60);
             }
           }
           else
