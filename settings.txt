@@ -9,7 +9,8 @@ Show Preview = True
 Save Span = 30
 Max Save Count For periodic save= 30
 Save On Each Sample Ended = false
-Time to stop renderer = 900
+#Time to stop renderer = 900
+Time to stop renderer = 6000
 
 # for camera
 #本番シーン用
@@ -22,10 +23,13 @@ Time to stop renderer = 900
 Width = 640
 #Height = 720
 Height = 360
-#Camera Position = 50, 55.0, 230.0
-#Camera Direction = 0.00001, -0.15, -1.0
-Camera Position = 50, 155.0, 300.0
-Camera Direction = 0.00001, -0.75, -1.5
+
+# camera setting for cornel box
+Camera Position = 50, 55.0, 230.0
+Camera Direction = 0.00001, -0.15, -1.0
+
+#Camera Position = 50, 155.0, 300.0
+#Camera Direction = 0.00001, -0.75, -1.5
 
 
 # for pathtracer
@@ -34,7 +38,7 @@ Sample Start = 1
 Sample End = 4096
 Sample Step = 1
 Next Event Estimation = False
-Save filename format for PathTracer = results/result(%savecount02%)_w(%width%)_h(%height%)_(%samples04%)_(%supersamples02%)x(%supersamples02%)_(%accumulatedTime03%)min
-#Save filename format for PathTracer = (%savecount02%)
+#Save filename format for PathTracer = results/result(%savecount02%)_w(%width%)_h(%height%)_(%samples04%)_(%supersamples02%)x(%supersamples02%)_(%accumulatedTime03%)min
+Save filename format for PathTracer = results/(%savecount02%)
 
 # for PhotonMapping

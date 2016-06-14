@@ -31,7 +31,6 @@ namespace OmochiRenderer {
     // 内部用。引数のデータをこのインスタンスのデータにコピー
     void CopyColorArrayToImage(const Color *img, size_t width, size_t height)
     {
-      std::cerr << "copy color width,height = " << width << "," << height << std::endl;
       auto myImg = ImageHandler::GetInstance().GetImage(m_img);
       if (!myImg) return;
 

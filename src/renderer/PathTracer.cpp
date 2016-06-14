@@ -58,7 +58,7 @@ void PathTracer::RenderScene(const Scene &scene) {
   // Result初期化
   delete m_result;
   m_result = new ScreenPixels();
-  m_result->InitializePixels(m_camera.GetScreenWidth(), m_camera.GetScreenHeight(), m_threadCount/2 + m_threadCount%2, m_threadCount/2 + m_threadCount%2);
+  m_result->InitializePixels(m_camera.GetScreenWidth(), m_camera.GetScreenHeight(), 2, 1);
   std::cerr << "width,height = " << m_camera.GetScreenWidth() << "," << m_camera.GetScreenHeight() << std::endl;
   std::cerr << "total width,height = " << m_result->CalcScreenWidth() << "," << m_result->CalcScreenHeight() << std::endl;
 
@@ -94,15 +94,14 @@ void PathTracer::scanPixelsAndCastRays(const Scene &scene, int previous_samples,
   atomic_y_index.store(0);
   m_processed_y_counts = 0;
   
-  auto xImageCount = m_threadCount/2 + m_threadCount%2;
-  auto yImageCount = m_threadCount/2 + m_threadCount%2;
+  //auto xImageCount = 1; // m_threadCount/2 + m_threadCount%2;
+  //auto yImageCount = m_threadCount/2 + m_threadCount%2;
   
   for (size_t threadIndex = 0; threadIndex < m_threadCount; threadIndex++) {
     
-    auto imageY = threadIndex / yImageCount;
-    auto imageX = threadIndex % xImageCount;
-    ScreenPixels::ScreenViewport *viewPort = m_result->GetViewport(imageX, imageY);
-
+    ScreenPixels::ScreenViewport *viewPort = m_result->GetViewport(threadIndex/2, 0);
+    assert (viewPort);
+    
     auto new_thread = new std::thread( [height, &scene, viewPort, previous_samples, next_samples, this] (const size_t threadIndex) {
       //for (int y = 0; y<(signed)height; y++) {
       clock_t t1, t2;
