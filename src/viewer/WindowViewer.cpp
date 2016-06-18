@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 #include "WindowViewer.h"
 #include "renderer/Camera.h"
@@ -356,8 +356,11 @@ namespace OmochiRenderer {
       */
       m_shader.UseShader();
 
-      int width = viewer.m_camera.GetScreenWidth();
-      int height = viewer.m_camera.GetScreenHeight();
+      const auto *resultPixels = viewer.m_renderer.GetResult();
+      const Color *result = resultPixels->GetScreen();
+
+      int width = resultPixels->CalcScreenWidth();
+      int height = resultPixels->CalcScreenHeight();
 
       double gl_width = 2.0 / width, gl_height = 2.0 / height;
       double gl_offset_x = gl_width / 2.0 - 1.0, gl_offset_y = gl_height / 2.0 - 1.0;
@@ -365,7 +368,6 @@ namespace OmochiRenderer {
 
 
       clock_t b = clock();
-      const Color *result = viewer.m_renderer.GetResult();
       for (int y = 0; y<height-1; y++) {
         for (int x = 0; x<width-1; x++) {
           int index = x + y*width;

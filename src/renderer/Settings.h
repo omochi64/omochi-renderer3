@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include <fstream>
@@ -33,7 +33,7 @@ namespace OmochiRenderer {
       , m_saveHDR(true)
     {
 #ifndef __APPLE__
-      m_numThreads = omp_get_num_procs()-1;
+      //m_numThreads = omp_get_num_procs()-1;
 #endif
     }
     ~Settings() {}

@@ -1,4 +1,4 @@
-//
+﻿//
 //  ScreenPixels.cpp
 //  omochi-renderer3
 //

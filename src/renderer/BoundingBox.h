@@ -124,7 +124,7 @@ public:
 
 #ifndef __APPLE__
   // Reference: http://d.hatena.ne.jp/ototoi/20090925/p1
-  inline static bool CheckIntersection4floatAABB(
+  inline static bool CheckIntersection4floatAABB(
 	  const __m128 bboxes[2][3], // 4boxes: min-max[2] * xyz[3] * boxes[4](__m128)
 	  const __m128 rayOrig[3],   // ray origin
 	  const __m128 rayInverseDir[3], // ray inversed dir

@@ -63,6 +63,9 @@
     <ClCompile Include="src\scenes\SceneForRaytracingCamp3.cpp">
       <Filter>scenes</Filter>
     </ClCompile>
+    <ClCompile Include="src\renderer\ScreenPixels.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="renderer">
@@ -238,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="src\scenes\SceneForRaytracingCamp3.h">
       <Filter>scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\ScreenPixels.hpp">
+      <Filter>renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

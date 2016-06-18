@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 #include "scenes/Scene.h"
 #include "PathTracer.h"
@@ -17,6 +17,7 @@ namespace OmochiRenderer {
 PathTracer::PathTracer(const Camera &camera, int samples, int supersamples)
   : Renderer()
   , m_camera(camera)
+  , m_result(nullptr)
 {
   init(camera, samples, samples, 1, supersamples, nullptr);
 }
@@ -24,6 +25,7 @@ PathTracer::PathTracer(const Camera &camera, int samples, int supersamples)
 PathTracer::PathTracer(const Camera &camera, int min_samples, int max_samples, int steps, int supersamples, RenderingFinishCallbackFunction callback)
   : Renderer()
   , m_camera(camera)
+  , m_result(nullptr)
 {
   init(camera, min_samples, max_samples, steps, supersamples, callback);
 }
@@ -99,8 +101,14 @@ void PathTracer::scanPixelsAndCastRays(const Scene &scene, int previous_samples,
   
   for (size_t threadIndex = 0; threadIndex < m_threadCount; threadIndex++) {
     
-    ScreenPixels::ScreenViewport *viewPort = m_result->GetViewport(threadIndex/2, 0);
-    assert (viewPort);
+    ScreenPixels::ScreenViewport *viewPort = nullptr;
+
+    for (int i = 0; i < 10 && viewPort == nullptr; i++)
+    {
+      viewPort = m_result->GetViewport(threadIndex / 2, 0);
+      if (viewPort == nullptr) std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    assert(viewPort);
     
     auto new_thread = new std::thread( [height, &scene, viewPort, previous_samples, next_samples, this] (const size_t threadIndex) {
       //for (int y = 0; y<(signed)height; y++) {

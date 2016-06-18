@@ -42,7 +42,7 @@ namespace OmochiRenderer {
 
   private:
 #ifdef _WIN32
-    struct QBVH_structure  {
+    struct QBVH_structure  {
       __m128 bboxes[2][3];//4 float min-max xyz
       size_t children[4]; //4 children
       int axis_top;       //top axis
